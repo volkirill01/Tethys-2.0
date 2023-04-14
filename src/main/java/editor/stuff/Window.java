@@ -2,7 +2,6 @@ package editor.stuff;
 
 import editor.eventListeners.Input;
 import editor.eventListeners.KeyCode;
-import editor.scene.EditorScene;
 import editor.scene.SceneManager;
 import editor.stuff.utils.Time;
 import org.lwjgl.Version;
@@ -99,11 +98,6 @@ public class Window {
             if (Time.deltaTime() >= 0.0f)
                 SceneManager.getCurrentScene().update();
 
-            if (Input.buttonDown(KeyCode.I)) {
-                glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-                glClear(GL_COLOR_BUFFER_BIT);
-            }
-
             glfwSwapBuffers(glfwWindow);
 
             endTime = Time.getTime();
@@ -122,5 +116,9 @@ public class Window {
         Objects.requireNonNull(glfwSetErrorCallback(null)).free();
     }
 
+    public static boolean isClose() { return glfwWindowShouldClose(glfwWindow); }
+
     public static long getGlfwWindow() { return glfwWindow; }
+
+    public static String getTitle() { return title; }
 }

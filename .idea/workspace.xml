@@ -4,31 +4,27 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/Input.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/KeyCode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/KeyListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/MouseListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/scene/EditorMode_EditorScene.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/scene/EditorScene.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/scene/PlayMode_EditorScene.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/scene/SceneManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/ColoredText.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/Window.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/utils/Time.java" afterDir="false" />
+    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="Create start Window;&#10;Add input Listeners;">
+      <change afterPath="$PROJECT_DIR$/Assets/test.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/editorFiles/shaders/default.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/entity/GameObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/Component.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/SpriteRenderer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/Transform.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/Camera.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/RenderBatch.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/SpriteMasterRenderer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/Texture.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/shader/Shader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/customVariables/Color.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scene/EditorMode_EditorScene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scene/EditorMode_EditorScene.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scene/EditorScene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scene/EditorScene.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scene/PlayMode_EditorScene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scene/PlayMode_EditorScene.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scene/SceneManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scene/SceneManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/Window.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +39,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="GLSL Shader" />
         <option value="Class" />
       </list>
     </option>
@@ -63,10 +60,15 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/_Files/Projects/Java/Tethys_2.0/src/main/java/editor/eventListeners"
+    "last_opened_file_path": "C:/_Files/Projects/Java/Tethys_2.0/src/main/java/editor/eventListeners",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "editing.templates"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -78,6 +80,7 @@
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="editor.Main" />
       <module name="Tethys_2.0.main" />
+      <option name="VM_PARAMETERS" value="-ea" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="editor.*" />
@@ -103,6 +106,14 @@
       <option name="presentableId" value="Default" />
       <updated>1681374145266</updated>
     </task>
+    <task id="LOCAL-00001" summary="Create start Window;&#10;Add input Listeners;">
+      <created>1681445176858</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1681445176858</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -110,10 +121,21 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="true" />
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Create start Window;&#10;Add input Listeners;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Create start Window;&#10;Add input Listeners;" />
   </component>
 </project>

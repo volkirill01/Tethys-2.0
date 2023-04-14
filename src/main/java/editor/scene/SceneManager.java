@@ -11,7 +11,8 @@ public class SceneManager {
             case 1 -> currentScene = new PlayMode_EditorScene();
             default -> throw new IllegalStateException("Unknown scene '" + newScene + "'.");
         }
-//                currentScene.init();
+        currentScene.init();
+        currentScene.start();
     }
 
     public static EditorScene getCurrentScene() { return currentScene; }
