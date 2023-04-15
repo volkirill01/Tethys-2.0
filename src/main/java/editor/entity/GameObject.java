@@ -10,7 +10,7 @@ public class GameObject {
 
     public String name;
     public Transform transform;
-    private List<Component> components = new ArrayList<>();
+    private final List<Component> components = new ArrayList<>();
 
     public GameObject(String name) {
         this.name = name;

@@ -1,45 +1,20 @@
 package editor.scene;
 
 
+import editor.assets.AssetPool;
 import editor.entity.GameObject;
 import editor.entity.component.components.SpriteRenderer;
+import editor.eventListeners.Input;
+import editor.eventListeners.KeyCode;
 import editor.renderer.Camera;
-import editor.renderer.Texture;
-import editor.renderer.shader.Shader;
-import editor.stuff.customVariables.Color;
+import editor.renderer.renderer2D.sprite.SpriteSheet;
 import editor.stuff.utils.Time;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class EditorMode_EditorScene extends EditorScene {
 
-//    private float[] vertexArray = {
-//             // position                // color                    // UV Coordinates
-//             100.5f, -100.5f, 0.0f,     1.0f, 0.0f, 0.0f, 1.0f,     1.0f, 0.0f,  // Bottom right   (0)
-//            -100.5f,  100.5f, 0.0f,     0.0f, 1.0f, 0.0f, 1.0f,     0.0f, 1.0f,  // Top left       (1)
-//             100.5f,  100.5f, 0.0f,     0.0f, 0.0f, 1.0f, 1.0f,     1.0f, 1.0f,  // Top right      (2)
-//            -100.5f, -100.5f, 0.0f,     1.0f, 1.0f, 0.0f, 1.0f,     0.0f, 0.0f   // Bottom left    (3)
-//    };
-//
-//    // IMPORTANT: Must be in counter-clockwise order
-//    private int[] elementArray = {
-//            2, 1, 0, // Top right Triangle
-//            0, 1, 3  // Bottom left Triangle
-//    };
-//
-//    private int vaoID, vboID, eboID;
-//
-//    private final Shader defaultShader = new Shader("editorFiles/shaders/default.glsl");
-//    private Texture testTexture;
-//
-//    private GameObject testObj;
+    private SpriteSheet sprites;
+    private GameObject go1;
 
     public EditorMode_EditorScene() {
 
@@ -47,81 +22,82 @@ public class EditorMode_EditorScene extends EditorScene {
 
     @Override
     public void init() {
-        this.camera = new Camera(new Vector3f(0.0f));
+        loadResources();
+        this.camera = new Camera(new Vector3f(-250.0f, 0.0f, 0.0f));
 
-        int xOffset = 10;
-        int yOffset = 10;
+        sprites = AssetPool.getSpriteSheet("Assets/spritesheet.png");
 
-        float totalWidth = (float) (600 - xOffset * 2);
-        float totalHeight = (float) (300 - yOffset * 2);
-        float sizeX = totalWidth / 100.0f;
-        float sizeY = totalHeight / 100.0f;
+        go1 = new GameObject("Obj1");
+        go1.transform.position.set(100.0f, 100.0f, 0.0f);
+        go1.transform.scale.set(256.0f, 256.0f, 0.0f);
+        go1.addComponent(new SpriteRenderer(sprites.getSprite(0)));
+        addGameObjectToScene(go1);
 
-        for (int x = 0; x < 100; x++) {
-            for (int y = 0; y < 100; y++) {
-                float xPos = xOffset + (x * sizeX);
-                float yPos = yOffset + (y * sizeY);
+        GameObject go2 = new GameObject("Obj2");
+        go2.transform.position.set(400.0f, 100.0f, 0.0f);
+        go2.transform.scale.set(256.0f, 256.0f, 0.0f);
+        go2.addComponent(new SpriteRenderer(sprites.getSprite(15)));
+        addGameObjectToScene(go2);
 
-                GameObject go = new GameObject("Obj " + x + ", " + y);
-                go.transform.position.set(xPos, yPos);
-                go.transform.scale.set(sizeX, sizeY);
-                go.addComponent(new SpriteRenderer(new Color(xPos / totalWidth, yPos / totalWidth, 255.0f, 255.0f)));
-                this.addGameObjectToScene(go);
-            }
-        }
-
-//        this.testTexture = new Texture("Assets/test.png");
+        // Performance Test
+//        int xOffset = 10;
+//        int yOffset = 10;
 //
-//        System.out.println("Creating test object");
-//        this.testObj = new GameObject("test obj");
-//        this.testObj.addComponent(new SpriteRenderer());
-//        this.addGameObjectToScene(this.testObj);
-
-//        // ============================================================
-//        // Generate VAO, VBO and EBO buffer Objects, and send to GPU
-//        // ============================================================
-//        vaoID = glGenVertexArrays();
-//        glBindVertexArray(vaoID);
+//        float totalWidth = (float) (600 - xOffset * 2);
+//        float totalHeight = (float) (300 - yOffset * 2);
+//        float sizeX = totalWidth / 100.0f;
+//        float sizeY = totalHeight / 100.0f;
 //
-//        // Create a float buffer of vertices
-//        FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(vertexArray.length);
-//        vertexBuffer.put(vertexArray);
-//        vertexBuffer.flip();
+//        for (int x = 0; x < 100; x++) {
+//            for (int y = 0; y < 100; y++) {
+//                float xPos = xOffset + (x * sizeX);
+//                float yPos = yOffset + (y * sizeY);
 //
-//        // Create VBO upload the vertex buffer
-//        vboID = glGenBuffers();
-//        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-//        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
-//
-//        // Create the indices and upload
-//        IntBuffer elementBuffer = BufferUtils.createIntBuffer(elementArray.length);
-//        elementBuffer.put(elementArray);
-//        elementBuffer.flip();
-//
-//        eboID = glGenBuffers();
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
-//        glBufferData(GL_ELEMENT_ARRAY_BUFFER, elementBuffer, GL_STATIC_DRAW);
-//
-//        // Add the vertex attribute pointers
-//        int positionSize = 3;   // x, y, z
-//        int colorSize = 4;      // r, g, b, a
-//        int uvSize = 2;      // x, y
-//        int vertexSizeBytes = (positionSize + colorSize + uvSize) * Float.BYTES;
-//        glVertexAttribPointer(0, positionSize, GL_FLOAT, false, vertexSizeBytes, 0);
-//        glEnableVertexAttribArray(0);
-//
-//        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeBytes, positionSize * Float.BYTES);
-//        glEnableVertexAttribArray(1);
-//
-//        glVertexAttribPointer(2, uvSize, GL_FLOAT, false, vertexSizeBytes, (positionSize + colorSize) * Float.BYTES);
-//        glEnableVertexAttribArray(2);
+//                GameObject go = new GameObject("Obj " + x + ", " + y);
+//                go.transform.position.set(xPos, yPos);
+//                go.transform.scale.set(sizeX, sizeY);
+//                go.addComponent(new SpriteRenderer(new Color(5.0f, 2.0f, 25.0f, 255.0f)));
+//                this.addGameObjectToScene(go);
+//            }
+//        }
     }
+
+    private void loadResources() {
+        AssetPool.addSpriteSheet("Assets/spritesheet.png",
+                new SpriteSheet(AssetPool.getTexture("Assets/spritesheet.png"),
+                        16, 16, 26, 0, 0, 0, 0));
+    }
+
+    private int spriteIndex = 0;
+    private float spriteFlipTime = 0.2f;
+    private float spriteFlipTimeLeft = 0.0f;
 
     @Override
     public void update() {
-        for (GameObject go : this.gameObjects) {
-            go.update();
+        if (Input.buttonDown(KeyCode.Arrow_Right))
+            camera.getPosition().x += 100f * Time.deltaTime();
+        if (Input.buttonDown(KeyCode.Arrow_Left))
+            camera.getPosition().x -= 100f * Time.deltaTime();
+
+        if (Input.buttonDown(KeyCode.Arrow_Up))
+            camera.getPosition().y += 100f * Time.deltaTime();
+        if (Input.buttonDown(KeyCode.Arrow_Down))
+            camera.getPosition().y -= 100f * Time.deltaTime();
+
+        if (spriteFlipTimeLeft <= 0) {
+            spriteFlipTimeLeft = spriteFlipTime;
+            spriteIndex++;
+            if (spriteIndex > 4)
+                spriteIndex = 0;
+            go1.getComponent(SpriteRenderer.class).setSprite(sprites.getSprite(spriteIndex));
+        } else {
+            spriteFlipTimeLeft -= Time.deltaTime();
         }
+
+        go1.transform.position.x += 10 * Time.deltaTime();
+
+        for (GameObject go : this.gameObjects)
+            go.update();
 
         this.spriteRenderer.render();
     }

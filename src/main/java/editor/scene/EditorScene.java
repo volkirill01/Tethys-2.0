@@ -2,7 +2,7 @@ package editor.scene;
 
 import editor.entity.GameObject;
 import editor.renderer.Camera;
-import editor.renderer.SpriteMasterRenderer;
+import editor.renderer.renderer2D.SpriteMasterRenderer;
 
 import java.util.ArrayList;
 import java.util.List;

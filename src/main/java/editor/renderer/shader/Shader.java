@@ -1,9 +1,6 @@
 package editor.renderer.shader;
 
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.BufferUtils;
 
 import java.io.IOException;
@@ -136,6 +133,13 @@ public class Shader {
         glUniformMatrix4fv(varLocation, false, matrixBuffer);
     }
 
+    public void uploadMat3f(String variableName, Matrix3f matrix) {
+        int varLocation = uploadVariable(variableName);
+        FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(3 * 3); // 3x3 Matrix
+        matrix.get(matrixBuffer);
+        glUniformMatrix3fv(varLocation, false, matrixBuffer);
+    }
+
     public void uploadFloat(String variableName, float value) {
         int varLocation = uploadVariable(variableName);
         glUniform1f(varLocation, value);
@@ -149,6 +153,11 @@ public class Shader {
     public void uploadTexture(String variableName, int textureSlot) {
         int varLocation = uploadVariable(variableName);
         glUniform1i(varLocation, textureSlot);
+    }
+
+    public void uploadIntArray(String variableName, int[] array) {
+        int varLocation = uploadVariable(variableName);
+        glUniform1iv(varLocation, array);
     }
 
     public void uploadVec2f(String variableName, Vector2f vector) {

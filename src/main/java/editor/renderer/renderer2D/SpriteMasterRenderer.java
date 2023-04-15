@@ -1,15 +1,16 @@
-package editor.renderer;
+package editor.renderer.renderer2D;
 
 import editor.entity.GameObject;
 import editor.entity.component.components.SpriteRenderer;
+import editor.renderer.Texture;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SpriteMasterRenderer {
 
-    private final int MAX_BATCH_SIZE = 1000;
-    private List<RenderBatch> batches = new ArrayList<>();
+    private final int MAX_BATCH_SIZE = 1_000;
+    private final List<RenderBatch> batches = new ArrayList<>();
 
     public SpriteMasterRenderer() {
 
@@ -24,9 +25,12 @@ public class SpriteMasterRenderer {
         boolean added = false;
         for (RenderBatch batch : this.batches) {
             if (batch.isHasRoom()) {
-                batch.addSprite(sprite);
-                added = true;
-                break;
+                Texture texture = sprite.getTexture();
+                if (texture == null || (batch.hasTexture(texture) || batch.hasTextureRoom())) {
+                    batch.addSprite(sprite);
+                    added = true;
+                    break;
+                }
             }
         }
 

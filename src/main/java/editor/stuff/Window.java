@@ -4,16 +4,19 @@ import editor.eventListeners.Input;
 import editor.eventListeners.KeyCode;
 import editor.scene.SceneManager;
 import editor.stuff.utils.Time;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 
 import java.awt.*;
+import java.nio.IntBuffer;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.GL_MAX_TEXTURE_IMAGE_UNITS;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
@@ -23,18 +26,15 @@ public class Window {
 
     private static long glfwWindow;
 
-    public static float r = 1.0f;
-    public static float g = 1.0f;
-    public static float b = 1.0f;
+    public static float r = 0.0f;
+    public static float g = 0.0f;
+    public static float b = 0.0f;
+    public static float a = 1.0f;
 
     public static void run() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         width = (int) screenSize.getWidth();
         height = (int) screenSize.getHeight();
-
-        System.out.printf(ColoredText.GREEN + "\nEngine starts:\n");
-        System.out.printf((ColoredText.YELLOW + "  Resolution: " + ColoredText.RESET + "%d x %d\n"), width, height);
-        System.out.printf((ColoredText.YELLOW + "  LWJGL Version: " + ColoredText.RESET + "%s\n"), Version.getVersion());
 
         init();
         loop();
@@ -80,6 +80,8 @@ public class Window {
         GL.createCapabilities();
 
         SceneManager.changeScene(0); // Load default Scene
+
+        printMachineInfo();
     }
 
     private static void loop() {
@@ -92,7 +94,7 @@ public class Window {
 
             glfwSetWindowTitle(glfwWindow, title + " FPS: " + (1.0f / Time.deltaTime()));
 
-            glClearColor(r, g, b, 1.0f);
+            glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
 
             if (Time.deltaTime() >= 0.0f)
@@ -114,6 +116,15 @@ public class Window {
         // Terminate GLFW and free the error callback
         glfwTerminate();
         Objects.requireNonNull(glfwSetErrorCallback(null)).free();
+    }
+
+    private static void printMachineInfo() {
+        System.out.printf(ColoredText.GREEN + "\nEngine starts:\n");
+        System.out.printf((ColoredText.YELLOW + "  Resolution: " + ColoredText.RESET + "%d x %d\n"), width, height);
+        System.out.printf((ColoredText.YELLOW + "  LWJGL Version: " + ColoredText.RESET + "%s\n"), Version.getVersion());
+        IntBuffer buffer = BufferUtils.createIntBuffer(1);
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, buffer);
+        System.out.printf((ColoredText.YELLOW + "  Texture Slots count: " + ColoredText.RESET + "%d\n"), buffer.get(0));
     }
 
     public static boolean isClose() { return glfwWindowShouldClose(glfwWindow); }

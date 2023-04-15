@@ -10,15 +10,16 @@ import static org.lwjgl.stb.STBImage.*;
 
 public class Texture {
 
-    private int textureID;
-    private String filepath;
+    private final int textureID;
+    private final String filepath;
+    private final int width, height;
 
     public Texture(String filepath) {
         this.filepath = filepath;
 
         // Generate texture on GPU
         this.textureID = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, textureID);
+        glBindTexture(GL_TEXTURE_2D, this.textureID);
 
         // Set texture parameters
         // Repeat image in both directions
@@ -38,6 +39,9 @@ public class Texture {
         if (image == null)
             throw new NullPointerException("Could not load image - '" + this.filepath + "'");
 
+        this.width = width.get(0);
+        this.height = height.get(0);
+
         switch (channels.get(0)) {
             case 3 -> glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width.get(0), height.get(0), 0, GL_RGB, GL_UNSIGNED_BYTE, image);
             case 4 -> glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.get(0), height.get(0), 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
@@ -52,4 +56,12 @@ public class Texture {
     public void unbind() {
         glBindTexture(GL_TEXTURE_2D, 0); // Bind nothing
     }
+
+    public int getTextureID() { return this.textureID; }
+
+    public String getFilepath() { return this.filepath; }
+
+    public int getWidth() { return this.width; }
+
+    public int getHeight() { return this.height; }
 }
