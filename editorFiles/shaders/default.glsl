@@ -25,6 +25,7 @@ in vec4 fColor;
 in vec2 fTextureCoordinates;
 in float fTextureID;
 
+// TODO CHANGE CONSTANT 8 TEXTURE SLOTS, TO USERS GPU TEXTURES SLOTS COUNT
 uniform sampler2D uTextureIDs[8];
 
 out vec4 out_Color;

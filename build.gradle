@@ -11,15 +11,25 @@ project.ext.lwjglVersion = "3.3.2"
 project.ext.jomlVersion = "1.10.5"
 project.ext.lwjgl3_awtVersion = "0.1.8"
 project.ext.lwjglNatives = "natives-windows"
+project.ext.imguiVersion = '1.77-0.17.1'
 
 repositories {
+    jcenter()
     mavenCentral()
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    // Serialization stuff
+    implementation "com.google.code.gson:gson:2.10.1"
 
+    // Imgui stuff
+    implementation "io.imgui.java:binding:$imguiVersion"
+    implementation "io.imgui.java:lwjgl3:$imguiVersion"
+
+    // Include all available natives, but it's likely that you want something specific
+    runtimeOnly "io.imgui.java:natives-windows:$imguiVersion"
+    runtimeOnly "io.imgui.java:natives-windows-x86:$imguiVersion"
+    // LWGJL stuff
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     implementation "org.lwjgl:lwjgl"
@@ -46,7 +56,4 @@ dependencies {
     implementation "org.lwjglx:lwjgl3-awt:${lwjgl3_awtVersion}"
 }
 
-test {
-    useJUnitPlatform()
-}
 targetCompatibility = JavaVersion.VERSION_14

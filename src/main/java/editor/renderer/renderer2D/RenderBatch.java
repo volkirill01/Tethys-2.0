@@ -4,7 +4,7 @@ import editor.assets.AssetPool;
 import editor.entity.component.components.SpriteRenderer;
 import editor.renderer.Texture;
 import editor.renderer.shader.Shader;
-import editor.scene.SceneManager;
+import editor.scenes.SceneManager;
 import editor.stuff.customVariables.Color;
 import org.joml.Vector2f;
 
@@ -15,7 +15,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
-public class RenderBatch {
+public class RenderBatch implements Comparable<RenderBatch> {
 
     // Vertex
     // ========
@@ -42,11 +42,13 @@ public class RenderBatch {
     private int vaoID, vboID;
     private final int maxBathSize;
     private final Shader shader;
+    private int zIndex;
 
-    public RenderBatch(int maxBatchSize) {
+    public RenderBatch(int maxBatchSize, int zIndex) {
         this.shader = AssetPool.getShader("editorFiles/shaders/default.glsl");
         this.maxBathSize = maxBatchSize;
         this.sprites = new SpriteRenderer[this.maxBathSize];
+        this.zIndex = zIndex;
 
         // 4 vertices per quad
         this.vertices = new float[this.maxBathSize * 4 * VERTEX_SIZE];
@@ -116,7 +118,7 @@ public class RenderBatch {
 
         // Send data tu GPU only if data is changed
         if (rebufferData) {
-            System.out.println("Send to GPU");
+            // TODO SEND ONLY CHANGED DATA, NOT ALL DATA
             glBindBuffer(GL_ARRAY_BUFFER, this.vboID);
             glBufferSubData(GL_ARRAY_BUFFER, 0, this.vertices);
         }
@@ -126,6 +128,10 @@ public class RenderBatch {
         this.shader.uploadMat4f("uProjectionMatrix", SceneManager.getCurrentScene().getCamera().getProjectionMatrix());
         this.shader.uploadMat4f("uViewMatrix", SceneManager.getCurrentScene().getCamera().getViewMatrix());
         for (int i = 0; i < this.textures.size(); i++) {
+            // TODO CHANGE CONSTANT 8 TEXTURE SLOTS, TO USERS GPU TEXTURES SLOTS COUNT
+//            IntBuffer buffer = BufferUtils.createIntBuffer(1);
+//            glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, buffer);
+
             glActiveTexture(GL_TEXTURE0 + i + 1);
             this.textures.get(i).bind();
         }
@@ -159,7 +165,7 @@ public class RenderBatch {
         int textureID = 0;
         if (sprite.getTexture() != null)
             for (int i = 0; i < this.textures.size(); i++)
-                if (this.textures.get(i) == sprite.getTexture()) {
+                if (this.textures.get(i).equals(sprite.getTexture())) {
                     textureID = i + 1;
                     break;
                 }
@@ -229,4 +235,9 @@ public class RenderBatch {
     public boolean hasTextureRoom() { return this.textures.size() < 8; }
 
     public boolean hasTexture(Texture texture) { return this.textures.contains(texture); }
+
+    public int getZIndex() { return this.zIndex; }
+
+    @Override
+    public int compareTo(RenderBatch o) { return Integer.compare(this.zIndex, o.getZIndex()); }
 }

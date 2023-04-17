@@ -30,6 +30,8 @@ public class Color {
 
     public void set(Color ref) { init(ref.r, ref.g, ref.b, ref.a); }
 
+    public void set(float[] colorArray) { init(colorArray[0], colorArray[1], colorArray[2], colorArray.length == 4 ? colorArray[3] : 255.0f);}
+
     public Color copy() { return new Color(this.r, this.g, this.b, this.a); }
 
     @Override
@@ -48,4 +50,7 @@ public class Color {
 
     public static Color WHITE = new Color(255.0f, 255.0f, 255.0f);
     public static Color BLACK = new Color(0.0f, 0.0f, 0.0f);
+    public static Color RED = new Color(255.0f, 0.0f, 0.0f);
+    public static Color GREEN = new Color(0.0f, 255.0f, 0.0f);
+    public static Color BLUE = new Color(0.0f, 0.0f, 255.0f);
 }

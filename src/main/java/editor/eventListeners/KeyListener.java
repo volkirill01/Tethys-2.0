@@ -8,7 +8,7 @@ public class KeyListener {
     private static final int KEYS_COUNT = 350;
     private static final boolean[] keyDown = new boolean[KEYS_COUNT];
 
-    protected static void keyCallback(long window, int key, int scancode, int action, int mods) {
+    public static void keyCallback(long window, int key, int scancode, int action, int mods) {
         if (action == GLFW_PRESS) {
             keyDown[key] = true;
         } else if (action == GLFW_RELEASE) {

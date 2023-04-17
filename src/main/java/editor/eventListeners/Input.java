@@ -22,4 +22,12 @@ public class Input {
 
         throw new IllegalStateException("'" + keyCode + "' - button out of bounds of Listeners.");
     }
+
+    public static float getMousePositionX() { return MouseListener.getMouseX(); }
+
+    public static float getMousePositionY() { return MouseListener.getMouseY(); }
+
+    public static float getMouseOrthographicX() { return MouseListener.getOrthographicX(); }
+
+    public static float getMouseOrthographicY() { return MouseListener.getOrthographicY(); }
 }

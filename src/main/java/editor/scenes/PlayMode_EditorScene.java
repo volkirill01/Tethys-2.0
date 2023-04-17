@@ -1,6 +1,4 @@
-package editor.scene;
-
-import editor.stuff.Window;
+package editor.scenes;
 
 public class PlayMode_EditorScene extends EditorScene {
 

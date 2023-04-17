@@ -8,14 +8,29 @@ import java.util.List;
 
 public class GameObject {
 
+    private static int ID_COUNTER = 0;
+    private int uid = -1;
+
     public String name;
     public Transform transform;
     private final List<Component> components = new ArrayList<>();
+    private int zIndex = 0;
 
     public GameObject(String name) {
         this.name = name;
         this.transform = new Transform();
         this.transform.gameObject = this;
+
+        this.uid = ID_COUNTER++;
+    }
+
+    public GameObject(String name, Transform transform, int zIndex) {
+        this.name = name;
+        this.transform = transform;
+        this.transform.gameObject = this;
+        this.zIndex = zIndex;
+
+        this.uid = ID_COUNTER++;
     }
 
     public <T extends Component> boolean hasComponent(Class<T> componentClass) {
@@ -55,8 +70,14 @@ public class GameObject {
     }
 
     public void addComponent(Component c) {
+        c.generateID();
         this.components.add(c);
         c.gameObject = this;
+    }
+
+    public void imgui() {
+        for (Component c : this.components)
+            c.imgui();
     }
 
     public void start() {
@@ -68,4 +89,12 @@ public class GameObject {
         for (Component c : this.components)
             c.update();
     }
+
+    public int getZIndex() { return this.zIndex; }
+
+    public static void init(int maxID) { ID_COUNTER = maxID; }
+
+    public int getUid() { return this.uid; }
+
+    public List<Component> getAllComponents() { return this.components; }
 }

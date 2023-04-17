@@ -5,6 +5,7 @@ import editor.entity.component.components.SpriteRenderer;
 import editor.renderer.Texture;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SpriteMasterRenderer {
@@ -24,7 +25,9 @@ public class SpriteMasterRenderer {
     private void add(SpriteRenderer sprite) {
         boolean added = false;
         for (RenderBatch batch : this.batches) {
-            if (batch.isHasRoom()) {
+            // TODO IF OBJECTS Z INDEX CHANGES, DELETE IT FROM CURRENT BATCH, AND MOVE TO ANOTHER
+
+            if (batch.isHasRoom() && batch.getZIndex() == sprite.gameObject.getZIndex()) {
                 Texture texture = sprite.getTexture();
                 if (texture == null || (batch.hasTexture(texture) || batch.hasTextureRoom())) {
                     batch.addSprite(sprite);
@@ -35,10 +38,11 @@ public class SpriteMasterRenderer {
         }
 
         if (!added) {
-            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE);
+            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, sprite.gameObject.getZIndex());
             newBatch.start();
             this.batches.add(newBatch);
             newBatch.addSprite(sprite);
+            Collections.sort(batches);
         }
     }
 
