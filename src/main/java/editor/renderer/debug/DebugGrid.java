@@ -1,5 +1,6 @@
 package editor.renderer.debug;
 
+import editor.renderer.Camera;
 import editor.scenes.SceneManager;
 import editor.stuff.Settings;
 import editor.stuff.customVariables.Color;
@@ -9,19 +10,20 @@ import org.joml.Vector3f;
 public class DebugGrid {
 
     public static void draw() {
-        Vector3f cameraPosition = SceneManager.getCurrentScene().getCamera().getPosition();
-        Vector2f projectionSize = SceneManager.getCurrentScene().getCamera().getProjectionSize();
+        Camera camera = SceneManager.getCurrentScene().getCamera();
+        Vector3f cameraPosition = camera.getPosition();
+        Vector2f projectionSize = camera.getProjectionSize();
 
         Color color = new Color(0.2f, 0.2f, 0.2f);
 
         int firstX = ((int) (cameraPosition.x / Settings.GRID_WIDTH) - 1) * Settings.GRID_WIDTH;
         int firstY = ((int) (cameraPosition.y / Settings.GRID_HEIGHT) - 1) * Settings.GRID_HEIGHT;
 
-        int numberVerticalLines = (int) (projectionSize.x / Settings.GRID_WIDTH) + 2;
-        int numberHorizontalLines = (int) (projectionSize.y / Settings.GRID_HEIGHT) + 2;
+        int numberVerticalLines = (int) (projectionSize.x * camera.getZoom() / Settings.GRID_WIDTH) + 2;
+        int numberHorizontalLines = (int) (projectionSize.y * camera.getZoom() / Settings.GRID_HEIGHT) + 2;
 
-        float width = projectionSize.x + Settings.GRID_WIDTH * 2;
-        float height = projectionSize.y + Settings.GRID_HEIGHT * 2;
+        float width = projectionSize.x * camera.getZoom() + Settings.GRID_WIDTH * 2;
+        float height = projectionSize.y * camera.getZoom() + Settings.GRID_HEIGHT * 2;
 
         int maxLines = Math.max(numberVerticalLines, numberHorizontalLines);
         for (int i = 0; i < maxLines; i++) {

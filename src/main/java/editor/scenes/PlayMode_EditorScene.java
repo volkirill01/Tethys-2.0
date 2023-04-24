@@ -15,4 +15,9 @@ public class PlayMode_EditorScene extends EditorScene {
     public void update() {
 
     }
+
+    @Override
+    public void render() {
+
+    }
 }

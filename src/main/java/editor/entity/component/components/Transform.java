@@ -1,12 +1,14 @@
 package editor.entity.component.components;
 
-import editor.entity.component.Component;
+import editor.entity.GameObject;
 import org.joml.Vector3f;
 
-public class Transform extends Component {
+public class Transform {
 
+    public transient GameObject gameObject;
     public Vector3f position = new Vector3f(0.0f);
     public Vector3f scale = new Vector3f(1.0f);
+    public float rotation = 0.0f;
 
     public Transform() { }
 
@@ -17,16 +19,6 @@ public class Transform extends Component {
     public void set(Vector3f position, Vector3f scale) {
         this.position.set(position);
         this.scale.set(scale);
-    }
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void update() {
-
     }
 
     public Transform copy() { return new Transform(new Vector3f(this.position), new Vector3f(this.scale)); }

@@ -4,77 +4,48 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="Add AssetPool;&#10;Add Sprite sheets;&#10;Optimize rendering(Add dirty flag);">
-      <change afterPath="$PROJECT_DIR$/Assets/blendImage1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/blendImage2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/decorationsAndBlocks.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/icons.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/pipes.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/icofont_all.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Bold.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-BoldItalic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-ExtraBold.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-ExtraBoldItalic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Italic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Light.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-LightItalic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Medium.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-MediumItalic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Regular.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-SemiBold.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-SemiBoldItalic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/editorFiles/shaders/debug/debugLineShader.glsl" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gui.ini" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/level.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/TMP_MARIO_STUFF/Prefabs.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/editor/windows/SceneView_Window.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/entity/GameObjectDeserializer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/ComponentDeserializer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/Rigidbody.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/gui/GuiFont.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/gui/ImGuiLayer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/Framebuffer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/debug/DebugDraw.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/debug/DebugGrid.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/debug/DebugLine.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/EditorMode_EditorScene.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/EditorScene.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/Maths.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/Settings.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/inputActions/MouseControls.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.4/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.4/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/checksums/md5-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.4/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/checksums/sha1-checksums.bin" afterDir="false" />
+    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="Add Scene Serialization and Deserialization;&#10;Add Debug Drawing;&#10;Add Editor GUI;&#10;Add Tiles Window (Click to tile image, and drag to game world);">
+      <change afterPath="$PROJECT_DIR$/editorFiles/gizmos.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/editorFiles/shaders/stuff/pickingShader.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/imgui.ini" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/TestFieldsWindow.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/editor/windows/Outliner_Window.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/gizmo/Gizmo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/gizmo/GizmoSystem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/gizmo/gizmos/ScaleGizmo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/gizmo/gizmos/TranslateGizmo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/EditorCamera.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/MasterRenderer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/stuff/PickingTexture.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/shaders/default.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/editorFiles/shaders/default.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/gui.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/level.txt" beforeDir="false" afterPath="$PROJECT_DIR$/level.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/editor/windows/SceneView_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/editor/windows/SceneView_Window.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/entity/GameObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/entity/GameObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/entity/component/Component.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/Component.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/SpriteRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/SpriteRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/Transform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/Transform.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/eventListeners/Input.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/Input.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/eventListeners/KeyListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/KeyListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/eventListeners/MouseListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/MouseListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/gui/ImGuiLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/gui/ImGuiLayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/Camera.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/Texture.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/Texture.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/debug/DebugGrid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/debug/DebugGrid.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/RenderBatch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/RenderBatch.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/SpriteMasterRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/SpriteMasterRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/sprite/Sprite.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/sprite/Sprite.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/sprite/SpriteSheet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/sprite/SpriteSheet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scene/EditorMode_EditorScene.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scene/EditorScene.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scene/PlayMode_EditorScene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/PlayMode_EditorScene.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scene/SceneManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/SceneManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scenes/EditorMode_EditorScene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/EditorMode_EditorScene.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scenes/EditorScene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/EditorScene.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scenes/PlayMode_EditorScene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/PlayMode_EditorScene.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/Settings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/Window.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/customVariables/Color.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/customVariables/Color.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/inputActions/MouseControls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/inputActions/MouseControls.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,28 +79,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/_Files/Projects/Java/Tethys_2.0/src/main/java/editor/stuff",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "editing.templates"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/_Files/Projects/Java/Tethys_2.0&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editing.templates&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\_Files\Projects\Java\Tethys_2.0\src\main\java\editor" />
+      <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\shaders\stuff" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\src\main\java\editor\stuff" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\src\main\java\editor\renderer\debug" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\fonts" />
-      <recent name="C:\_Files\Projects\Java\Tethys_2.0\src\main\java\editor\eventListeners" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="editor.gizmo" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.Main">
+    <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="Tethys_2.0.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="editor.Main" />
       <module name="Tethys_2.0.main" />
@@ -146,6 +128,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Main (1)" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -180,7 +163,14 @@
       <option name="project" value="LOCAL" />
       <updated>1681545669780</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Add Scene Serialization and Deserialization;&#10;Add Debug Drawing;&#10;Add Editor GUI;&#10;Add Tiles Window (Click to tile image, and drag to game world);">
+      <created>1681727039173</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1681727039173</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -205,6 +195,7 @@
     <MESSAGE value="Create start Window;&#10;Add input Listeners;" />
     <MESSAGE value="Add ECS;&#10;Add Sprite Batched Renderer;" />
     <MESSAGE value="Add AssetPool;&#10;Add Sprite sheets;&#10;Optimize rendering(Add dirty flag);" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add AssetPool;&#10;Add Sprite sheets;&#10;Optimize rendering(Add dirty flag);" />
+    <MESSAGE value="Add Scene Serialization and Deserialization;&#10;Add Debug Drawing;&#10;Add Editor GUI;&#10;Add Tiles Window (Click to tile image, and drag to game world);" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Scene Serialization and Deserialization;&#10;Add Debug Drawing;&#10;Add Editor GUI;&#10;Add Tiles Window (Click to tile image, and drag to game world);" />
   </component>
 </project>

@@ -28,20 +28,27 @@ public class SpriteRenderer extends Component {
         }
     }
 
-//    @Override
-//    public void imgui() {
-//        float[] imColors = { color.r / 255.0f, color.g / 255.0f, color.b / 255.0f };
-//        if (ImGui.colorPicker3("Color Picker: ", imColors)) {
-//            this.color.set(imColors[0] * 255.0f, imColors[1] * 255.0f, imColors[2] * 255.0f);
-//            this.isDirty = true;
-//        }
-//    }
+    @Override
+    public void imgui() {
+        float[] imColors = { color.r / 255.0f, color.g / 255.0f, color.b / 255.0f };
+        if (ImGui.colorEdit3("Color Picker: ", imColors)) {
+            this.color.set(imColors[0] * 255.0f, imColors[1] * 255.0f, imColors[2] * 255.0f);
+            this.isDirty = true;
+        }
+    }
 
     public Color getColor() { return this.color; }
 
     public void setColor(Color color) {
         if (!this.color.equals(color)) {
             this.color.set(color);
+            this.isDirty = true;
+        }
+    }
+
+    public void setColor(float scalar) {
+        if (!this.color.equals(new Color(scalar, scalar, scalar, scalar))) {
+            this.color.set(scalar, scalar, scalar, scalar);
             this.isDirty = true;
         }
     }

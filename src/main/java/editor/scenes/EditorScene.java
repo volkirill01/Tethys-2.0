@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class EditorScene {
 
@@ -25,7 +26,6 @@ public abstract class EditorScene {
     protected SpriteMasterRenderer spriteRenderer = new SpriteMasterRenderer();
 
     protected List<GameObject> gameObjects = new ArrayList<>();
-    protected GameObject activeGameObject = null;
 
     protected boolean levelLoaded = false;
 
@@ -34,6 +34,8 @@ public abstract class EditorScene {
     public abstract void init();
 
     public abstract void update();
+
+    public abstract void render();
 
     public void start() {
         for (GameObject go : this.gameObjects) {
@@ -53,19 +55,14 @@ public abstract class EditorScene {
         }
     }
 
+    public GameObject getGameObject(int uid) {
+        Optional<GameObject> result = this.gameObjects.stream().filter(gameObject -> gameObject.getUid() == uid).findFirst();
+        return result.orElse(null);
+    }
+
     public Camera getCamera() { return this.camera; }
 
     // TODO MOVE THIS, ITS NOT BE THERE
-    public void sceneImgui() {
-        if (activeGameObject != null) {
-            ImGui.begin("Outliner");
-            activeGameObject.imgui();
-            ImGui.end();
-        }
-
-        imgui();
-    }
-
     public void imgui() {
 
     }
@@ -79,7 +76,12 @@ public abstract class EditorScene {
 
         try {
             FileWriter writer = new FileWriter("level.txt");
-            writer.write(gson.toJson(this.gameObjects));
+            List<GameObject> objectsToSerialize = new ArrayList<>();
+            for (GameObject obj : this.gameObjects)
+                if (obj.isDoSerialization())
+                    objectsToSerialize.add(obj);
+
+            writer.write(gson.toJson(objectsToSerialize));
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException("Error in saving Scene - '" + "level.txt" + "'", e);

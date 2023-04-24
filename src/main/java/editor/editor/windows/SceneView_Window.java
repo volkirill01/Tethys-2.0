@@ -9,9 +9,9 @@ import imgui.flag.ImGuiWindowFlags;
 
 public class SceneView_Window {
 
-    private static float leftX, rightX, topY, bottomY;
+    private float leftX, rightX, topY, bottomY;
 
-    public static void imgui() {
+    public void imgui() {
         ImGui.begin("Scene View Window", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
 
         ImVec2 viewportSize = getLargestSizeForViewport();
@@ -27,6 +27,8 @@ public class SceneView_Window {
         topY = topLeft.y + viewportSize.y;
 
         int textureID = Window.getFramebuffer().getTextureID();
+        ImVec2 start = new ImVec2();
+        ImGui.getCursorPos(start);
         ImGui.image(textureID, viewportSize.x, viewportSize.y, 0, 1, 1, 0);
 
         MouseListener.setGameViewportPos(topLeft);
@@ -35,7 +37,7 @@ public class SceneView_Window {
         ImGui.end();
     }
 
-    private static ImVec2 getLargestSizeForViewport() {
+    private ImVec2 getLargestSizeForViewport() {
         ImVec2 viewportSize = new ImVec2();
         ImGui.getContentRegionMax(viewportSize);
         float aspectWidth = viewportSize.x;
@@ -49,7 +51,7 @@ public class SceneView_Window {
         return new ImVec2(aspectWidth, aspectHeight);
     }
 
-    private static ImVec2 getCenteredPositionForViewport(ImVec2 aspectSize) {
+    private ImVec2 getCenteredPositionForViewport(ImVec2 aspectSize) {
         ImVec2 viewportSize = new ImVec2();
         ImGui.getContentRegionMax(viewportSize);
 
@@ -59,7 +61,7 @@ public class SceneView_Window {
         return new ImVec2(viewportPositionX + ImGui.getCursorPosX(), viewportPositionY + ImGui.getCursorPosY());
     }
 
-    public static boolean getWantCaptureMouse() {
+    public boolean getWantCaptureMouse() {
         return Input.getMousePositionX() >= leftX && Input.getMousePositionX() <= rightX &&
                 Input.getMousePositionY() >= bottomY && Input.getMousePositionY() <= topY;
     }

@@ -1,10 +1,18 @@
 package editor.stuff;
 
+import editor.assets.AssetPool;
+import editor.entity.GameObject;
+import editor.entity.component.components.SpriteRenderer;
 import editor.eventListeners.Input;
+import editor.eventListeners.KeyCode;
+import editor.eventListeners.MouseListener;
 import editor.gui.ImGuiLayer;
 import editor.renderer.Framebuffer;
+import editor.renderer.MasterRenderer;
 import editor.renderer.debug.DebugDraw;
 import editor.renderer.debug.DebugGrid;
+import editor.renderer.shader.Shader;
+import editor.renderer.stuff.PickingTexture;
 import editor.scenes.SceneManager;
 import editor.stuff.customVariables.Color;
 import editor.stuff.utils.Time;
@@ -27,6 +35,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
 
+//    private static int start_width, start_height;
     private static int width, height;
     private static final String title = "Tethys";
 
@@ -35,6 +44,7 @@ public class Window {
     private static ImGuiLayer imguiLayer;
 
     private static Framebuffer framebuffer;
+    private static PickingTexture pickingTexture;
 
     public static float r = 1.0f;
     public static float g = 1.0f;
@@ -43,8 +53,13 @@ public class Window {
 
     public static void run() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        width = (int) screenSize.getWidth();
-        height = (int) screenSize.getHeight();
+//        start_width = (int) screenSize.getWidth();
+//        start_height = (int) screenSize.getHeight();
+//        width = start_width;
+//        height = start_height;
+
+        width = 2560;
+        height = 1080;
 
         init();
         loop();
@@ -65,19 +80,18 @@ public class Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Create window but make it invisible before setting it
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //GLFW_TRUE
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //GLFW_TRUE
+//        glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //GLFW_TRUE
 
         // Create the window
-        glfwWindow = glfwCreateWindow(width, height, title, NULL, NULL); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //((int) (width / 1.2f), (int) (height / 1.2f))
+//        glfwWindow = glfwCreateWindow((int) (start_width / 1.2f), (int) (start_height / 1.2f), title, NULL, NULL); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //((int) (width / 1.2f), (int) (height / 1.2f))
+        glfwWindow = glfwCreateWindow((int) (width / 1.2f), (int) (height / 1.2f), title, NULL, NULL); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //((int) (width / 1.2f), (int) (height / 1.2f))
         if (glfwWindow == NULL)
             throw new IllegalStateException("Failed to create GLFW Window.");
 
         // Setup callbacks
         Input.setInputCallbacks();
-        glfwSetWindowSizeCallback(glfwWindow, (w, newWidth, newHeight) -> {
-            Window.setWidth(newWidth);
-            Window.setHeight(newHeight);
-        });
+        glfwSetWindowSizeCallback(glfwWindow, Window::windowResizeCallback);
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(glfwWindow);
@@ -100,25 +114,46 @@ public class Window {
         imguiLayer = new ImGuiLayer(glfwWindow);
         imguiLayer.initImGui();
 
-        framebuffer = new Framebuffer(width, height);
-        glViewport(0, 0, width, height);
+        framebuffer = new Framebuffer(2560, 1080);
+        pickingTexture = new PickingTexture(2560, 1080);
+        glViewport(0, 0, 2560, 1080);
 
         SceneManager.changeScene(0); // Load default Scene
 
         printMachineInfo();
 
-        glfwSetWindowSize(glfwWindow, (int) (width / 1.2f), (int) (height / 1.2f)); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //DELETE THIS
-        glfwMaximizeWindow(glfwWindow); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //DELETE THIS
+//        glfwSetWindowSize(glfwWindow, (int) (start_width / 1.2f), (int) (start_height / 1.2f)); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //DELETE THIS
+//        glfwMaximizeWindow(glfwWindow); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //DELETE THIS
     }
 
     private static void loop() {
         float beginTime = Time.getTime();
         float endTime;
 
+        Shader defaultShader = AssetPool.getShader("editorFiles/shaders/default.glsl");
+        Shader pickingShader = AssetPool.getShader("editorFiles/shaders/stuff/pickingShader.glsl");
+
         while (!glfwWindowShouldClose(glfwWindow)) {
+            glfwWindowResizeCallback();
+
             // Poll events
             glfwPollEvents();
 
+            // Render pass 1. Render to picking texture
+            glDisable(GL_BLEND);
+            pickingTexture.bind();
+
+            glViewport(0, 0, 2560, 1080);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            MasterRenderer.bindShader(pickingShader);
+            SceneManager.getCurrentScene().render();
+
+            pickingTexture.unbind();
+            glEnable(GL_BLEND);
+
+            // Render pass 2. Render actual scene
             DebugDraw.addBox2D(new Vector3f(50.0f, 150.0f, 0.0f), new Vector2f(100.0f, 200.0f));
             DebugDraw.addCube(new Vector3f(150.0f, 250.0f, -20.0f), new Vector3f(100.0f, 200.0f, 100.0f), new Vector3f(45.0f, 50.0f, 10.0f), Color.BLUE);
 
@@ -132,7 +167,12 @@ public class Window {
 
             if (Time.deltaTime() >= 0.0f) {
                 DebugGrid.draw();
+
                 SceneManager.getCurrentScene().update();
+
+                MasterRenderer.bindShader(defaultShader);
+                SceneManager.getCurrentScene().render();
+
                 DebugDraw.draw();
             }
             framebuffer.unbind();
@@ -142,12 +182,26 @@ public class Window {
 
             glfwSwapBuffers(glfwWindow);
 
+            MouseListener.endFrame();
+
             endTime = Time.getTime();
             Time.setDeltaTime(endTime - beginTime);
             beginTime = endTime;
         }
 
         SceneManager.getCurrentScene().save();
+    }
+
+    private static void glfwWindowResizeCallback() {
+        int[] width = { 0 };
+        int[] height = { 0 };
+        glfwGetWindowSize(glfwWindow, width, height);
+        windowResizeCallback(glfwWindow, width[0], height[0]);
+    }
+
+    private static void windowResizeCallback(long w, int newWidth, int newHeight) {
+        Window.setWidth(newWidth);
+        Window.setHeight(newHeight);
     }
 
     private static void closeWindow() {
@@ -175,9 +229,13 @@ public class Window {
 
     public static String getTitle() { return title; }
 
+//    public static int getStartWidth() { return start_width; }
+
     public static int getWidth() { return width; }
 
     public static void setWidth(int width) { Window.width = width; }
+
+//    public static int getStartHeight() { return start_height; }
 
     public static int getHeight() { return height; }
 
@@ -185,5 +243,7 @@ public class Window {
 
     public static Framebuffer getFramebuffer() { return Window.framebuffer; }
 
-    public static float getTargetAspectRatio() { return (float) width / (float) height; }
+    public static float getTargetAspectRatio() { return 16.0f / 9.0f; }
+
+    public static PickingTexture getPickingTexture() { return Window.pickingTexture; }
 }

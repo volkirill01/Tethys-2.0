@@ -15,6 +15,9 @@ public class GameObject {
     public Transform transform;
     private final List<Component> components = new ArrayList<>();
     private int zIndex = 0;
+    private boolean clickable = true;
+
+    private boolean doSerialization = true;
 
     public GameObject(String name) {
         this.name = name;
@@ -90,6 +93,12 @@ public class GameObject {
             c.update();
     }
 
+    public void setDoSerialize() { this.doSerialization = true; }
+
+    public void setNoSerialize() { this.doSerialization = false; }
+
+    public boolean isDoSerialization() { return this.doSerialization; }
+
     public int getZIndex() { return this.zIndex; }
 
     public static void init(int maxID) { ID_COUNTER = maxID; }
@@ -97,4 +106,8 @@ public class GameObject {
     public int getUid() { return this.uid; }
 
     public List<Component> getAllComponents() { return this.components; }
+
+    public boolean isClickable() { return this.clickable; }
+
+    public void setClickable(boolean clickable) { this.clickable = clickable; }
 }

@@ -2,6 +2,7 @@ package editor.renderer.renderer2D;
 
 import editor.entity.GameObject;
 import editor.entity.component.components.SpriteRenderer;
+import editor.renderer.MasterRenderer;
 import editor.renderer.Texture;
 
 import java.util.ArrayList;
@@ -47,7 +48,9 @@ public class SpriteMasterRenderer {
     }
 
     public void render() {
+        MasterRenderer.getCurrentShader().use();
         for (RenderBatch batch : this.batches)
             batch.render();
+        MasterRenderer.getCurrentShader().detach();
     }
 }

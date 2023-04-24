@@ -1,5 +1,7 @@
 package editor.gui;
 
+import editor.TestFieldsWindow;
+import editor.editor.windows.Outliner_Window;
 import editor.editor.windows.SceneView_Window;
 import editor.eventListeners.KeyCode;
 import editor.eventListeners.KeyListener;
@@ -29,7 +31,18 @@ public class ImGuiLayer {
     // LWJGL3 renderer (SHOULD be initialized)
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
 
-    public ImGuiLayer(long glfwWindow) { this.glfwWindow = glfwWindow; }
+    private SceneView_Window sceneView_Window;
+    private Outliner_Window outliner_Window;
+
+    public ImGuiLayer(long glfwWindow) {
+        this.glfwWindow = glfwWindow;
+        createEditorWindows();
+    }
+
+    private void createEditorWindows() {
+        this.sceneView_Window = new SceneView_Window();
+        this.outliner_Window = new Outliner_Window();
+    }
 
     // Initialize Dear ImGui.
     public void initImGui() {
@@ -123,7 +136,7 @@ public class ImGuiLayer {
             if (!io.getWantCaptureMouse() && mouseDown[1])
                 ImGui.setWindowFocus(null);
 
-            if (!io.getWantCaptureMouse() || SceneView_Window.getWantCaptureMouse())
+            if (!io.getWantCaptureMouse() || sceneView_Window.getWantCaptureMouse())
                 MouseListener.mouseButtonCallback(w, button, action, mods);
         });
 
@@ -131,8 +144,8 @@ public class ImGuiLayer {
             io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
             io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
 
-            if (!io.getWantCaptureMouse())
-                MouseListener.mouseScrollCallback(w, io.getMouseWheelH() + (float) xOffset, io.getMouseWheel() + (float) yOffset);
+//            if (!io.getWantCaptureMouse())
+            MouseListener.mouseScrollCallback(w, xOffset, yOffset);
         });
 
         io.setSetClipboardTextFn(new ImStrConsumer() {
@@ -164,10 +177,13 @@ public class ImGuiLayer {
 
         setupDockSpace();
         // TODO DELETE DRAWING OF CURRENT SCENE
-        SceneManager.getCurrentScene().sceneImgui();
+        SceneManager.getCurrentScene().imgui();
         ImGui.showDemoWindow();
+        TestFieldsWindow.imgui();
 
-        SceneView_Window.imgui(); // TODO REPLACE THIS WITH NON STATIC CLASS, ADD MULTIPLE WINDOW DUPLICATES
+        sceneView_Window.imgui(); // TODO ADD MULTIPLE WINDOW DUPLICATES
+        outliner_Window.update(); // TODO ADD MULTIPLE WINDOW DUPLICATES
+        outliner_Window.imgui(); // TODO ADD MULTIPLE WINDOW DUPLICATES
         ImGui.end(); // End of Editor DockSpace
 
         ImGui.render();

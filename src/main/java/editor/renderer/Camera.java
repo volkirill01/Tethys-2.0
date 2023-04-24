@@ -9,6 +9,9 @@ public class Camera {
     private final Matrix4f projectionMatrix, viewMatrix, inverseProjectionMatrix, inverseViewMatrix;
     private final Vector3f position;
     private final Vector2f projectionSize = new Vector2f(32.0f * 40.0f, 32.0f * 21.0f);
+//    private final Vector2f projectionSize = new Vector2f(32.0f * 50.0f, 32.0f * 20.0f);
+
+    private float zoom = 1.0f;
 
     public Camera(Vector3f position) {
         this.position = position;
@@ -21,8 +24,7 @@ public class Camera {
 
     public void adjustProjection() {
         this.projectionMatrix.identity();
-        this.projectionMatrix.ortho(0.0f, this.projectionSize.x, 0.0f, this.projectionSize.y, 0.0f, 100.0f);
-
+        this.projectionMatrix.ortho(0.0f, this.projectionSize.x * this.zoom, 0.0f, this.projectionSize.y * this.zoom, 0.0f, 100.0f);
         this.projectionMatrix.invert(this.inverseProjectionMatrix);
     }
 
@@ -45,4 +47,10 @@ public class Camera {
     public Matrix4f getInverseViewMatrix() { return this.inverseViewMatrix; }
 
     public Vector2f getProjectionSize() { return this.projectionSize; }
+
+    public float getZoom() { return this.zoom; }
+
+    public void setZoom(float zoom) { this.zoom = zoom; }
+
+    public void addZoom(float value) { this.zoom += value; }
 }

@@ -5,7 +5,6 @@ import editor.eventListeners.Input;
 import editor.eventListeners.KeyCode;
 import editor.scenes.SceneManager;
 import editor.stuff.Settings;
-import editor.stuff.Window;
 
 public class MouseControls {
 
@@ -22,11 +21,10 @@ public class MouseControls {
         if (holdingObject == null)
             return;
 
-        holdingObject.transform.position.x = Input.getMouseOrthographicX() - 16;
-        holdingObject.transform.position.y = Input.getMouseOrthographicY() - 16;
+        holdingObject.transform.position.x = Input.getMouseOrthographicXPosition() - 16;
+        holdingObject.transform.position.y = Input.getMouseOrthographicYPosition() - 16;
         holdingObject.transform.position.x = (int) (holdingObject.transform.position.x / Settings.GRID_WIDTH) * Settings.GRID_WIDTH;
         holdingObject.transform.position.y = (int) (holdingObject.transform.position.y / Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT;
-
 
         if (Input.buttonDown(KeyCode.Mouse_Button_Left))
             place();

@@ -4,12 +4,14 @@ package editor.scenes;
 import TMP_MARIO_STUFF.Prefabs;
 import editor.assets.AssetPool;
 import editor.entity.GameObject;
-import editor.entity.component.components.Rigidbody;
 import editor.entity.component.components.SpriteRenderer;
+import editor.gizmo.GizmoSystem;
+import editor.gizmo.gizmos.ScaleGizmo;
+import editor.gizmo.gizmos.TranslateGizmo;
 import editor.renderer.Camera;
+import editor.renderer.EditorCamera;
 import editor.renderer.renderer2D.sprite.Sprite;
 import editor.renderer.renderer2D.sprite.SpriteSheet;
-import editor.stuff.customVariables.Color;
 import editor.stuff.inputActions.MouseControls;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -20,6 +22,9 @@ public class EditorMode_EditorScene extends EditorScene {
 
     private SpriteSheet sprites;
     private GameObject go1;
+    private EditorCamera editorCamera;
+
+    private GizmoSystem gizmoSystem;
 
     public EditorMode_EditorScene() {
 
@@ -30,10 +35,12 @@ public class EditorMode_EditorScene extends EditorScene {
         loadResources();
         this.camera = new Camera(new Vector3f(-250.0f, 0.0f, 0.0f));
         sprites = AssetPool.getSpriteSheet("Assets/decorationsAndBlocks.png");
+        this.editorCamera = new EditorCamera(SceneManager.getCurrentScene().getCamera());
+
+        gizmoSystem = new GizmoSystem();
+        gizmoSystem.init();
 
         if (levelLoaded) {
-            if (gameObjects.size() > 0)
-                activeGameObject = gameObjects.get(0);
             return;
         }
 
@@ -113,6 +120,10 @@ public class EditorMode_EditorScene extends EditorScene {
                 new SpriteSheet(AssetPool.getTexture("Assets/decorationsAndBlocks.png"),
                         16, 16, 81, 0, 0, 0, 0));
 
+        AssetPool.addSpriteSheet("editorFiles/gizmos.png",
+                new SpriteSheet(AssetPool.getTexture("editorFiles/gizmos.png"),
+                        24, 48, 3, 0, 0, 0, 0));
+
         for (GameObject go : this.gameObjects) {
             if (go.hasComponent(SpriteRenderer.class)) {
                 SpriteRenderer renderer = go.getComponent(SpriteRenderer.class);
@@ -130,6 +141,10 @@ public class EditorMode_EditorScene extends EditorScene {
     @Override
     public void update() {
         MouseControls.update();
+        this.editorCamera.update();
+        SceneManager.getCurrentScene().getCamera().adjustProjection();
+
+        gizmoSystem.update();
 
 //        if (Input.buttonDown(KeyCode.Arrow_Right))
 //            camera.getPosition().x += 100f * Time.deltaTime();
@@ -155,9 +170,10 @@ public class EditorMode_EditorScene extends EditorScene {
 
         for (GameObject go : this.gameObjects)
             go.update();
-
-        this.spriteRenderer.render();
     }
+
+    @Override
+    public void render() { this.spriteRenderer.render(); }
 
     @Override
     public void imgui() {
