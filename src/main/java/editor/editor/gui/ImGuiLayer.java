@@ -1,7 +1,9 @@
-package editor.gui;
+package editor.editor.gui;
 
 import editor.TestFieldsWindow;
+import editor.editor.windows.MainMenuBar;
 import editor.editor.windows.Outliner_Window;
+import editor.editor.windows.SceneHierarchy_Window;
 import editor.editor.windows.SceneView_Window;
 import editor.eventListeners.KeyCode;
 import editor.eventListeners.KeyListener;
@@ -11,18 +13,24 @@ import editor.stuff.Window;
 import editor.stuff.utils.Time;
 import imgui.ImGui;
 import imgui.ImGuiIO;
+import imgui.ImGuiViewport;
 import imgui.callback.ImStrConsumer;
 import imgui.callback.ImStrSupplier;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
 
 import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
+import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 
 public class ImGuiLayer {
 
+    // Pinter to glfw window
     private final long glfwWindow;
 
     // Mouse cursors provided by GLFW
@@ -30,9 +38,11 @@ public class ImGuiLayer {
 
     // LWJGL3 renderer (SHOULD be initialized)
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
+    private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
 
     private SceneView_Window sceneView_Window;
     private Outliner_Window outliner_Window;
+    private SceneHierarchy_Window sceneHierarchy_Window;
 
     public ImGuiLayer(long glfwWindow) {
         this.glfwWindow = glfwWindow;
@@ -42,6 +52,7 @@ public class ImGuiLayer {
     private void createEditorWindows() {
         this.sceneView_Window = new SceneView_Window();
         this.outliner_Window = new Outliner_Window();
+        this.sceneHierarchy_Window = new SceneHierarchy_Window();
     }
 
     // Initialize Dear ImGui.
@@ -55,9 +66,11 @@ public class ImGuiLayer {
         final ImGuiIO io = ImGui.getIO();
 
         io.setIniFilename("gui.ini");
-        io.setConfigFlags(ImGuiConfigFlags.NavEnableKeyboard); // Navigation with keyboard
-        io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
-        io.setBackendFlags(ImGuiBackendFlags.HasMouseCursors); // Mouse cursors to display while resizing windows etc.
+//        io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);   // Navigation with keyboard
+        io.addConfigFlags(ImGuiConfigFlags.DockingEnable);       // Enable Docking for windows
+        // TODO FIX IMGUI VIEWPORTS
+//        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);     // Enable ImGUi Viewports(multiple windows)
+        io.setBackendFlags(ImGuiBackendFlags.HasMouseCursors);   // Mouse cursors to display while resizing windows etc.
         io.setBackendPlatformName("imgui_java_impl_glfw");
 
         // ------------------------------------------------------------
@@ -89,19 +102,18 @@ public class ImGuiLayer {
 
         // ------------------------------------------------------------
         // Mouse cursors mapping
-        mouseCursors[ImGuiMouseCursor.Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-        mouseCursors[ImGuiMouseCursor.TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
-        mouseCursors[ImGuiMouseCursor.ResizeAll] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-        mouseCursors[ImGuiMouseCursor.ResizeNS] = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
-        mouseCursors[ImGuiMouseCursor.ResizeEW] = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-        mouseCursors[ImGuiMouseCursor.ResizeNESW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-        mouseCursors[ImGuiMouseCursor.ResizeNWSE] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
         mouseCursors[ImGuiMouseCursor.Hand] = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
-        mouseCursors[ImGuiMouseCursor.NotAllowed] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+        mouseCursors[ImGuiMouseCursor.NotAllowed] = glfwCreateStandardCursor(GLFW_NOT_ALLOWED_CURSOR);
+        mouseCursors[ImGuiMouseCursor.Arrow] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+        mouseCursors[ImGuiMouseCursor.ResizeAll] = glfwCreateStandardCursor(GLFW_RESIZE_ALL_CURSOR);
+        mouseCursors[ImGuiMouseCursor.ResizeEW] = glfwCreateStandardCursor(GLFW_RESIZE_EW_CURSOR);
+        mouseCursors[ImGuiMouseCursor.ResizeNESW] = glfwCreateStandardCursor(GLFW_RESIZE_NESW_CURSOR);
+        mouseCursors[ImGuiMouseCursor.ResizeNS] = glfwCreateStandardCursor(GLFW_RESIZE_NS_CURSOR);
+        mouseCursors[ImGuiMouseCursor.ResizeNWSE] = glfwCreateStandardCursor(GLFW_RESIZE_NWSE_CURSOR);
+        mouseCursors[ImGuiMouseCursor.TextInput] = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
 
         // ------------------------------------------------------------
         // GLFW callbacks to handle user input
-
         glfwSetKeyCallback(glfwWindow, (w, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS)
                 io.setKeysDown(key, true);
@@ -144,8 +156,8 @@ public class ImGuiLayer {
             io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
             io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
 
-//            if (!io.getWantCaptureMouse())
-            MouseListener.mouseScrollCallback(w, xOffset, yOffset);
+            if (!io.getWantCaptureMouse() || sceneView_Window.getWantCaptureMouse())
+                MouseListener.mouseScrollCallback(w, xOffset, yOffset);
         });
 
         io.setSetClipboardTextFn(new ImStrConsumer() {
@@ -168,29 +180,31 @@ public class ImGuiLayer {
         // Method initializes LWJGL3 renderer.
         // This method SHOULD be called after you've initialized your ImGui configuration (fonts and so on).
         // ImGui context should be created as well.
+//        imGuiGlfw.init(glfwWindow, false);
         imGuiGl3.init("#version 330 core");
     }
 
     public void update() {
         startFrame(Time.deltaTime());
-        ImGui.newFrame();
 
-        setupDockSpace();
+        float menuBarHeight = MainMenuBar.imgui();
+        setupDockSpace(menuBarHeight);
         // TODO DELETE DRAWING OF CURRENT SCENE
         SceneManager.getCurrentScene().imgui();
-        ImGui.showDemoWindow();
-        TestFieldsWindow.imgui();
+        ImGui.showDemoWindow();      // TODO Delete this
+        ImGui.showStackToolWindow(); // TODO Delete this
+        TestFieldsWindow.imgui();    // TODO Delete this
 
         sceneView_Window.imgui(); // TODO ADD MULTIPLE WINDOW DUPLICATES
-        outliner_Window.update(); // TODO ADD MULTIPLE WINDOW DUPLICATES
         outliner_Window.imgui(); // TODO ADD MULTIPLE WINDOW DUPLICATES
-        ImGui.end(); // End of Editor DockSpace
+        sceneHierarchy_Window.imgui(); // TODO ADD MULTIPLE WINDOW DUPLICATES
 
-        ImGui.render();
         endFrame();
     }
 
     private void startFrame(final float deltaTime) {
+//        imGuiGlfw.newFrame();
+
         // Get window properties and mouse position
         float[] winWidth = { Window.getWidth() };
         float[] winHeight = { Window.getHeight() };
@@ -209,35 +223,55 @@ public class ImGuiLayer {
         final int imguiCursor = ImGui.getMouseCursor();
         glfwSetCursor(glfwWindow, mouseCursors[imguiCursor]);
         glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        ImGui.newFrame();
     }
 
     private void endFrame() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, Window.getWidth(), Window.getHeight());
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
         // After Dear ImGui prepared a draw data, we use it in the LWJGL3 renderer.
         // At that moment ImGui will be rendered to the current OpenGL context.
-        imGuiGl3.render(ImGui.getDrawData());
+        ImGui.render();
+        imGuiGl3.renderDrawData(ImGui.getDrawData());
+
+        // TODO FIX IMGUI VIEWPORTS
+//        long backupWindowPointer = glfwGetCurrentContext();
+//        ImGui.updatePlatformWindows();
+//        ImGui.renderPlatformWindowsDefault();
+//        glfwMakeContextCurrent(backupWindowPointer);
     }
 
     // If you want to clean a room after yourself - do it by yourself
-    private void destroyImGui() {
+    public void destroyImGui() {
         imGuiGl3.dispose();
         ImGui.destroyContext();
     }
 
-    private void setupDockSpace() {
-        int windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar |
+    private void setupDockSpace(float menuBarHeight) {
+        int windowFlags = ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar |
                 ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove |
                 ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoNavFocus;
 
-        ImGui.setNextWindowPos(0.0f, 0.0f, ImGuiCond.Always);
-        ImGui.setNextWindowSize(Window.getWidth(), Window.getHeight()); // Set DockSpace window size
+        // TODO FIX IMGUI VIEWPORTS
+//        ImGuiViewport mainViewport = ImGui.getMainViewport();
+//        ImGui.setNextWindowPos(mainViewport.getWorkPosX(), mainViewport.getWorkPosY());
+//        ImGui.setNextWindowSize(mainViewport.getWorkSizeX(), mainViewport.getWorkSizeY());
+//        ImGui.setNextWindowViewport(mainViewport.getID());
+        ImGui.setNextWindowPos(0.0f, menuBarHeight);
+        ImGui.setNextWindowSize(Window.getWidth(), Window.getHeight() - menuBarHeight); // Set DockSpace window size
         ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
         ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0.0f, 0.0f);
 
-        ImGui.begin("Editor DeckSpace", new ImBoolean(true), windowFlags);
+        ImGui.begin("Editor DockSpace", new ImBoolean(true), windowFlags);
         ImGui.popStyleVar(3);
 
         // Dockspace
-        ImGui.dockSpace(ImGui.getID("DeckSpace"));
+        ImGui.dockSpace(ImGui.getID("DockSpace"));
+
+        ImGui.end(); // End of Editor DockSpace
     }
 }

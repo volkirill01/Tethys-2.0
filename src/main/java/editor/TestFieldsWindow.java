@@ -49,9 +49,33 @@ public class TestFieldsWindow {
             ImGui.colorEdit3("Color", color);
             ImGui.colorPicker3("Color2", color2, ImGuiColorEditFlags.PickerHueWheel);
 
-            ImGui.button("Hand");
+            ImGui.button("Cursor Hand");
             if (ImGui.isItemHovered())
                 ImGui.setMouseCursor(ImGuiMouseCursor.Hand);
+            ImGui.button("Cursor NotAllowed");
+            if (ImGui.isItemHovered())
+                ImGui.setMouseCursor(ImGuiMouseCursor.NotAllowed);
+            ImGui.button("Cursor Arrow");
+            if (ImGui.isItemHovered())
+                ImGui.setMouseCursor(ImGuiMouseCursor.Arrow);
+            ImGui.button("Cursor ResizeAll");
+            if (ImGui.isItemHovered())
+                ImGui.setMouseCursor(ImGuiMouseCursor.ResizeAll);
+            ImGui.button("Cursor ResizeEW");
+            if (ImGui.isItemHovered())
+                ImGui.setMouseCursor(ImGuiMouseCursor.ResizeEW);
+            ImGui.button("Cursor ResizeNESW");
+            if (ImGui.isItemHovered())
+                ImGui.setMouseCursor(ImGuiMouseCursor.ResizeNESW);
+            ImGui.button("Cursor ResizeNS");
+            if (ImGui.isItemHovered())
+                ImGui.setMouseCursor(ImGuiMouseCursor.ResizeNS);
+            ImGui.button("Cursor ResizeNWSE");
+            if (ImGui.isItemHovered())
+                ImGui.setMouseCursor(ImGuiMouseCursor.ResizeNWSE);
+            ImGui.button("Cursor TextInput");
+            if (ImGui.isItemHovered())
+                ImGui.setMouseCursor(ImGuiMouseCursor.TextInput);
         }
 
 //        if (ImGui.collapsingHeader("Boolean Types")) {

@@ -24,27 +24,48 @@ public class Input {
         throw new IllegalStateException("'" + keyCode + "' - button out of bounds of Listeners.");
     }
 
+    public static boolean buttonClick(int keyCode) {
+        if (keyCode >= 32)
+            return KeyListener.isKeyClick(keyCode);
+        else if (keyCode <= 7)
+            return MouseListener.isButtonClick(keyCode);
+
+        throw new IllegalStateException("'" + keyCode + "' - button out of bounds of Listeners.");
+    }
+
     public static float getMousePositionX() { return MouseListener.getMouseX(); }
 
     public static float getMousePositionY() { return MouseListener.getMouseY(); }
+
+    public static Vector2f getMouseScreenPosition() { return MouseListener.getScreen(); }
 
     public static float getMouseScreenPositionX() { return MouseListener.getScreenX(); }
 
     public static float getMouseScreenPositionY() { return MouseListener.getScreenY(); }
 
-    public static Vector2f getMouseOrthographicPosition() { return MouseListener.getOrthographicPos(); }
+    public static Vector2f getMouseWorldPosition() { return MouseListener.getOrthographicPos(); }
 
-    public static float getMouseOrthographicXPosition() { return MouseListener.getOrthographicXPos(); }
+    public static float getMouseWorldPositionX() { return MouseListener.getOrthographicXPos(); }
 
-    public static float getMouseOrthographicYPosition() { return MouseListener.getOrthographicYPos(); }
+    public static float getMouseWorldPositionY() { return MouseListener.getOrthographicYPos(); }
 
-    public static float getMouseWorldXPosition() { return MouseListener.getMouseWorldXPosition(); }
+    public static Vector2f screenToWorld(Vector2f screen) { return MouseListener.screenToWorld(screen); }
 
-    public static float getMouseWorldYPosition() { return MouseListener.getMouseWorldYPosition(); }
+    public static Vector2f worldToScreen(Vector2f world) { return MouseListener.worldToScreen(world); }
 
-    public static float getMouseWorldDeltaXPosition() { return MouseListener.getMouseWorldDeltaXPosition(); }
+//    public static Vector2f getMouseOrthographicPosition() { return MouseListener.getOrthographicPos(); }
 
-    public static float getMouseWorldDeltaYPosition() { return MouseListener.getMouseWorldDeltaYPosition(); }
+//    public static float getMouseOrthographicXPosition() { return MouseListener.getOrthographicXPos(); }
+//
+//    public static float getMouseOrthographicYPosition() { return MouseListener.getOrthographicYPos(); }
+//
+//    public static float getMouseWorldXPosition() { return MouseListener.getMouseWorldXPosition(); }
+//
+//    public static float getMouseWorldYPosition() { return MouseListener.getMouseWorldYPosition(); }
+//
+//    public static float getMouseWorldDeltaXPosition() { return MouseListener.getMouseWorldDeltaXPosition(); }
+//
+//    public static float getMouseWorldDeltaYPosition() { return MouseListener.getMouseWorldDeltaYPosition(); }
 
     public static boolean isMouseDragging() { return MouseListener.isDragging(); }
 

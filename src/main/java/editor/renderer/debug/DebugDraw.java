@@ -304,4 +304,9 @@ public class DebugDraw {
 
         Maths.rotate3DVertices(points, center, rotation);
     }
+
+    public static void clearLines() {
+        lines.clear();
+        Arrays.fill(vertexArray, 0.0f);
+    }
 }

@@ -11,9 +11,9 @@ public class TranslateGizmo extends Gizmo {
     public void update() {
         if (activeGameObject != null) {
             if (this.xAxisActive && !this.yAxisActive)
-                activeGameObject.transform.position.x -= Input.getMouseWorldDeltaXPosition();
+                activeGameObject.transform.position.x -= Input.getMouseWorldPositionX(); //.getMouseWorldDeltaXPosition();
             else if (this.yAxisActive && !this.xAxisActive)
-                activeGameObject.transform.position.y -= Input.getMouseWorldDeltaYPosition();
+                activeGameObject.transform.position.y -= Input.getMouseWorldPositionY(); //.getMouseWorldDeltaYPosition();
         }
 
         super.update();

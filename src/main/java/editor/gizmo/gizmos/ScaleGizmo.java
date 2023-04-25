@@ -11,9 +11,9 @@ public class ScaleGizmo extends Gizmo {
     public void update() {
         if (activeGameObject != null) {
             if (this.xAxisActive && !this.yAxisActive)
-                activeGameObject.transform.scale.x -= Input.getMouseWorldDeltaXPosition();
+                activeGameObject.transform.scale.x -= Input.getMouseWorldPositionX(); // .getMouseWorldDeltaXPosition();
             else if (this.yAxisActive && !this.xAxisActive)
-                activeGameObject.transform.scale.y -= Input.getMouseWorldDeltaYPosition();
+                activeGameObject.transform.scale.y -= Input.getMouseWorldPositionY(); // .getMouseWorldDeltaYPosition();
         }
 
         super.update();

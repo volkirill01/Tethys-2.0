@@ -120,8 +120,10 @@ public class Shader {
     }
 
     private int uploadVariable(String variableName) {
-        if (!this.beingUsed)
-            throw new RuntimeException("'" + filepath + "' Shader not used for uploading variable '" + variableName + "'");
+        if (!this.beingUsed) {
+            use();
+//            throw new RuntimeException("'" + filepath + "' Shader not used for uploading variable '" + variableName + "'");
+        }
 
         return glGetUniformLocation(this.shaderProgramID, variableName);
     }

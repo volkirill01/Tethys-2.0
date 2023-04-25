@@ -1,7 +1,13 @@
 package editor.entity;
 
+import com.google.gson.Gson;
+import editor.assets.AssetPool;
+import editor.editor.gui.EditorGUI;
 import editor.entity.component.Component;
+import editor.entity.component.components.SpriteRenderer;
 import editor.entity.component.components.Transform;
+import editor.stuff.utils.EditorGson;
+import imgui.ImGui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,40 +18,19 @@ public class GameObject {
     private int uid = -1;
 
     public String name;
-    public Transform transform;
+    public transient Transform transform;
     private final List<Component> components = new ArrayList<>();
-    private int zIndex = 0;
     private boolean clickable = true;
 
-    private boolean doSerialization = true;
+    private transient boolean doSerialization = true;
+    private transient boolean isDeath = false;
 
     public GameObject(String name) {
         this.name = name;
-        this.transform = new Transform();
-        this.transform.gameObject = this;
-
         this.uid = ID_COUNTER++;
     }
 
-    public GameObject(String name, Transform transform, int zIndex) {
-        this.name = name;
-        this.transform = transform;
-        this.transform.gameObject = this;
-        this.zIndex = zIndex;
-
-        this.uid = ID_COUNTER++;
-    }
-
-    public <T extends Component> boolean hasComponent(Class<T> componentClass) {
-        for (Component c : this.components) {
-            if (componentClass.isAssignableFrom(c.getClass())) {
-                if (c.getClass() == componentClass)
-                    return true;
-            } else
-                throw new ClassCastException("Error of casting component - '" + componentClass.getName() + "' to '" + c.getClass().getName() + "'.");
-        }
-        return false;
-    }
+    public <T extends Component> boolean hasComponent(Class<T> componentClass) { return getComponent(componentClass) != null; }
 
     public <T extends Component> T getComponent(Class<T> componentClass) {
         for (Component c : this.components) {
@@ -79,8 +64,11 @@ public class GameObject {
     }
 
     public void imgui() {
+        this.name = EditorGUI.textFieldNoLabel("GameObject_Name_" + this.uid, this.name);
+
         for (Component c : this.components)
-            c.imgui();
+            if (ImGui.collapsingHeader(c.getClass().getSimpleName()))
+                c.imgui();
     }
 
     public void start() {
@@ -88,26 +76,55 @@ public class GameObject {
             c.start();
     }
 
+    public void editorUpdate() {
+        for (Component c : this.components)
+            c.editorUpdate();
+    }
+
     public void update() {
         for (Component c : this.components)
             c.update();
     }
 
-    public void setDoSerialize() { this.doSerialization = true; }
+    public void destroy() {
+        this.isDeath = true;
+        for (Component component : this.components)
+            component.destroy();
+    }
 
-    public void setNoSerialize() { this.doSerialization = false; }
+    public GameObject copy() {
+        Gson gson = EditorGson.getGsonBuilder();
+
+        String objAsGson = gson.toJson(this);
+        GameObject copy = gson.fromJson(objAsGson, GameObject.class);
+        
+        copy.generateUid();
+        for (Component c : copy.components)
+            c.generateID();
+
+        if (copy.hasComponent(SpriteRenderer.class)) {
+            SpriteRenderer renderer = copy.getComponent(SpriteRenderer.class);
+            if (renderer.getTexture() != null)
+                renderer.setTexture(AssetPool.getTexture(renderer.getTexture().getFilepath()));
+        }
+        return copy;
+    }
+
+    public void setSerialize(boolean serialize) { this.doSerialization = serialize; }
 
     public boolean isDoSerialization() { return this.doSerialization; }
-
-    public int getZIndex() { return this.zIndex; }
 
     public static void init(int maxID) { ID_COUNTER = maxID; }
 
     public int getUid() { return this.uid; }
+
+    private void generateUid() { this.uid = ID_COUNTER++; }
 
     public List<Component> getAllComponents() { return this.components; }
 
     public boolean isClickable() { return this.clickable; }
 
     public void setClickable(boolean clickable) { this.clickable = clickable; }
+
+    public boolean isDeath() { return this.isDeath; }
 }

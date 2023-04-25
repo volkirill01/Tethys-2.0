@@ -2,57 +2,64 @@ package editor.stuff;
 
 import editor.assets.AssetPool;
 import editor.entity.GameObject;
-import editor.entity.component.components.SpriteRenderer;
 import editor.eventListeners.Input;
-import editor.eventListeners.KeyCode;
+import editor.eventListeners.KeyListener;
 import editor.eventListeners.MouseListener;
-import editor.gui.ImGuiLayer;
+import editor.editor.gui.ImGuiLayer;
+import editor.observers.EventSystem;
+import editor.observers.Observer;
+import editor.observers.events.Event;
 import editor.renderer.Framebuffer;
 import editor.renderer.MasterRenderer;
 import editor.renderer.debug.DebugDraw;
 import editor.renderer.debug.DebugGrid;
 import editor.renderer.shader.Shader;
 import editor.renderer.stuff.PickingTexture;
+import editor.scenes.EngineSceneInitializer;
 import editor.scenes.SceneManager;
-import editor.stuff.customVariables.Color;
+import editor.stuff.inputActions.KeyboardControls;
+import editor.stuff.inputActions.MouseControls;
 import editor.stuff.utils.Time;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
 
-import java.awt.*;
 import java.nio.IntBuffer;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.GL_MAX_TEXTURE_IMAGE_UNITS;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class Window {
+public class Window implements Observer {
 
-//    private static int start_width, start_height;
     private static int width, height;
     private static final String title = "Tethys";
 
     private static long glfwWindow;
+
+    private static long audioContext;
+    private static long audioDevice;
 
     private static ImGuiLayer imguiLayer;
 
     private static Framebuffer framebuffer;
     private static PickingTexture pickingTexture;
 
-    public static float r = 1.0f;
-    public static float g = 1.0f;
-    public static float b = 1.0f;
-    public static float a = 1.0f;
+    private static boolean runtimePlaying = false;
 
-    public static void run() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public void run() {
+        EventSystem.addObserver(this);
+
+//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //        start_width = (int) screenSize.getWidth();
 //        start_height = (int) screenSize.getHeight();
 //        width = start_width;
@@ -68,7 +75,7 @@ public class Window {
         closeWindow();
     }
 
-    private static void init() {
+    private void init() {
         // Setup an Error callback
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -80,12 +87,10 @@ public class Window {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Create window but make it invisible before setting it
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //GLFW_TRUE
-//        glfwWindowHint(GLFW_MAXIMIZED, GLFW_FALSE); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //GLFW_TRUE
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
         // Create the window
-//        glfwWindow = glfwCreateWindow((int) (start_width / 1.2f), (int) (start_height / 1.2f), title, NULL, NULL); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //((int) (width / 1.2f), (int) (height / 1.2f))
-        glfwWindow = glfwCreateWindow((int) (width / 1.2f), (int) (height / 1.2f), title, NULL, NULL); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //((int) (width / 1.2f), (int) (height / 1.2f))
+        glfwWindow = glfwCreateWindow((int) (width / 1.2f), (int) (height / 1.2f), title, NULL, NULL);
         if (glfwWindow == NULL)
             throw new IllegalStateException("Failed to create GLFW Window.");
 
@@ -100,6 +105,20 @@ public class Window {
 
         // Make the Window visible
         glfwShowWindow(glfwWindow);
+
+        // Initialize AudioDevice
+        String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
+        audioDevice = alcOpenDevice(defaultDeviceName);
+
+        int[] attributes = { 0 };
+        audioContext = alcCreateContext(audioDevice, attributes);
+        alcMakeContextCurrent(audioContext);
+
+        ALCCapabilities alcCapabilities = ALC.createCapabilities(audioDevice);
+        ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+
+        if (!alCapabilities.OpenAL10)
+            throw new IllegalStateException("Audio Library not supported.");
 
         // This line is critical for LWJGL's interoperation with GLFW's
         // OpenGL context, or any context that is managed externally.
@@ -118,15 +137,12 @@ public class Window {
         pickingTexture = new PickingTexture(2560, 1080);
         glViewport(0, 0, 2560, 1080);
 
-        SceneManager.changeScene(0); // Load default Scene
+        SceneManager.changeScene(new EngineSceneInitializer()); // Load default Scene
 
         printMachineInfo();
-
-//        glfwSetWindowSize(glfwWindow, (int) (start_width / 1.2f), (int) (start_height / 1.2f)); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //DELETE THIS
-//        glfwMaximizeWindow(glfwWindow); // TODO FIX IMGUI CURSOR OFFSET AND SET THIS PROPERLY //DELETE THIS
     }
 
-    private static void loop() {
+    private void loop() {
         float beginTime = Time.getTime();
         float endTime;
 
@@ -138,6 +154,10 @@ public class Window {
 
             // Poll events
             glfwPollEvents();
+
+            // Update Listeners
+            KeyboardControls.update();
+            MouseControls.update();
 
             // Render pass 1. Render to picking texture
             glDisable(GL_BLEND);
@@ -154,21 +174,21 @@ public class Window {
             glEnable(GL_BLEND);
 
             // Render pass 2. Render actual scene
-            DebugDraw.addBox2D(new Vector3f(50.0f, 150.0f, 0.0f), new Vector2f(100.0f, 200.0f));
-            DebugDraw.addCube(new Vector3f(150.0f, 250.0f, -20.0f), new Vector3f(100.0f, 200.0f, 100.0f), new Vector3f(45.0f, 50.0f, 10.0f), Color.BLUE);
-
             DebugDraw.beginFrame();
 
             glfwSetWindowTitle(glfwWindow, title + " FPS: " + (1.0f / Time.deltaTime()));
 
             framebuffer.bind();
-            glClearColor(r, g, b, a);
+            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             if (Time.deltaTime() >= 0.0f) {
                 DebugGrid.draw();
 
-                SceneManager.getCurrentScene().update();
+                if (runtimePlaying)
+                    SceneManager.getCurrentScene().update();
+                else
+                    SceneManager.getCurrentScene().editorUpdate();
 
                 MasterRenderer.bindShader(defaultShader);
                 SceneManager.getCurrentScene().render();
@@ -183,13 +203,14 @@ public class Window {
             glfwSwapBuffers(glfwWindow);
 
             MouseListener.endFrame();
+            KeyListener.endFrame();
 
             endTime = Time.getTime();
             Time.setDeltaTime(endTime - beginTime);
             beginTime = endTime;
         }
 
-        SceneManager.getCurrentScene().save();
+        SceneManager.getCurrentScene().saveAs("level.txt");
     }
 
     private static void glfwWindowResizeCallback() {
@@ -206,6 +227,10 @@ public class Window {
 
     private static void closeWindow() {
         // Free the memory
+        imguiLayer.destroyImGui();
+        alcDestroyContext(audioContext);
+        alcCloseDevice(audioDevice);
+
         glfwFreeCallbacks(glfwWindow);
         glfwDestroyWindow(glfwWindow);
 
@@ -229,13 +254,9 @@ public class Window {
 
     public static String getTitle() { return title; }
 
-//    public static int getStartWidth() { return start_width; }
-
     public static int getWidth() { return width; }
 
     public static void setWidth(int width) { Window.width = width; }
-
-//    public static int getStartHeight() { return start_height; }
 
     public static int getHeight() { return height; }
 
@@ -246,4 +267,29 @@ public class Window {
     public static float getTargetAspectRatio() { return 16.0f / 9.0f; }
 
     public static PickingTexture getPickingTexture() { return Window.pickingTexture; }
+
+    public static boolean isRuntimePlaying() { return Window.runtimePlaying; }
+
+    public static void setRuntimePlaying(boolean runtimePlaying) { Window.runtimePlaying = runtimePlaying; }
+
+    @Override
+    public void onNotify(GameObject object, Event event) {
+        switch (event.type) {
+            case GameEngine_StartPlay -> {
+                runtimePlaying = true;
+                SceneManager.getCurrentScene().saveAs("level.txt"); // TODO SAVE TO TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
+                SceneManager.changeScene(new EngineSceneInitializer());
+            }
+            case GameEngine_StopPlay -> {
+                runtimePlaying = false;
+                SceneManager.changeScene(new EngineSceneInitializer()); // TODO LOAD FROM TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
+            }
+            case GameEngine_SaveScene -> {
+                SceneManager.getCurrentScene().saveAs("level.txt");
+            }
+            case GameEngine_LoadScene -> {
+                SceneManager.changeScene(new EngineSceneInitializer());
+            }
+        }
+    }
 }

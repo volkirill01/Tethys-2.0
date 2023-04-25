@@ -1,8 +1,11 @@
 package editor.entity.component;
 
+import editor.editor.gui.EditorGUI;
 import editor.entity.GameObject;
+import editor.stuff.Settings;
 import editor.stuff.customVariables.Color;
 import imgui.ImGui;
+import imgui.type.ImInt;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -12,7 +15,7 @@ import java.lang.reflect.Modifier;
 
 public abstract class Component {
 
-    private static int ID_COUNTER = 0; // TODO CHANGE THIS SYSTEM TO ACTUAL APROPEREATE UUID
+    private static int ID_COUNTER = 0; // TODO CHANGE THIS SYSTEM TO ACTUAL APPROPRIATE UUID
     private int uid = -1;
     public transient GameObject gameObject = null;
 
@@ -31,41 +34,42 @@ public abstract class Component {
                 Class type = field.getType();
                 Object value = field.get(this);
                 String name = field.getName();
+                if (Settings.variableNamesStartsUpperCase)
+                    name = field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
 
                 if (type == int.class) {
                     int val = (int) value;
-                    int[] imInt = { val };
-                    if (ImGui.dragInt(name + ": ", imInt))
-                        field.set(this, imInt[0]);
+                    field.set(this, EditorGUI.field_Int(name, val));
                 } else if (type == float.class) {
                     float val = (float) value;
-                    float[] imFloat = { val };
-                    if (ImGui.dragFloat(name + ": ", imFloat))
-                        field.set(this, imFloat[0]);
+                    field.set(this, EditorGUI.field_Float(name, val));
                 } else if (type == boolean.class) {
                     boolean val = (boolean) value;
                     if (ImGui.checkbox(name + ": ", val))
                         field.set(this, !val);
-                } else if (type == Vector4f.class) {
-                    Vector4f val = (Vector4f) value;
-                    float[] imVec = { val.x, val.y, val.z, val.w };
-                    if (ImGui.dragFloat4(name + ": ", imVec))
-                        val.set(imVec[0], imVec[1], imVec[2], imVec[3]);
-                } else if (type == Vector3f.class) {
-                    Vector3f val = (Vector3f) value;
-                    float[] imVec = { val.x, val.y, val.z };
-                    if (ImGui.dragFloat3(name + ": ", imVec))
-                        val.set(imVec[0], imVec[1], imVec[2]);
                 } else if (type == Vector2f.class) {
                     Vector2f val = (Vector2f) value;
                     float[] imVec = { val.x, val.y };
                     if (ImGui.dragFloat2(name + ": ", imVec))
                         val.set(imVec[0], imVec[1]);
+                } else if (type == Vector3f.class) {
+                    Vector3f val = (Vector3f) value;
+                    EditorGUI.field_Vector3f(name, val);
+                } else if (type == Vector4f.class) {
+                    Vector4f val = (Vector4f) value;
+                    float[] imVec = { val.x, val.y, val.z, val.w };
+                    if (ImGui.dragFloat4(name + ": ", imVec))
+                        val.set(imVec[0], imVec[1], imVec[2], imVec[3]);
                 } else if (type == Color.class) {
                     Color val = (Color) value;
-                    float[] imVec = { val.r / 255.0f, val.g / 255.0f, val.b / 255.0f, val.a / 255.0f };
-                    if (ImGui.colorEdit4(name + ": ", imVec))
-                        val.set(imVec[0] * 255.0f, imVec[1] * 255.0f, imVec[2] * 255.0f, imVec[3] * 255.0f);
+                    EditorGUI.field_Color(name, val);
+                } else if (type.isEnum()) {
+                    String[] enumValues = getEnumValues(type);
+                    String enumType = ((Enum) value).name();
+                    ImInt index = new ImInt(indexOf(enumType, enumValues));
+                    if (ImGui.combo(field.getName(), index, enumValues, enumValues.length)) {
+                        field.set(this, type.getEnumConstants()[index.get()]);
+                    }
                 } else {
                     ImGui.text(name + ", " + type.getCanonicalName() + " - Custom inspector not added yet.");
                 }
@@ -78,7 +82,26 @@ public abstract class Component {
         }
     }
 
+    private <T extends Enum<T>> String[] getEnumValues(Class<T> enumType) {
+        String[] enumValues = new String[enumType.getEnumConstants().length];
+        int i = 0;
+        for (T enumIntegerValue : enumType.getEnumConstants()) {
+            enumValues[i] = enumIntegerValue.name();
+            i++;
+        }
+        return enumValues;
+    }
+
+    private int indexOf(String str, String[] array) {
+        for (int i = 0; i < array.length; i++)
+            if (str.equals(array[i]))
+                return i;
+        return -1;
+    }
+
     public void start() { }
+
+    public void editorUpdate() { }
 
     public void update() { }
 
@@ -86,6 +109,8 @@ public abstract class Component {
         if (this.uid == -1)
             this.uid = ID_COUNTER++;
     }
+
+    public void destroy() { }
 
     public int getUid() { return this.uid; }
 

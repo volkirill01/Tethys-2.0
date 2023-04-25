@@ -8,8 +8,10 @@ public class Camera {
 
     private final Matrix4f projectionMatrix, viewMatrix, inverseProjectionMatrix, inverseViewMatrix;
     private final Vector3f position;
-    private final Vector2f projectionSize = new Vector2f(32.0f * 40.0f, 32.0f * 21.0f);
-//    private final Vector2f projectionSize = new Vector2f(32.0f * 50.0f, 32.0f * 20.0f);
+
+    private final float projectionWidth = 6.0f;
+    private final float projectionHeight = 3.0f;
+    private final Vector2f projectionSize = new Vector2f(this.projectionWidth, this.projectionHeight);
 
     private float zoom = 1.0f;
 

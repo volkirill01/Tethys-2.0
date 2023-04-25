@@ -1,4 +1,4 @@
-package editor.gui;
+package editor.editor.gui;
 
 import imgui.ImFont;
 import imgui.ImFontAtlas;

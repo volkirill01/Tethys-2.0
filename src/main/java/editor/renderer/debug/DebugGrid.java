@@ -16,8 +16,8 @@ public class DebugGrid {
 
         Color color = new Color(0.2f, 0.2f, 0.2f);
 
-        int firstX = ((int) (cameraPosition.x / Settings.GRID_WIDTH) - 1) * Settings.GRID_WIDTH;
-        int firstY = ((int) (cameraPosition.y / Settings.GRID_HEIGHT) - 1) * Settings.GRID_HEIGHT;
+        float firstX = ((int) (cameraPosition.x / Settings.GRID_WIDTH) - 1) * Settings.GRID_WIDTH;
+        float firstY = ((int) (cameraPosition.y / Settings.GRID_HEIGHT) - 1) * Settings.GRID_HEIGHT;
 
         int numberVerticalLines = (int) (projectionSize.x * camera.getZoom() / Settings.GRID_WIDTH) + 2;
         int numberHorizontalLines = (int) (projectionSize.y * camera.getZoom() / Settings.GRID_HEIGHT) + 2;
@@ -27,8 +27,8 @@ public class DebugGrid {
 
         int maxLines = Math.max(numberVerticalLines, numberHorizontalLines);
         for (int i = 0; i < maxLines; i++) {
-            int x = firstX + (Settings.GRID_WIDTH * i);
-            int y = firstY + (Settings.GRID_HEIGHT * i);
+            float x = firstX + (Settings.GRID_WIDTH * i);
+            float y = firstY + (Settings.GRID_HEIGHT * i);
 
             if (i < numberVerticalLines)
                 DebugDraw.addLine(new Vector3f(x, firstY, 0.0f), new Vector3f(x, firstY + height, 0.0f), color);

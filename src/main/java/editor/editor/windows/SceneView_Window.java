@@ -1,5 +1,6 @@
 package editor.editor.windows;
 
+import editor.TestFieldsWindow;
 import editor.eventListeners.Input;
 import editor.eventListeners.MouseListener;
 import editor.stuff.Window;
@@ -9,14 +10,14 @@ import imgui.flag.ImGuiWindowFlags;
 
 public class SceneView_Window {
 
-    private float leftX, rightX, topY, bottomY;
+    private static float leftX, rightX, topY, bottomY;
 
     public void imgui() {
         ImGui.begin("Scene View Window", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
 
+        ImGui.setCursorPos(ImGui.getCursorPosX(), ImGui.getCursorPosY());
         ImVec2 viewportSize = getLargestSizeForViewport();
         ImVec2 viewportPos = getCenteredPositionForViewport(viewportSize);
-
         ImGui.setCursorPos(viewportPos.x, viewportPos.y);
 
         ImVec2 topLeft = new ImVec2();
@@ -38,10 +39,11 @@ public class SceneView_Window {
     }
 
     private ImVec2 getLargestSizeForViewport() {
-        ImVec2 viewportSize = new ImVec2();
-        ImGui.getContentRegionMax(viewportSize);
+        ImVec2 viewportSize = ImGui.getContentRegionAvail();
+
         float aspectWidth = viewportSize.x;
         float aspectHeight = aspectWidth / Window.getTargetAspectRatio();
+
         if (aspectHeight > viewportSize.y) {
             // We must switch to pillar box mode (black bars on left and right sides of screen)
             aspectHeight = viewportSize.y;
@@ -52,8 +54,7 @@ public class SceneView_Window {
     }
 
     private ImVec2 getCenteredPositionForViewport(ImVec2 aspectSize) {
-        ImVec2 viewportSize = new ImVec2();
-        ImGui.getContentRegionMax(viewportSize);
+        ImVec2 viewportSize = ImGui.getContentRegionAvail();
 
         float viewportPositionX = (viewportSize.x / 2.0f) - (aspectSize.x / 2.0f);
         float viewportPositionY = (viewportSize.y / 2.0f) - (aspectSize.y / 2.0f);
@@ -61,7 +62,7 @@ public class SceneView_Window {
         return new ImVec2(viewportPositionX + ImGui.getCursorPosX(), viewportPositionY + ImGui.getCursorPosY());
     }
 
-    public boolean getWantCaptureMouse() {
+    public static boolean getWantCaptureMouse() {
         return Input.getMousePositionX() >= leftX && Input.getMousePositionX() <= rightX &&
                 Input.getMousePositionY() >= bottomY && Input.getMousePositionY() <= topY;
     }

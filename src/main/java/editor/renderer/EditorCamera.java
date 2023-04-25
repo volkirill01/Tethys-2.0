@@ -27,11 +27,13 @@ public class EditorCamera {
     public void update() {
         // TODO REPLACE STATIC KEY, WITH KEY FROM USER SETTINGS
         if (Input.buttonDown(KeyCode.Mouse_Button_Right) && this.dragDebounce > 0) {
-            this.clickOrigin = new Vector2f(Input.getMouseOrthographicXPosition(), Input.getMouseOrthographicYPosition());
+            this.clickOrigin = Input.getMouseWorldPosition();
+//            this.clickOrigin = new Vector2f(Input.getMouseOrthographicXPosition(), Input.getMouseOrthographicYPosition());
             this.dragDebounce -= Time.deltaTime();
             return;
         } else if (Input.buttonDown(KeyCode.Mouse_Button_Right)) {
-            Vector2f mousePos = new Vector2f(Input.getMouseOrthographicXPosition(), Input.getMouseOrthographicYPosition());
+            Vector2f mousePos = Input.getMouseWorldPosition();
+//            Vector2f mousePos = new Vector2f(Input.getMouseOrthographicXPosition(), Input.getMouseOrthographicYPosition());
             Vector2f delta = new Vector2f(mousePos).sub(this.clickOrigin);
             delta.mul(Time.deltaTime() * this.dragSensitivity);
             this.levelEditorCamera.getPosition().sub(delta.x, delta.y, 0.0f);

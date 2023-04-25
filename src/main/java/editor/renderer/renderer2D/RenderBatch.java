@@ -1,6 +1,6 @@
 package editor.renderer.renderer2D;
 
-import editor.assets.AssetPool;
+import editor.entity.GameObject;
 import editor.entity.component.components.SpriteRenderer;
 import editor.renderer.MasterRenderer;
 import editor.renderer.Texture;
@@ -38,6 +38,8 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private final int ENTITY_ID_OFFSET = TEXTURE_ID_OFFSET + TEXTURE_ID_SIZE * Float.BYTES;
     private final int VERTEX_SIZE = POS_SIZE + COLOR_SIZE + TEXTURE_COORDINATES_SIZE + TEXTURE_ID_SIZE + ENTITY_ID_SIZE;
 
+    private SpriteMasterRenderer renderer;
+
     private final SpriteRenderer[] sprites;
     private int numberOfSprites;
     private boolean hasRoom;
@@ -49,7 +51,9 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private final int maxBathSize;
     private final int zIndex;
 
-    public RenderBatch(int maxBatchSize, int zIndex) {
+    public RenderBatch(int maxBatchSize, int zIndex, SpriteMasterRenderer renderer) {
+        this.renderer = renderer;
+
         this.maxBathSize = maxBatchSize;
         this.sprites = new SpriteRenderer[this.maxBathSize];
         this.zIndex = zIndex;
@@ -121,6 +125,13 @@ public class RenderBatch implements Comparable<RenderBatch> {
                 spr.setDirty(false);
                 rebufferData = true;
             }
+
+            // TODO GET BETTER SOLUTION FOR THIS
+            if (spr.gameObject.transform.getZIndex() != this.zIndex) {
+                destroyIfExists(spr.gameObject);
+                renderer.add(spr.gameObject);
+                i--;
+            }
         }
 
         // Send data tu GPU only if data is changed
@@ -160,6 +171,21 @@ public class RenderBatch implements Comparable<RenderBatch> {
         shader.detach();
     }
 
+    public boolean destroyIfExists(GameObject obj) {
+        SpriteRenderer renderer = obj.getComponent(SpriteRenderer.class);
+        for (int i = 0; i < this.numberOfSprites; i++) {
+            if (this.sprites[i] == renderer) {
+                for (int j = i; j < this.numberOfSprites - 1; j++) {
+                    this.sprites[j] = this.sprites[j + 1];
+                    this.sprites[j].setDirty(true);
+                }
+                this.numberOfSprites--;
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void loadVertexProperties(int index) {
         SpriteRenderer sprite = this.sprites[index];
 
@@ -185,19 +211,18 @@ public class RenderBatch implements Comparable<RenderBatch> {
             transformationMatrix.scale(sprite.gameObject.transform.scale);
         }
 
-
         // Add vertices with the appropriate properties
-        float xAdd = 1.0f;
-        float yAdd = 1.0f;
+        float xAdd = 0.5f;
+        float yAdd = 0.5f;
         float zAdd = 0.0f;
 
         for (int i = 0; i < 4; i++) { // 4 vertices per sprite
             if (i == 1)
-                yAdd = 0.0f;
+                yAdd = -0.5f;
             else if (i == 2)
-                xAdd = 0.0f;
+                xAdd = -0.5f;
             else if (i == 3)
-                yAdd = 1.0f;
+                yAdd = 0.5f;
 
             Vector4f currentPos = new Vector4f(
                     sprite.gameObject.transform.position.x + (xAdd * sprite.gameObject.transform.scale.x),
@@ -258,7 +283,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
         elements[offsetArrayIndex + 5]  = offset + 1;
     }
 
-    public boolean isHasRoom() { return this.hasRoom; }
+    public boolean hasRoom() { return this.hasRoom; }
 
     public boolean hasTextureRoom() { return this.textures.size() < 8; }
 

@@ -1,9 +1,11 @@
 package editor.assets;
 
+import editor.audio.Sound;
 import editor.renderer.Texture;
 import editor.renderer.renderer2D.sprite.SpriteSheet;
 import editor.renderer.shader.Shader;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ public class AssetPool {
     private static final Map<String, Texture> textures = new HashMap<>();
     private static final Map<String, Shader> shaders = new HashMap<>();
     private static final Map<String, SpriteSheet> spriteSheets = new HashMap<>();
+    private static final Map<String, Sound> sounds = new HashMap<>();
 
     public static Texture getTexture(String filepath) {
         if (textures.containsKey(filepath))
@@ -41,5 +44,25 @@ public class AssetPool {
             throw new NullPointerException("SpriteSheet not found - '" + filepath + "'.");
 
         return spriteSheets.getOrDefault(filepath, null);
+    }
+
+    public static Collection<Sound> getAllSounds() { return sounds.values(); }
+
+    public static Sound getSound(String filepath) {
+        if (sounds.containsKey(filepath))
+            return sounds.get(filepath);
+
+        Sound newSound = new Sound(filepath, false);
+        sounds.put(filepath, newSound);
+        return newSound;
+    }
+
+    public static Sound addSound(String filepath, boolean loops) {
+        if (sounds.containsKey(filepath))
+            return sounds.get(filepath);
+
+        Sound newSound = new Sound(filepath, loops);
+        sounds.put(filepath, newSound);
+        return newSound;
     }
 }
