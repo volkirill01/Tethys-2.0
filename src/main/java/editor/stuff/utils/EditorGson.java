@@ -14,6 +14,7 @@ public class EditorGson {
                 .setPrettyPrinting()
                 .registerTypeAdapter(GameObject.class, new GameObjectDeserializer())
                 .registerTypeAdapter(Component.class, new ComponentDeserializer())
+                .enableComplexMapKeySerialization()
                 .create();
     }
 }

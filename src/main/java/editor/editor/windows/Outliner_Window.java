@@ -6,6 +6,7 @@ import editor.eventListeners.KeyCode;
 import editor.physics.physics2D.components.RigidBody2D;
 import editor.physics.physics2D.components.colliders.Box2DCollider;
 import editor.physics.physics2D.components.colliders.Circle2DCollider;
+import editor.physics.physics2D.components.colliders.Pillbox2DCollider;
 import editor.scenes.SceneManager;
 import editor.stuff.Window;
 import editor.stuff.utils.Time;
@@ -30,13 +31,17 @@ public class Outliner_Window {
                     if (ImGui.menuItem("Add RigidBody2D"))
                         activeGameObject.addComponent(new RigidBody2D());
 
-                if (!activeGameObject.hasComponent(Box2DCollider.class) && !activeGameObject.hasComponent(Circle2DCollider.class))
+                if (!activeGameObject.hasComponent(Box2DCollider.class))
                     if (ImGui.menuItem("Add Box2DCollider"))
                         activeGameObject.addComponent(new Box2DCollider());
 
-                if (!activeGameObject.hasComponent(Circle2DCollider.class) && !activeGameObject.hasComponent(Box2DCollider.class))
+                if (!activeGameObject.hasComponent(Circle2DCollider.class))
                     if (ImGui.menuItem("Add Circle2DCollider"))
                         activeGameObject.addComponent(new Circle2DCollider());
+
+                if (!activeGameObject.hasComponent(Pillbox2DCollider.class))
+                    if (ImGui.menuItem("Add Pillbox2DCollider"))
+                        activeGameObject.addComponent(new Pillbox2DCollider());
 
                 ImGui.endPopup();
             }

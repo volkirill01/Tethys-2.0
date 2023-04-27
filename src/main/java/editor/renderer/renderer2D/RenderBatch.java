@@ -121,9 +121,14 @@ public class RenderBatch implements Comparable<RenderBatch> {
         for (int i = 0; i < this.numberOfSprites; i++) {
             SpriteRenderer spr = this.sprites[i];
             if (spr.isDirty()) {
-                loadVertexProperties(i);
-                spr.setDirty(false);
-                rebufferData = true;
+                if (!hasTexture(spr.getTexture())) {
+                    this.renderer.destroyGameObject(spr.gameObject);
+                    this.renderer.add(spr.gameObject);
+                } else {
+                    loadVertexProperties(i);
+                    spr.setDirty(false);
+                    rebufferData = true;
+                }
             }
 
             // TODO GET BETTER SOLUTION FOR THIS

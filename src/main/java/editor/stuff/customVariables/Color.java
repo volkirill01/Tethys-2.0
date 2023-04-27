@@ -1,13 +1,13 @@
 package editor.stuff.customVariables;
 
-import editor.entity.component.components.Transform;
-
 public class Color {
 
     public float r;
     public float g;
     public float b;
     public float a;
+
+    public Color(Color ref) { init(ref.r, ref.g, ref.b, ref.a); }
 
     public Color(int r, int g, int b) { init(r, g, b, 255.0f); }
 

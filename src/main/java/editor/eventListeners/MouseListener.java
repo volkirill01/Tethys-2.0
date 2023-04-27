@@ -103,8 +103,8 @@ public class MouseListener {
 
     protected static Vector2f screenToWorld(Vector2f screenCoordinates) {
         Vector2f normalizedDeviceCoordinates = new Vector2f(
-                screenCoordinates.x / 2560,
-                screenCoordinates.y / 1080
+                screenCoordinates.x / Window.getScreenWidth(),
+                screenCoordinates.y / Window.getScreenHeight()
         );
 
         normalizedDeviceCoordinates.mul(2.0f).sub(1.0f, 1.0f);
@@ -124,7 +124,7 @@ public class MouseListener {
         normalizeDeviceCoordinates.mul(projectionMatrix.mul(viewMatrix));
         Vector2f windowSpace = new Vector2f(normalizeDeviceCoordinates.x, normalizeDeviceCoordinates.y).mul(1.0f / normalizeDeviceCoordinates.w);
         windowSpace.add(new Vector2f(1.0f).div(2.0f));
-        windowSpace.mul(2560.0f, 1080.0f);
+        windowSpace.mul((float) Window.getScreenWidth(), (float) Window.getScreenHeight());
         return windowSpace;
     }
 
@@ -134,9 +134,9 @@ public class MouseListener {
 
     protected static Vector2f getScreen() {
         float currentX = getMouseX() - gameViewportPos.x;
-        currentX = (currentX / gameViewportSize.x) * 2560;
+        currentX = (currentX / gameViewportSize.x) * Window.getScreenWidth();
         float currentY = getMouseY() - gameViewportPos.y;
-        currentY = 1080 - ((currentY / gameViewportSize.y) * 1080);
+        currentY = Window.getScreenHeight() - ((currentY / gameViewportSize.y) * Window.getScreenHeight());
         return new Vector2f(currentX, currentY);
     }
 

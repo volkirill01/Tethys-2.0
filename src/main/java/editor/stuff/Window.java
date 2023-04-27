@@ -1,6 +1,7 @@
 package editor.stuff;
 
 import editor.assets.AssetPool;
+import editor.editor.windows.Outliner_Window;
 import editor.entity.GameObject;
 import editor.eventListeners.Input;
 import editor.eventListeners.KeyListener;
@@ -9,6 +10,7 @@ import editor.editor.gui.ImGuiLayer;
 import editor.observers.EventSystem;
 import editor.observers.Observer;
 import editor.observers.events.Event;
+import editor.physics.physics2D.Physics2D;
 import editor.renderer.Framebuffer;
 import editor.renderer.MasterRenderer;
 import editor.renderer.debug.DebugDraw;
@@ -29,6 +31,7 @@ import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
 
+import java.awt.*;
 import java.nio.IntBuffer;
 import java.util.Objects;
 
@@ -42,6 +45,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window implements Observer {
 
     private static int width, height;
+    private static int screen_width, screen_height;
     private static final String title = "Tethys";
 
     private static long glfwWindow;
@@ -59,14 +63,12 @@ public class Window implements Observer {
     public void run() {
         EventSystem.addObserver(this);
 
-//        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-//        start_width = (int) screenSize.getWidth();
-//        start_height = (int) screenSize.getHeight();
-//        width = start_width;
-//        height = start_height;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screen_width = (int) screenSize.getWidth();
+        screen_height = (int) screenSize.getHeight();
 
-        width = 2560;
-        height = 1080;
+        width = screen_width;
+        height = screen_height;
 
         init();
         loop();
@@ -133,9 +135,9 @@ public class Window implements Observer {
         imguiLayer = new ImGuiLayer(glfwWindow);
         imguiLayer.initImGui();
 
-        framebuffer = new Framebuffer(2560, 1080);
-        pickingTexture = new PickingTexture(2560, 1080);
-        glViewport(0, 0, 2560, 1080);
+        framebuffer = new Framebuffer(Window.getScreenWidth(), Window.getScreenHeight());
+        pickingTexture = new PickingTexture(Window.getScreenWidth(), Window.getScreenHeight());
+        glViewport(0, 0, Window.getScreenWidth(), Window.getScreenHeight());
 
         SceneManager.changeScene(new EngineSceneInitializer()); // Load default Scene
 
@@ -163,7 +165,7 @@ public class Window implements Observer {
             glDisable(GL_BLEND);
             pickingTexture.bind();
 
-            glViewport(0, 0, 2560, 1080);
+            glViewport(0, 0, Window.getScreenWidth(), Window.getScreenHeight());
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -254,6 +256,10 @@ public class Window implements Observer {
 
     public static String getTitle() { return title; }
 
+    public static int getScreenWidth() { return screen_width; }
+
+    public static int getScreenHeight() { return screen_height; }
+
     public static int getWidth() { return width; }
 
     public static void setWidth(int width) { Window.width = width; }
@@ -272,6 +278,8 @@ public class Window implements Observer {
 
     public static void setRuntimePlaying(boolean runtimePlaying) { Window.runtimePlaying = runtimePlaying; }
 
+    public static Physics2D getPhysics2D() { return SceneManager.getCurrentScene().getPhysics2D(); }
+
     @Override
     public void onNotify(GameObject object, Event event) {
         switch (event.type) {
@@ -279,10 +287,12 @@ public class Window implements Observer {
                 runtimePlaying = true;
                 SceneManager.getCurrentScene().saveAs("level.txt"); // TODO SAVE TO TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
                 SceneManager.changeScene(new EngineSceneInitializer());
+                Outliner_Window.clearSelected();
             }
             case GameEngine_StopPlay -> {
                 runtimePlaying = false;
                 SceneManager.changeScene(new EngineSceneInitializer()); // TODO LOAD FROM TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
+                Outliner_Window.clearSelected();
             }
             case GameEngine_SaveScene -> {
                 SceneManager.getCurrentScene().saveAs("level.txt");

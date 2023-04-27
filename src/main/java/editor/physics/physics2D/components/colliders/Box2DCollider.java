@@ -8,7 +8,7 @@ import org.joml.Vector3f;
 public class Box2DCollider extends Collider2D {
 
     private final Vector2f size = new Vector2f(1.0f);
-    private final Vector2f origin = new Vector2f(0.0f);
+    private final Vector2f offset = new Vector2f(0.0f);
 
     @Override
     public void editorUpdate() {
@@ -26,7 +26,7 @@ public class Box2DCollider extends Collider2D {
 
     public void setSize(Vector2f size) { this.size.set(size); }
 
-    public Vector2f getOrigin() { return this.origin; }
+    public Vector2f getOffset() { return this.offset; }
 
-    public void setOrigin(Vector2f origin) { this.origin.set(origin); }
+    public void setOffset(Vector2f offset) { this.offset.set(offset); }
 }

@@ -6,6 +6,7 @@ import editor.stuff.Settings;
 import editor.stuff.customVariables.Color;
 import imgui.ImGui;
 import imgui.type.ImInt;
+import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -45,21 +46,19 @@ public abstract class Component {
                     field.set(this, EditorGUI.field_Float(name, val));
                 } else if (type == boolean.class) {
                     boolean val = (boolean) value;
-                    if (ImGui.checkbox(name + ": ", val))
-                        field.set(this, !val);
+                    field.set(this, EditorGUI.field_Boolean(name, val));
+                } else if (type == String.class) {
+                    String val = (String) value;
+                    field.set(this, EditorGUI.field_String(name, val));
                 } else if (type == Vector2f.class) {
                     Vector2f val = (Vector2f) value;
-                    float[] imVec = { val.x, val.y };
-                    if (ImGui.dragFloat2(name + ": ", imVec))
-                        val.set(imVec[0], imVec[1]);
+                    EditorGUI.field_Vector2f(name, val);
                 } else if (type == Vector3f.class) {
                     Vector3f val = (Vector3f) value;
                     EditorGUI.field_Vector3f(name, val);
                 } else if (type == Vector4f.class) {
                     Vector4f val = (Vector4f) value;
-                    float[] imVec = { val.x, val.y, val.z, val.w };
-                    if (ImGui.dragFloat4(name + ": ", imVec))
-                        val.set(imVec[0], imVec[1], imVec[2], imVec[3]);
+                    EditorGUI.field_Vector4f(name, val);
                 } else if (type == Color.class) {
                     Color val = (Color) value;
                     EditorGUI.field_Color(name, val);
@@ -104,6 +103,14 @@ public abstract class Component {
     public void editorUpdate() { }
 
     public void update() { }
+
+    public void beginCollision(GameObject collidingObject, Contact contact, Vector2f hitNormal) { }
+
+    public void endCollision(GameObject collidingObject, Contact contact, Vector2f hitNormal) { }
+
+    public void preSolve(GameObject collidingObject, Contact contact, Vector2f hitNormal) { } // One direction Example: (Pass throw bottom but solid on top)
+
+    public void postSolve(GameObject collidingObject, Contact contact, Vector2f hitNormal) { } // One direction Example: (Pass throw top but solid on bottom)
 
     public void generateID() {
         if (this.uid == -1)

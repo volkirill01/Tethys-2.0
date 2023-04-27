@@ -1,6 +1,7 @@
 package editor.renderer.debug;
 
 import editor.assets.AssetPool;
+import editor.renderer.Camera;
 import editor.renderer.shader.Shader;
 import editor.scenes.SceneManager;
 import editor.stuff.Maths;
@@ -16,7 +17,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class DebugDraw {
 
-    private static final int MAX_LINES = 500;
+    private static final int MAX_LINES = 3000;
 
     private static final List<DebugLine> lines = new ArrayList<>();
     // 6 floats per vertex, 2 vertices per line
@@ -104,7 +105,7 @@ public class DebugDraw {
         glEnableVertexAttribArray(1);
 
         // Draw the batch
-        glDrawArrays(GL_LINES, 0, lines.size() * 6 * 2);
+        glDrawArrays(GL_LINES, 0, lines.size());
 
         // Disable location
         glDisableVertexAttribArray(0);
@@ -124,7 +125,13 @@ public class DebugDraw {
 
     /** @param lifetime in frames */
     public static void addLine(Vector3f from, Vector3f to, Color color, int lifetime) {
-        if (lines.size() >= MAX_LINES)
+        Camera camera = SceneManager.getCurrentScene().getCamera();
+        Vector2f cameraLeft = new Vector2f(camera.getPosition().x, camera.getPosition().y).sub(2.0f, 2.0f);
+        Vector2f cameraRight = new Vector2f(camera.getPosition().x, camera.getPosition().y).add(new Vector2f(camera.getProjectionSize()).mul(camera.getZoom())).add(new Vector2f(4.0f, 4.0f));
+        boolean lineInView = ((from.x >= cameraLeft.x && from.x <= cameraRight.x) && (from.y >= cameraLeft.y && from.y <= cameraRight.y)) ||
+                ((to.x >= cameraLeft.x && to.x <= cameraRight.x) && (to.y >= cameraLeft.y && to.y <= cameraRight.y));
+
+        if (lines.size() >= MAX_LINES || !lineInView)
             return;
 
         DebugDraw.lines.add(new DebugLine(from, to, color, lifetime));

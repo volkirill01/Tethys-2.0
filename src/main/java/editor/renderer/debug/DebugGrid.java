@@ -22,8 +22,8 @@ public class DebugGrid {
         int numberVerticalLines = (int) (projectionSize.x * camera.getZoom() / Settings.GRID_WIDTH) + 2;
         int numberHorizontalLines = (int) (projectionSize.y * camera.getZoom() / Settings.GRID_HEIGHT) + 2;
 
-        float width = projectionSize.x * camera.getZoom() + Settings.GRID_WIDTH * 2;
-        float height = projectionSize.y * camera.getZoom() + Settings.GRID_HEIGHT * 2;
+        float width = projectionSize.x * camera.getZoom() + (5 * Settings.GRID_WIDTH);
+        float height = projectionSize.y * camera.getZoom() + (5 * Settings.GRID_HEIGHT);
 
         int maxLines = Math.max(numberVerticalLines, numberHorizontalLines);
         for (int i = 0; i < maxLines; i++) {

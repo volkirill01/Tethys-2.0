@@ -1,5 +1,6 @@
 package editor;
 
+import editor.editor.gui.EditorGUI;
 import editor.renderer.Texture;
 import editor.stuff.customVariables.Color;
 import editor.stuff.utils.Time;
@@ -128,8 +129,8 @@ public class TestFieldsWindow {
 //        for (int i = 0; i < getVectors3f.length; i++)
 //            getVectors3f[i] = EditorImGui.field_Vector3f("Test Vector3 (" + i + ")", getVectors3f[i]);
 //
-//        for (int i = 0; i < getColors.length; i++)
-//            EditorImGui.field_Color_WithAlpha("Test Color (" + i + ")", getColors[i]);
+        for (int i = 0; i < getColors.length; i++)
+            EditorGUI.field_Color("Test Color (" + i + ")", getColors[i]);
 
         ImGui.end();
     }

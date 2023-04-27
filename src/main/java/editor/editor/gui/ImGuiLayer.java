@@ -193,6 +193,7 @@ public class ImGuiLayer {
         SceneManager.getCurrentScene().imgui();
         ImGui.showDemoWindow();      // TODO Delete this
         ImGui.showStackToolWindow(); // TODO Delete this
+        ImGui.showMetricsWindow(); // TODO Delete this
         TestFieldsWindow.imgui();    // TODO Delete this
 
         sceneView_Window.imgui(); // TODO ADD MULTIPLE WINDOW DUPLICATES

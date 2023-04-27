@@ -62,3 +62,34 @@ dependencies {
 }
 
 targetCompatibility = JavaVersion.VERSION_14
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path' : configurations.compileClasspath.collect { it.getName() }.join(' '),
+                'Main-Class' : 'Main'
+        )
+    }
+
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task fatJar(type: Jar) {
+    manifest.from jar.manifest
+//    classifier = 'all'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}
+
+artifacts {
+    archives fatJar
+}

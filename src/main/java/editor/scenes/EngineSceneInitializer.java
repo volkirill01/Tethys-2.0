@@ -82,7 +82,7 @@ public class EngineSceneInitializer extends SceneInitializer {
                 int id = sprite.getTextureID();
                 Vector2f[] texCoordinates = sprite.getTextureCoordinates();
 
-                ImGui.pushID("AssetButton_" + id + "_" + i);
+                ImGui.pushID("TileButton_" + i);
                 if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoordinates[2].x, texCoordinates[0].y, texCoordinates[0].x, texCoordinates[2].y)) {
                     GameObject obj = Prefabs.generateSpriteObject(sprite, Settings.GRID_WIDTH, Settings.GRID_HEIGHT);
                     MouseControls.pickUpObject(obj);

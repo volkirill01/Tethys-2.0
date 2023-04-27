@@ -20,7 +20,7 @@ import java.util.Set;
 public class MouseControls {
 
     private static GameObject holdingObject = null;
-    private static final float startDebounceTime = 0.05f;
+    private static final float startDebounceTime = 0.2f;
     private static float debounceTime = startDebounceTime;
 
     private static boolean boxSelectSet = false;
@@ -55,26 +55,30 @@ public class MouseControls {
             }
         }
 
-        if (holdingObject != null && debounceTime <= 0) {
-            holdingObject.transform.position.x = Input.getMouseWorldPositionX() - Settings.GRID_WIDTH / 2.0f;
-            holdingObject.transform.position.y = Input.getMouseWorldPositionY() - Settings.GRID_HEIGHT / 2.0f;
-            holdingObject.transform.position.x = ((int) Math.floor(holdingObject.transform.position.x / Settings.GRID_WIDTH) * Settings.GRID_WIDTH) + Settings.GRID_WIDTH / 2.0f;
-            holdingObject.transform.position.y = ((int) Math.floor(holdingObject.transform.position.y / Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT) + Settings.GRID_HEIGHT / 2.0f;
+        if (holdingObject != null) {
+            holdingObject.transform.position.x = ((int) Math.floor(Input.getMouseWorldPositionX() / Settings.GRID_WIDTH) * Settings.GRID_WIDTH) + Settings.GRID_WIDTH / 2.0f;
+            holdingObject.transform.position.y = ((int) Math.floor(Input.getMouseWorldPositionY() / Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT) + Settings.GRID_HEIGHT / 2.0f;
 
             if (Input.buttonDown(KeyCode.Mouse_Button_Left)) {
-                place();
-                debounceTime = startDebounceTime;
+                float halfWidth = Settings.GRID_WIDTH / 2.0f;
+                float halfHeight = Settings.GRID_HEIGHT / 2.0f;
+                if (Input.isMouseDragging() && !blockInSquare(holdingObject.transform.position.x - halfWidth, holdingObject.transform.position.y - halfHeight)) {
+                    place();
+                } else if (!Input.isMouseDragging() && debounceTime < 0.0f) {
+                    place();
+                    debounceTime = startDebounceTime;
+                }
             }
-        } else if (Input.buttonClick(KeyCode.Mouse_Button_Left) && debounceTime < 0.0f) {
+        } else if (!Input.isMouseDragging() && Input.buttonClick(KeyCode.Mouse_Button_Left) && debounceTime < 0.0f) {
             int x = (int) Input.getMouseScreenPositionX();
             int y = (int) Input.getMouseScreenPositionY();
-            int gameObjectUID = Window.getPickingTexture().readPixel(x, y);
-            GameObject pickedObject = SceneManager.getCurrentScene().getGameObject(gameObjectUID);
+            int gameObjectID = Window.getPickingTexture().readPixel(x, y);
+            GameObject pickedObject = SceneManager.getCurrentScene().getGameObject(gameObjectID);
             if (pickedObject != null && pickedObject.isClickable())
                 Outliner_Window.setActiveGameObject(pickedObject);
-            else if (pickedObject == null && !Input.isMouseDragging()) {
+            else if (pickedObject == null)
                 Outliner_Window.clearSelected();
-            }
+
             debounceTime = startDebounceTime;
         } else if (Input.isMouseDragging() && Input.buttonDown(KeyCode.Mouse_Button_Left)) {
             if (!boxSelectSet) {
@@ -118,5 +122,24 @@ public class MouseControls {
                     Outliner_Window.addActiveGameObject(pickedObject);
             }
         }
+    }
+
+    private static boolean blockInSquare(float x, float y) {
+        Vector2f start = new Vector2f(x, y);
+        Vector2f end = new Vector2f(start).add(Settings.GRID_WIDTH, Settings.GRID_HEIGHT);
+        Vector2f startScreenF = Input.worldToScreen(start);
+        Vector2f endScreenF = Input.worldToScreen(end);
+        Vector2i startScreen = new Vector2i((int) startScreenF.x + 2, (int) startScreenF.y + 2); // Adding 2 pixels to go inside square and not check surrounding squares
+        Vector2i endScreen = new Vector2i((int) endScreenF.x - 2, (int) endScreenF.y - 2); // Subtracting 2 pixels to go inside square and not check surrounding squares
+        float[] gameObjectsIDs = Window.getPickingTexture().readPixels(startScreen, endScreen);
+
+        for (float objID : gameObjectsIDs) {
+            if (objID >= 0) { // Check if ID of gameObject is valid( >= 0 )
+                GameObject pickedObj = SceneManager.getCurrentScene().getGameObject((int) objID);
+                if (pickedObj.isClickable())
+                    return true;
+            }
+        }
+        return false;
     }
 }

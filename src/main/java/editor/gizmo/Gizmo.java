@@ -1,6 +1,7 @@
 package editor.gizmo;
 
 import TMP_MARIO_STUFF.Prefabs;
+import editor.TestFieldsWindow;
 import editor.editor.windows.Outliner_Window;
 import editor.entity.GameObject;
 import editor.entity.component.components.SpriteRenderer;
@@ -19,8 +20,8 @@ public class Gizmo {
     private final SpriteRenderer xAxisRenderer;
     private final SpriteRenderer yAxisRenderer;
 
-    private final Vector3f xAxisArrowOffset = new Vector3f(Settings.GRID_WIDTH * 2.0f, 0.0f, 0.0f);
-    private final Vector3f yAxisArrowOffset = new Vector3f(Settings.GRID_WIDTH / 2.0f, Settings.GRID_HEIGHT * 2.0f, 0.0f);
+    private final Vector3f xAxisArrowOffset = new Vector3f(Settings.GRID_WIDTH * 1.5f, 0.0f, 0.0f);
+    private final Vector3f yAxisArrowOffset = new Vector3f(0.0f, Settings.GRID_HEIGHT * 1.5f, 0.0f);
     protected boolean xAxisActive = false;
     protected boolean yAxisActive = false;
 

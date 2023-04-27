@@ -1,5 +1,3 @@
-package editor;
-
 import editor.stuff.Window;
 
 public class Main {

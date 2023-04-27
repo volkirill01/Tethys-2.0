@@ -34,6 +34,7 @@ public class Scene {
     private final Physics2D physics2D = new Physics2D();
 
     private final List<GameObject> gameObjects = new ArrayList<>();
+    private final List<GameObject> pendingGameObjects = new ArrayList<>(); // Object we want to add to scene, but not in middle of the frame(Decrease chance for bugs)
 
     private final SceneInitializer sceneInitializer;
     private EditorCamera editorCamera;
@@ -69,6 +70,14 @@ public class Scene {
                 i--;
             }
         }
+
+        for (GameObject obj : this.pendingGameObjects) {
+            this.gameObjects.add(obj);
+            obj.start();
+            this.spriteRenderer.add(obj);
+            this.physics2D.add(obj);
+        }
+        this.pendingGameObjects.clear();
     }
 
     public void update() {
@@ -91,6 +100,14 @@ public class Scene {
                 i--;
             }
         }
+
+        for (GameObject obj : this.pendingGameObjects) {
+            this.gameObjects.add(obj);
+            obj.start();
+            this.spriteRenderer.add(obj);
+            this.physics2D.add(obj);
+        }
+        this.pendingGameObjects.clear();
     }
 
     public void render() { this.spriteRenderer.render(); }
@@ -111,20 +128,29 @@ public class Scene {
         return go;
     }
 
-    public void addGameObjectToScene(GameObject go) {
+    public void addGameObjectToScene(GameObject obj) {
         if (!isRunning)
-            this.gameObjects.add(go);
-        else {
-            this.gameObjects.add(go);
-            go.start();
-            this.spriteRenderer.add(go);
-            this.physics2D.add(go);
-        }
+            this.gameObjects.add(obj);
+        else
+            this.pendingGameObjects.add(obj);
     }
 
     public GameObject getGameObject(int uid) {
         Optional<GameObject> result = this.gameObjects.stream().filter(gameObject -> gameObject.getUid() == uid).findFirst();
         return result.orElse(null);
+    }
+
+    public GameObject getGameObject(String name) {
+        Optional<GameObject> result = this.gameObjects.stream().filter(gameObject -> gameObject.name.equals(name)).findFirst();
+        return result.orElse(null);
+    }
+
+    public <T extends Component> GameObject getGameObjectWithComponent(Class<T> _class) {
+        for (GameObject obj : this.gameObjects)
+            if (obj.hasComponent(_class))
+                return obj;
+
+        return null;
     }
 
     public List<GameObject> getAllGameObjects() { return this.gameObjects; }
@@ -191,4 +217,6 @@ public class Scene {
 //            throw new NullPointerException("Scene is Empty - '" + "level.txt" + "'");
         }
     }
+
+    public Physics2D getPhysics2D() { return this.physics2D; }
 }

@@ -4,95 +4,50 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="Add EditorCamera;&#10;Add Gizmo system;&#10;Add Outliner Window, and Mouse picking;">
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/1-up.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/bowserfalls.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/bowserfire.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/break_block.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/bump.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/coin.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/fireball.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/fireworks.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/flagpole.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/gameover.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/invincible.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/jump-small.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/jump-super.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/kick.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/main-theme-overworld.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/mario_die.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/pipe.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/powerup.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/powerup_appears.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/stage_clear.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/stomp.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/vine.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/warning.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/sounds/world_clear.ogg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/audio/Sound.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/editor/gui/EditorGUI.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/editor/windows/MainMenuBar.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/editor/windows/SceneHierarchy_Window.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/observers/EventSystem.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/observers/Observer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/observers/events/Event.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/observers/events/EventType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/Physics2D.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/Collider2D.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/RigidBody2D.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/colliders/Box2DCollider.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/colliders/Circle2DCollider.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/enums/BodyType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/EngineSceneInitializer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/SceneInitializer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/inputActions/KeyboardControls.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/utils/EditorGson.java" afterDir="false" />
+    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="Add 2D physics;&#10;Add play button(Runtime);&#10;Add SceneHierarchy Window;&#10;Add Sounds;">
+      <change afterPath="$PROJECT_DIR$/build2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/ContactListener2D.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/RayCastInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/colliders/Pillbox2DCollider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/gui.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/imgui.ini" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/level.txt" beforeDir="false" afterPath="$PROJECT_DIR$/level.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/TMP_MARIO_STUFF/Prefabs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TMP_MARIO_STUFF/Prefabs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/TestFieldsWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/TestFieldsWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/assets/AssetPool.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/assets/AssetPool.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/editor/gui/EditorGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/editor/gui/EditorGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/editor/gui/ImGuiLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/editor/gui/ImGuiLayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/editor/windows/Outliner_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/editor/windows/Outliner_Window.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/editor/windows/SceneView_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/editor/windows/SceneView_Window.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/entity/GameObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/entity/GameObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/entity/GameObjectDeserializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/entity/GameObjectDeserializer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/entity/component/Component.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/Component.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/SpriteRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/SpriteRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/Transform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/entity/component/components/Transform.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/eventListeners/Input.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/Input.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/eventListeners/KeyListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/KeyListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/eventListeners/MouseListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/eventListeners/MouseListener.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/gizmo/Gizmo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/gizmo/Gizmo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/gizmo/gizmos/ScaleGizmo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/gizmo/gizmos/ScaleGizmo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/gizmo/gizmos/TranslateGizmo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/gizmo/gizmos/TranslateGizmo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/gui/GuiFont.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/editor/gui/GuiFont.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/gui/ImGuiLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/editor/gui/ImGuiLayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/Camera.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/EditorCamera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/EditorCamera.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/Physics2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/Physics2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/Collider2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/Collider2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/RigidBody2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/RigidBody2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/colliders/Box2DCollider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/colliders/Box2DCollider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/colliders/Circle2DCollider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/physics/physics2D/components/colliders/Circle2DCollider.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/debug/DebugDraw.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/debug/DebugDraw.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/debug/DebugGrid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/debug/DebugGrid.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/RenderBatch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/RenderBatch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/SpriteMasterRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/renderer2D/SpriteMasterRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/shader/Shader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/shader/Shader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/renderer/stuff/PickingTexture.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/renderer/stuff/PickingTexture.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scenes/EditorMode_EditorScene.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scenes/EditorScene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/Scene.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scenes/PlayMode_EditorScene.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scenes/SceneManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/SceneManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scenes/EngineSceneInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/EngineSceneInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/scenes/Scene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/scenes/Scene.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/Settings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/Settings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/Window.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/customVariables/Color.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/customVariables/Color.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/inputActions/KeyboardControls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/inputActions/KeyboardControls.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/inputActions/MouseControls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/inputActions/MouseControls.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/editor/stuff/utils/EditorGson.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/editor/stuff/utils/EditorGson.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,36 +92,32 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editing.templates&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propCompiler&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\_Files\Projects\Java\Tethys_2.0" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\src\main\java\editor" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\shaders\stuff" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\src\main\java\editor\stuff" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\src\main\java\editor\renderer\debug" />
-      <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\fonts" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="editor.gizmo" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Main">
-    <configuration name="Main (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Main" />
-      <module name="Tethys_2.0.main" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="editor.Main" />
+      <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="Tethys_2.0.main" />
       <option name="VM_PARAMETERS" value="-ea" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="editor.*" />
+          <option name="PATTERN" value=".*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -174,9 +125,57 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Tethys_2.0 [fatJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="fatJar" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="Tethys_2.0 [jar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="--stacktrace" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="jar" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.Main" />
+      <item itemvalue="Gradle.Tethys_2.0 [fatJar]" />
+      <item itemvalue="Gradle.Tethys_2.0 [jar]" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Main (1)" />
+        <item itemvalue="Gradle.Tethys_2.0 [fatJar]" />
+        <item itemvalue="Gradle.Tethys_2.0 [jar]" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -225,7 +224,14 @@
       <option name="project" value="LOCAL" />
       <updated>1682310704567</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Add 2D physics;&#10;Add play button(Runtime);&#10;Add SceneHierarchy Window;&#10;Add Sounds;">
+      <created>1682418808207</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1682418808207</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -252,6 +258,7 @@
     <MESSAGE value="Add AssetPool;&#10;Add Sprite sheets;&#10;Optimize rendering(Add dirty flag);" />
     <MESSAGE value="Add Scene Serialization and Deserialization;&#10;Add Debug Drawing;&#10;Add Editor GUI;&#10;Add Tiles Window (Click to tile image, and drag to game world);" />
     <MESSAGE value="Add EditorCamera;&#10;Add Gizmo system;&#10;Add Outliner Window, and Mouse picking;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add EditorCamera;&#10;Add Gizmo system;&#10;Add Outliner Window, and Mouse picking;" />
+    <MESSAGE value="Add 2D physics;&#10;Add play button(Runtime);&#10;Add SceneHierarchy Window;&#10;Add Sounds;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add 2D physics;&#10;Add play button(Runtime);&#10;Add SceneHierarchy Window;&#10;Add Sounds;" />
   </component>
 </project>
