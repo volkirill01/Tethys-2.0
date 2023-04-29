@@ -1,9 +1,9 @@
 package editor.renderer.renderer2D;
 
 import editor.entity.GameObject;
-import editor.entity.component.components.SpriteRenderer;
 import editor.renderer.MasterRenderer;
 import editor.renderer.Texture;
+import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,24 +14,18 @@ public class SpriteMasterRenderer {
     private final int MAX_BATCH_SIZE = 1_000;
     private final List<RenderBatch> batches = new ArrayList<>();
 
-    public SpriteMasterRenderer() {
-
-    }
-
     public void add(GameObject go) {
         if (go.hasComponent(SpriteRenderer.class))
             add(go.getComponent(SpriteRenderer.class));
     }
 
-    private void add(SpriteRenderer sprite) {
+    private void add(SpriteRenderer renderer) {
         boolean added = false;
         for (RenderBatch batch : this.batches) {
-            // TODO IF OBJECTS Z INDEX CHANGES, DELETE IT FROM CURRENT BATCH, AND MOVE TO ANOTHER
-
-            if (batch.hasRoom() && batch.getZIndex() == sprite.gameObject.transform.getZIndex()) {
-                Texture texture = sprite.getTexture();
+            if (batch.hasRoom() && batch.getZIndex() == renderer.gameObject.transform.getZIndex()) {
+                Texture texture = renderer.getTexture();
                 if (texture == null || (batch.hasTexture(texture) || batch.hasTextureRoom())) {
-                    batch.addSprite(sprite);
+                    batch.addSprite(renderer);
                     added = true;
                     break;
                 }
@@ -39,27 +33,25 @@ public class SpriteMasterRenderer {
         }
 
         if (!added) {
-            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, sprite.gameObject.transform.getZIndex(), this);
+            RenderBatch newBatch = new RenderBatch(MAX_BATCH_SIZE, renderer.gameObject.transform.getZIndex(), this);
             newBatch.start();
             this.batches.add(newBatch);
-            newBatch.addSprite(sprite);
+            newBatch.addSprite(renderer);
             Collections.sort(batches);
         }
     }
 
     public void destroyGameObject(GameObject obj) {
         if (!obj.hasComponent(SpriteRenderer.class)) return;
-        for (RenderBatch batch :
-                this.batches) {
+        for (RenderBatch batch : this.batches)
             if (batch.destroyIfExists(obj))
                 return;
-        }
     }
 
-    public void render() {
+    public void render(Matrix4f projectionMatrix, Matrix4f viewMatrix) {
         MasterRenderer.getCurrentShader().use();
-        for (int i = 0; i < this.batches.size(); i++)
-            this.batches.get(i).render();
+        for (RenderBatch batch : this.batches)
+            batch.render(projectionMatrix, viewMatrix);
         MasterRenderer.getCurrentShader().detach();
     }
 }

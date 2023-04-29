@@ -1,13 +1,26 @@
 package editor.assets;
 
+import de.javagl.obj.*;
 import editor.audio.Sound;
 import editor.renderer.Texture;
 import editor.renderer.renderer2D.sprite.SpriteSheet;
 import editor.renderer.shader.Shader;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL33;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.*;
+
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class AssetPool {
 

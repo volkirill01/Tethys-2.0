@@ -13,13 +13,13 @@ public class Box2DCollider extends Collider2D {
     @Override
     public void editorUpdate() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugDraw.addBox2D(center, this.size, new Vector3f(0.0f, 0.0f, this.gameObject.transform.rotation));
+        DebugDraw.addBox2D(center, this.size, this.gameObject.transform.rotation);
     }
 
     @Override
     public void update() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugDraw.addBox2D(center, this.size, new Vector3f(0.0f, 0.0f, this.gameObject.transform.rotation));
+        DebugDraw.addBox2D(center, this.size, this.gameObject.transform.rotation);
     }
 
     public Vector2f getSize() { return this.size; }

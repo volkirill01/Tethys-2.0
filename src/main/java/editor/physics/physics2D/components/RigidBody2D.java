@@ -31,10 +31,10 @@ public class RigidBody2D extends Component {
             return;
 
         switch (this.bodyType) {
-            case Static -> this.rawBody.setTransform(new Vec2(this.gameObject.transform.position.x, this.gameObject.transform.position.y), this.gameObject.transform.rotation);
+            case Static -> this.rawBody.setTransform(new Vec2(this.gameObject.transform.position.x, this.gameObject.transform.position.y), this.gameObject.transform.rotation.z);
             case Dynamic, Kinematic -> {
                 this.gameObject.transform.position.set(this.rawBody.getPosition().x, this.rawBody.getPosition().y, this.gameObject.transform.position.z);
-                this.gameObject.transform.rotation = (float) Math.toDegrees(this.rawBody.getAngle());
+                this.gameObject.transform.rotation.z = (float) Math.toDegrees(this.rawBody.getAngle());
                 Vec2 velocity = this.rawBody.getLinearVelocity();
                 this.velocity.set(velocity.x, velocity.y);
             }

@@ -1,10 +1,7 @@
 package editor.editor.gui;
 
 import editor.TestFieldsWindow;
-import editor.editor.windows.MainMenuBar;
-import editor.editor.windows.Outliner_Window;
-import editor.editor.windows.SceneHierarchy_Window;
-import editor.editor.windows.SceneView_Window;
+import editor.editor.windows.*;
 import editor.eventListeners.KeyCode;
 import editor.eventListeners.KeyListener;
 import editor.eventListeners.MouseListener;
@@ -21,7 +18,7 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
 
-import java.util.Objects;
+import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -40,9 +37,15 @@ public class ImGuiLayer {
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
 
+//    private SceneView_Window sceneView_Window;
+//    private GameView_Window gameView_Window;
+//    private Outliner_Window outliner_Window;
+//    private SceneHierarchy_Window sceneHierarchy_Window;
+
+    private static int windowId = 0;
+    private final Map<Integer, Map.Entry<ImBoolean, EditorImGuiWindow>> windows = new LinkedHashMap<>();
     private SceneView_Window sceneView_Window;
-    private Outliner_Window outliner_Window;
-    private SceneHierarchy_Window sceneHierarchy_Window;
+    private static EditorImGuiWindow windowOnFullscreen = null;
 
     public ImGuiLayer(long glfwWindow) {
         this.glfwWindow = glfwWindow;
@@ -50,9 +53,17 @@ public class ImGuiLayer {
     }
 
     private void createEditorWindows() {
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new GameView_Window()));
         this.sceneView_Window = new SceneView_Window();
-        this.outliner_Window = new Outliner_Window();
-        this.sceneHierarchy_Window = new SceneHierarchy_Window();
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), sceneView_Window));
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Outliner_Window()));
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new SceneHierarchy_Window()));
+
+
+//        this.sceneView_Window = new SceneView_Window();
+//        this.gameView_Window = new GameView_Window();
+//        this.outliner_Window = new Outliner_Window();
+//        this.sceneHierarchy_Window = new SceneHierarchy_Window();
     }
 
     // Initialize Dear ImGui.
@@ -148,7 +159,7 @@ public class ImGuiLayer {
             if (!io.getWantCaptureMouse() && mouseDown[1])
                 ImGui.setWindowFocus(null);
 
-            if (!io.getWantCaptureMouse() || sceneView_Window.getWantCaptureMouse())
+            if ((!io.getWantCaptureMouse() || sceneView_Window.getWantCaptureMouse()) && sceneView_Window.isVisible())
                 MouseListener.mouseButtonCallback(w, button, action, mods);
         });
 
@@ -156,7 +167,7 @@ public class ImGuiLayer {
             io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
             io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
 
-            if (!io.getWantCaptureMouse() || sceneView_Window.getWantCaptureMouse())
+            if ((!io.getWantCaptureMouse() || sceneView_Window.getWantCaptureMouse()) && sceneView_Window.isVisible())
                 MouseListener.mouseScrollCallback(w, xOffset, yOffset);
         });
 
@@ -180,31 +191,42 @@ public class ImGuiLayer {
         // Method initializes LWJGL3 renderer.
         // This method SHOULD be called after you've initialized your ImGui configuration (fonts and so on).
         // ImGui context should be created as well.
-//        imGuiGlfw.init(glfwWindow, false);
+        imGuiGlfw.init(glfwWindow, false);
         imGuiGl3.init("#version 330 core");
     }
 
     public void update() {
         startFrame(Time.deltaTime());
 
-        float menuBarHeight = MainMenuBar.imgui();
-        setupDockSpace(menuBarHeight);
-        // TODO DELETE DRAWING OF CURRENT SCENE
-        SceneManager.getCurrentScene().imgui();
-        ImGui.showDemoWindow();      // TODO Delete this
-        ImGui.showStackToolWindow(); // TODO Delete this
-        ImGui.showMetricsWindow(); // TODO Delete this
-        TestFieldsWindow.imgui();    // TODO Delete this
+        if (windowOnFullscreen == null) {
+            float menuBarHeight = MainMenuBar.imgui();
+            setupDockSpace(menuBarHeight);
+            // TODO DELETE DRAWING OF CURRENT SCENE
+            SceneManager.getCurrentScene().imgui();
+            ImGui.showDemoWindow();      // TODO Delete this
+            ImGui.showStackToolWindow(); // TODO Delete this
+            ImGui.showMetricsWindow(); // TODO Delete this
+            TestFieldsWindow.imgui(); // TODO Delete this
 
-        sceneView_Window.imgui(); // TODO ADD MULTIPLE WINDOW DUPLICATES
-        outliner_Window.imgui(); // TODO ADD MULTIPLE WINDOW DUPLICATES
-        sceneHierarchy_Window.imgui(); // TODO ADD MULTIPLE WINDOW DUPLICATES
+            try {
+                for (int windowId : windows.keySet())
+                    if (windows.get(windowId).getKey().get())
+                        windows.get(windowId).getValue().imgui(windows.get(windowId).getKey());
+            } catch (ConcurrentModificationException ignored) { }
 
+        } else {
+            ImGuiViewport viewport = ImGui.getMainViewport();
+            ImGui.setNextWindowPos(viewport.getWorkPos().x, viewport.getWorkPos().y);
+            ImGui.setNextWindowSize(viewport.getWorkSize().x, viewport.getWorkSize().y);
+            ImGui.setNextWindowViewport(viewport.getID());
+
+            windowOnFullscreen.imgui(new ImBoolean(true));
+        }
         endFrame();
     }
 
     private void startFrame(final float deltaTime) {
-//        imGuiGlfw.newFrame();
+        imGuiGlfw.newFrame();
 
         // Get window properties and mouse position
         float[] winWidth = { Window.getWidth() };
@@ -275,4 +297,52 @@ public class ImGuiLayer {
 
         ImGui.end(); // End of Editor DockSpace
     }
+
+    public static void setWindowOnFullscreen(EditorImGuiWindow windowOnFullscreen) {
+//        if (windowOnFullscreen != null) // TODO FIX THIS
+//            windowOnFullscreen = new EditorImGuiWindow<T>();
+//        else
+        windowOnFullscreen = null;
+    }
+
+    public static EditorImGuiWindow getWindowOnFullscreen() { return windowOnFullscreen; }
+
+    public <T extends EditorImGuiWindow> EditorImGuiWindow getWindow(Class<T> window) {
+        if (!window.isAssignableFrom(EditorImGuiWindow.class)) throw new RuntimeException("This class not assignable from EditorImGUiWindow.");
+
+        for (int windowId : this.windows.keySet())
+            if (this.windows.get(windowId).getValue().getClass() == window)
+                return this.windows.get(windowId).getValue();
+
+        return null;
+    }
+
+    public EditorImGuiWindow getWindow(int windowId) { return this.windows.get(windowId).getValue(); }
+
+    public static void selectWindow(EditorImGuiWindow window) { // TODO FIX THIS METHOD
+//        Map<Integer, Map.Entry<ImBoolean, EditorImGuiWindow>> tmp = new HashMap<>(this.windows);
+//
+////        tmp.remove(window.getId());
+//        tmp.put(window.getId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), window));
+//
+//        this.windows = tmp;
+
+//        Map<Integer, Map.Entry<ImBoolean, EditorImGuiWindow>> tmpMap = new LinkedHashMap<>(this.windows);
+//        tmpMap.remove(window.getId());
+//        tmpMap.put(window.getId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), window));
+//        this.windows = tmpMap;
+    }
+
+    public <T extends EditorImGuiWindow> boolean setWindowOpen(Class<T> window, boolean state) {
+        if (!window.isAssignableFrom(EditorImGuiWindow.class)) throw new RuntimeException("This class not assignable from EditorImGUiWindow.");
+
+        for (int windowId : this.windows.keySet())
+            if (this.windows.get(windowId).getValue().getClass() == window) {
+                this.windows.get(windowId).getKey().set(state);
+                return true;
+            }
+        return false;
+    }
+
+    public static int getNextWindowId() { return windowId++; }
 }

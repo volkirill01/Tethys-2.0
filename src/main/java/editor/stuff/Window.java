@@ -1,6 +1,7 @@
 package editor.stuff;
 
 import editor.assets.AssetPool;
+import editor.editor.gui.EditorThemeSystem;
 import editor.editor.windows.Outliner_Window;
 import editor.entity.GameObject;
 import editor.eventListeners.Input;
@@ -11,17 +12,19 @@ import editor.observers.EventSystem;
 import editor.observers.Observer;
 import editor.observers.events.Event;
 import editor.physics.physics2D.Physics2D;
+import editor.renderer.camera.Camera;
 import editor.renderer.Framebuffer;
 import editor.renderer.MasterRenderer;
 import editor.renderer.debug.DebugDraw;
 import editor.renderer.debug.DebugGrid;
 import editor.renderer.shader.Shader;
+import editor.renderer.stuff.Fbo;
 import editor.renderer.stuff.PickingTexture;
-import editor.scenes.EngineSceneInitializer;
 import editor.scenes.SceneManager;
 import editor.stuff.inputActions.KeyboardControls;
 import editor.stuff.inputActions.MouseControls;
 import editor.stuff.utils.Time;
+import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -32,7 +35,10 @@ import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
 
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -55,7 +61,8 @@ public class Window implements Observer {
 
     private static ImGuiLayer imguiLayer;
 
-    private static Framebuffer framebuffer;
+    private static Fbo framebuffer;
+//    private static Framebuffer framebuffer;
     private static PickingTexture pickingTexture;
 
     private static boolean runtimePlaying = false;
@@ -135,11 +142,14 @@ public class Window implements Observer {
         imguiLayer = new ImGuiLayer(glfwWindow);
         imguiLayer.initImGui();
 
-        framebuffer = new Framebuffer(Window.getScreenWidth(), Window.getScreenHeight());
+        EditorThemeSystem.changeTheme(EditorThemeSystem.darkTheme());
+
+        framebuffer = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_RENDER_BUFFER);
+//        framebuffer = new Framebuffer(Window.getScreenWidth(), Window.getScreenHeight());
         pickingTexture = new PickingTexture(Window.getScreenWidth(), Window.getScreenHeight());
         glViewport(0, 0, Window.getScreenWidth(), Window.getScreenHeight());
 
-        SceneManager.changeScene(new EngineSceneInitializer()); // Load default Scene
+        SceneManager.changeScene("level.scene"); // Load default Scene
 
         printMachineInfo();
     }
@@ -169,8 +179,7 @@ public class Window implements Observer {
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            MasterRenderer.bindShader(pickingShader);
-            SceneManager.getCurrentScene().render();
+            renderPass(pickingShader, SceneManager.getCurrentScene().getCamera().getProjectionMatrix(), SceneManager.getCurrentScene().getCamera().getViewMatrix());
 
             pickingTexture.unbind();
             glEnable(GL_BLEND);
@@ -182,22 +191,29 @@ public class Window implements Observer {
 
             framebuffer.bind();
             glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             if (Time.deltaTime() >= 0.0f) {
-                DebugGrid.draw();
+                DebugGrid.addGrid();
 
                 if (runtimePlaying)
                     SceneManager.getCurrentScene().update();
                 else
                     SceneManager.getCurrentScene().editorUpdate();
 
-                MasterRenderer.bindShader(defaultShader);
-                SceneManager.getCurrentScene().render();
+                renderPass(defaultShader, SceneManager.getCurrentScene().getCamera().getProjectionMatrix(), SceneManager.getCurrentScene().getCamera().getViewMatrix());
 
                 DebugDraw.draw();
             }
             framebuffer.unbind();
+
+            for (Camera c : SceneManager.getCurrentScene().getAllCameras()) {
+                c.getFob().bind();
+                glClearColor(c.getBackgroundColor().r / 255.0f, c.getBackgroundColor().g / 255.0f, c.getBackgroundColor().b / 255.0f, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT);
+                renderPass(defaultShader, c.getProjectionMatrix(), c.getViewMatrix());
+                c.getFob().unbind();
+            }
 
             // Display Editors GUI
             imguiLayer.update();
@@ -212,7 +228,12 @@ public class Window implements Observer {
             beginTime = endTime;
         }
 
-        SceneManager.getCurrentScene().saveAs("level.txt");
+        SceneManager.getCurrentScene().saveAs("level.scene");
+    }
+
+    private static void renderPass(Shader shader, Matrix4f projectionMatrix, Matrix4f viewMatrix) {
+        MasterRenderer.bindShader(shader);
+        SceneManager.getCurrentScene().render(projectionMatrix, viewMatrix);
     }
 
     private static void glfwWindowResizeCallback() {
@@ -228,6 +249,11 @@ public class Window implements Observer {
     }
 
     private static void closeWindow() {
+        // Delete tmp files
+        try {
+            Files.delete(new File("tmpRuntimeScene.scene").toPath());
+        } catch (IOException ignored) { }
+
         // Free the memory
         imguiLayer.destroyImGui();
         alcDestroyContext(audioContext);
@@ -268,7 +294,8 @@ public class Window implements Observer {
 
     public static void setHeight(int height) { Window.height = height; }
 
-    public static Framebuffer getFramebuffer() { return Window.framebuffer; }
+    public static Fbo getFramebuffer() { return Window.framebuffer; }
+//    public static Framebuffer getFramebuffer() { return Window.framebuffer; }
 
     public static float getTargetAspectRatio() { return 16.0f / 9.0f; }
 
@@ -285,20 +312,20 @@ public class Window implements Observer {
         switch (event.type) {
             case GameEngine_StartPlay -> {
                 runtimePlaying = true;
-                SceneManager.getCurrentScene().saveAs("level.txt"); // TODO SAVE TO TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
-                SceneManager.changeScene(new EngineSceneInitializer());
+                SceneManager.getCurrentScene().saveAs("tmpRuntimeScene.scene"); // TODO SAVE TO TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
+                SceneManager.changeScene("tmpRuntimeScene.scene");
                 Outliner_Window.clearSelected();
             }
             case GameEngine_StopPlay -> {
                 runtimePlaying = false;
-                SceneManager.changeScene(new EngineSceneInitializer()); // TODO LOAD FROM TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
+                SceneManager.changeScene("tmpRuntimeScene.scene"); // TODO LOAD FROM TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
                 Outliner_Window.clearSelected();
             }
             case GameEngine_SaveScene -> {
-                SceneManager.getCurrentScene().saveAs("level.txt");
+                SceneManager.getCurrentScene().saveAs("level.scene");
             }
-            case GameEngine_LoadScene -> {
-                SceneManager.changeScene(new EngineSceneInitializer());
+            case GameEngine_ReloadScene -> {
+                SceneManager.changeScene("level.scene");
             }
         }
     }

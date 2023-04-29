@@ -1,11 +1,11 @@
-package editor.entity.component.components;
+package editor.renderer.renderer2D;
 
 import editor.editor.gui.EditorGUI;
 import editor.entity.component.Component;
+import editor.entity.component.Transform;
 import editor.renderer.renderer2D.sprite.Sprite;
 import editor.renderer.Texture;
 import editor.stuff.customVariables.Color;
-import imgui.ImGui;
 import org.joml.Vector2f;
 
 public class SpriteRenderer extends Component {
@@ -60,14 +60,10 @@ public class SpriteRenderer extends Component {
     public Sprite getSprite() { return this.sprite; }
 
     public void setSprite(Sprite sprite) {
-        // TODO CHECK IF SPRITE CHANGED, THEN UPDATE SPRITE AND DIRTY FLAG
-//        if (!this.color.equals(color)) {
-//            this.color.set(color);
-//            this.isDirty = true;
-//        }
-
-        this.sprite = sprite;
-        this.isDirty = true;
+        if (!this.sprite.equals(sprite)) {
+            this.sprite = (sprite);
+            this.isDirty = true;
+        }
     }
 
     public Texture getTexture() { return this.sprite.getTexture(); }

@@ -8,6 +8,8 @@ public class Settings {
     public static final float GRID_WIDTH = 0.25f;
     public static final float GRID_HEIGHT = 0.25f;
 
+    public static final Color boxSelectionColor = new Color(150.0f, 150.0f, 150.0f);
+
     public static final Color xAxisColor = new Color(204.0f, 36.0f, 29.0f);
     public static final Color xAxisColor_Hover = new Color(224.0f, 50.0f, 43.0f);
     public static final Color yAxisColor = new Color(152.0f, 151.0f, 26.0f);

@@ -1,21 +1,17 @@
 package editor.editor.windows;
 
-import editor.TestFieldsWindow;
+import editor.assets.AssetPool;
 import editor.editor.gui.EditorImGuiWindow;
-import editor.eventListeners.Input;
 import editor.eventListeners.MouseListener;
-import editor.renderer.camera.CameraType;
 import editor.scenes.SceneManager;
 import editor.stuff.Window;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
 
-public class SceneView_Window extends EditorImGuiWindow {
+public class GameView_Window extends EditorImGuiWindow {
 
-    private static float leftX, rightX, topY, bottomY;
-
-    public SceneView_Window() { super("\uF02C Scene", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);}
+    public GameView_Window() { super("\uEA32 Game", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse); }
 
     @Override
     public void drawWindow() {
@@ -24,26 +20,13 @@ public class SceneView_Window extends EditorImGuiWindow {
         ImVec2 viewportPos = getCenteredPositionForViewport(viewportSize);
         ImGui.setCursorPos(viewportPos.x, viewportPos.y);
 
-        ImVec2 topLeft = ImGui.getCursorScreenPos();
-        leftX = topLeft.x;
-        bottomY = topLeft.y;
-        rightX = topLeft.x + viewportSize.x;
-        topY = topLeft.y + viewportSize.y;
+        ImVec2 topLeft = new ImVec2();
+        ImGui.getCursorScreenPos(topLeft);
 
-        int textureID = Window.getFramebuffer().getColorTexture();
-//        int textureID = Window.getFramebuffer().getTextureID();
+        int textureID = SceneManager.getCurrentScene().getMainCamera() != null ? SceneManager.getCurrentScene().getMainCamera().getFob().getColorTexture() : AssetPool.getTexture("editorFiles/images/noMainCameraInScene.png").getTextureID();
         ImVec2 start = new ImVec2();
         ImGui.getCursorPos(start);
         ImGui.image(textureID, viewportSize.x, viewportSize.y, 0, 1, 1, 0);
-
-        ImGui.sameLine();
-        ImGui.setCursorPos(ImGui.getCursorPosX() + TestFieldsWindow.getFloats[0], ImGui.getCursorPosY() + TestFieldsWindow.getFloats[1]);
-        if (ImGui.button(SceneManager.getCurrentScene().getCamera().getCameraType().name())) {
-            if (SceneManager.getCurrentScene().getCamera().getCameraType() == CameraType.Perspective)
-                SceneManager.getCurrentScene().getCamera().setCameraType(CameraType.Orthographic);
-            else
-                SceneManager.getCurrentScene().getCamera().setCameraType(CameraType.Perspective);
-        }
 
         MouseListener.setGameViewportPos(topLeft);
         MouseListener.setGameViewportSize(viewportSize);
@@ -71,10 +54,5 @@ public class SceneView_Window extends EditorImGuiWindow {
         float viewportPositionY = (viewportSize.y / 2.0f) - (aspectSize.y / 2.0f);
 
         return new ImVec2(viewportPositionX + ImGui.getCursorPosX(), viewportPositionY + ImGui.getCursorPosY());
-    }
-
-    public static boolean getWantCaptureMouse() {
-        return Input.getMousePositionX() >= leftX && Input.getMousePositionX() <= rightX &&
-                Input.getMousePositionY() >= bottomY && Input.getMousePositionY() <= topY;
     }
 }

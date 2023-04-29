@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import editor.assets.AssetPool;
 import editor.editor.gui.EditorGUI;
 import editor.entity.component.Component;
-import editor.entity.component.components.SpriteRenderer;
-import editor.entity.component.components.Transform;
+import editor.renderer.renderer2D.SpriteRenderer;
+import editor.entity.component.Transform;
 import editor.stuff.utils.EditorGson;
 import imgui.ImGui;
 

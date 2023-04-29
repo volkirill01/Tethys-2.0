@@ -4,5 +4,5 @@ public enum EventType {
     GameEngine_StartPlay,
     GameEngine_StopPlay,
     GameEngine_SaveScene,
-    GameEngine_LoadScene
+    GameEngine_ReloadScene
 }

@@ -1,7 +1,7 @@
 package editor.eventListeners;
 
 import editor.editor.windows.SceneView_Window;
-import editor.renderer.Camera;
+import editor.renderer.camera.BaseCamera;
 import editor.scenes.SceneManager;
 import editor.stuff.Window;
 import imgui.ImVec2;
@@ -108,7 +108,7 @@ public class MouseListener {
         );
 
         normalizedDeviceCoordinates.mul(2.0f).sub(1.0f, 1.0f);
-        Camera camera = SceneManager.getCurrentScene().getCamera();
+        BaseCamera camera = SceneManager.getCurrentScene().getCamera();
         Vector4f tmp = new Vector4f(normalizedDeviceCoordinates.x, normalizedDeviceCoordinates.y, 0.0f, 1.0f);
         Matrix4f inverseView = new Matrix4f(camera.getInverseViewMatrix());
         Matrix4f inverseProjection = new Matrix4f(camera.getInverseProjectionMatrix());
@@ -117,7 +117,7 @@ public class MouseListener {
     }
 
     protected static Vector2f worldToScreen(Vector2f worldCoordinates) {
-        Camera camera = SceneManager.getCurrentScene().getCamera();
+        BaseCamera camera = SceneManager.getCurrentScene().getCamera();
         Vector4f normalizeDeviceCoordinates = new Vector4f(worldCoordinates.x, worldCoordinates.y, 0.0f, 1.0f);
         Matrix4f viewMatrix = new Matrix4f(camera.getViewMatrix());
         Matrix4f projectionMatrix = new Matrix4f(camera.getProjectionMatrix());
@@ -153,7 +153,7 @@ public class MouseListener {
 
         Vector4f tmp = new Vector4f(currentX, currentY, 0.0f, 1.0f);
 
-        Camera camera = SceneManager.getCurrentScene().getCamera();
+        BaseCamera camera = SceneManager.getCurrentScene().getCamera();
         Matrix4f viewProjection = new Matrix4f();
         camera.getInverseViewMatrix().mul(camera.getInverseProjectionMatrix(), viewProjection);
         tmp.mul(viewProjection);

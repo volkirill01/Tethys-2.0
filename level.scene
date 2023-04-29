@@ -1,0 +1,478 @@
+[
+  {
+    "uid": 0,
+    "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png",
+    "components": [
+      {
+        "type": "editor.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 0.25,
+            "y": 0.25,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 8
+        }
+      },
+      {
+        "type": "editor.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 255.0,
+            "g": 255.0,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 16.0,
+            "height": 16.0,
+            "texture": {
+              "filepath": "Assets/decorationsAndBlocks.png",
+              "width": 112,
+              "height": 192
+            },
+            "textureCoordinates": [
+              {
+                "x": 0.14285715,
+                "y": 0.8333333
+              },
+              {
+                "x": 0.14285715,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.8333333
+              }
+            ]
+          },
+          "uid": 9
+        }
+      }
+    ],
+    "clickable": true
+  },
+  {
+    "uid": 1,
+    "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png",
+    "components": [
+      {
+        "type": "editor.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 0.0,
+            "y": 0.125,
+            "z": -0.125
+          },
+          "scale": {
+            "x": 0.25,
+            "y": 0.25,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 90.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 18
+        }
+      },
+      {
+        "type": "editor.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 255.0,
+            "g": 255.0,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 16.0,
+            "height": 16.0,
+            "texture": {
+              "filepath": "Assets/decorationsAndBlocks.png",
+              "width": 112,
+              "height": 192
+            },
+            "textureCoordinates": [
+              {
+                "x": 0.14285715,
+                "y": 0.8333333
+              },
+              {
+                "x": 0.14285715,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.8333333
+              }
+            ]
+          },
+          "uid": 19
+        }
+      }
+    ],
+    "clickable": true
+  },
+  {
+    "uid": 2,
+    "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png",
+    "components": [
+      {
+        "type": "editor.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 0.125,
+            "y": 0.0,
+            "z": -0.125
+          },
+          "scale": {
+            "x": 0.25,
+            "y": 0.25,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 90.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 20
+        }
+      },
+      {
+        "type": "editor.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 255.0,
+            "g": 255.0,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 16.0,
+            "height": 16.0,
+            "texture": {
+              "filepath": "Assets/decorationsAndBlocks.png",
+              "width": 112,
+              "height": 192
+            },
+            "textureCoordinates": [
+              {
+                "x": 0.14285715,
+                "y": 0.8333333
+              },
+              {
+                "x": 0.14285715,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.8333333
+              }
+            ]
+          },
+          "uid": 21
+        }
+      }
+    ],
+    "clickable": true
+  },
+  {
+    "uid": 3,
+    "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png",
+    "components": [
+      {
+        "type": "editor.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 0.0,
+            "y": -0.125,
+            "z": -0.125
+          },
+          "scale": {
+            "x": 0.25,
+            "y": 0.25,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 90.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 22
+        }
+      },
+      {
+        "type": "editor.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 255.0,
+            "g": 255.0,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 16.0,
+            "height": 16.0,
+            "texture": {
+              "filepath": "Assets/decorationsAndBlocks.png",
+              "width": 112,
+              "height": 192
+            },
+            "textureCoordinates": [
+              {
+                "x": 0.14285715,
+                "y": 0.8333333
+              },
+              {
+                "x": 0.14285715,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.8333333
+              }
+            ]
+          },
+          "uid": 23
+        }
+      }
+    ],
+    "clickable": true
+  },
+  {
+    "uid": 4,
+    "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png",
+    "components": [
+      {
+        "type": "editor.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -0.25
+          },
+          "scale": {
+            "x": 0.25,
+            "y": 0.25,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 24
+        }
+      },
+      {
+        "type": "editor.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 255.0,
+            "g": 255.0,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 16.0,
+            "height": 16.0,
+            "texture": {
+              "filepath": "Assets/decorationsAndBlocks.png",
+              "width": 112,
+              "height": 192
+            },
+            "textureCoordinates": [
+              {
+                "x": 0.14285715,
+                "y": 0.8333333
+              },
+              {
+                "x": 0.14285715,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.8333333
+              }
+            ]
+          },
+          "uid": 25
+        }
+      }
+    ],
+    "clickable": true
+  },
+  {
+    "uid": 5,
+    "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png",
+    "components": [
+      {
+        "type": "editor.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": -0.125,
+            "y": 0.0,
+            "z": -0.125
+          },
+          "scale": {
+            "x": 0.25,
+            "y": 0.25,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 90.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 26
+        }
+      },
+      {
+        "type": "editor.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 255.0,
+            "g": 255.0,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 16.0,
+            "height": 16.0,
+            "texture": {
+              "filepath": "Assets/decorationsAndBlocks.png",
+              "width": 112,
+              "height": 192
+            },
+            "textureCoordinates": [
+              {
+                "x": 0.14285715,
+                "y": 0.8333333
+              },
+              {
+                "x": 0.14285715,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.75
+              },
+              {
+                "x": 0.0,
+                "y": 0.8333333
+              }
+            ]
+          },
+          "uid": 27
+        }
+      }
+    ],
+    "clickable": true
+  },
+  {
+    "uid": 6,
+    "name": "Mesh",
+    "components": [
+      {
+        "type": "editor.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": -1.36,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 0.25,
+            "y": 0.25,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 36
+        }
+      },
+      {
+        "type": "editor.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 255.0,
+            "g": 255.0,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 16.0,
+            "height": 16.0,
+            "texture": {
+              "filepath": "Assets/decorationsAndBlocks.png",
+              "width": 112,
+              "height": 192
+            },
+            "textureCoordinates": [
+              {
+                "x": 0.2857143,
+                "y": 0.5833333
+              },
+              {
+                "x": 0.2857143,
+                "y": 0.5
+              },
+              {
+                "x": 0.14285715,
+                "y": 0.5
+              },
+              {
+                "x": 0.14285715,
+                "y": 0.5833333
+              }
+            ]
+          },
+          "uid": 37
+        }
+      }
+    ],
+    "clickable": true
+  }
+]

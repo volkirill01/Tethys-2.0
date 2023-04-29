@@ -5,7 +5,6 @@ import editor.entity.GameObject;
 import editor.stuff.Settings;
 import editor.stuff.customVariables.Color;
 import imgui.ImGui;
-import imgui.type.ImInt;
 import org.jbox2d.dynamics.contacts.Contact;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -38,40 +37,26 @@ public abstract class Component {
                 if (Settings.variableNamesStartsUpperCase)
                     name = field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
 
-                if (type == int.class) {
-                    int val = (int) value;
-                    field.set(this, EditorGUI.field_Int(name, val));
-                } else if (type == float.class) {
-                    float val = (float) value;
-                    field.set(this, EditorGUI.field_Float(name, val));
-                } else if (type == boolean.class) {
-                    boolean val = (boolean) value;
-                    field.set(this, EditorGUI.field_Boolean(name, val));
-                } else if (type == String.class) {
-                    String val = (String) value;
-                    field.set(this, EditorGUI.field_String(name, val));
-                } else if (type == Vector2f.class) {
-                    Vector2f val = (Vector2f) value;
-                    EditorGUI.field_Vector2f(name, val);
-                } else if (type == Vector3f.class) {
-                    Vector3f val = (Vector3f) value;
-                    EditorGUI.field_Vector3f(name, val);
-                } else if (type == Vector4f.class) {
-                    Vector4f val = (Vector4f) value;
-                    EditorGUI.field_Vector4f(name, val);
-                } else if (type == Color.class) {
-                    Color val = (Color) value;
-                    EditorGUI.field_Color(name, val);
-                } else if (type.isEnum()) {
-                    String[] enumValues = getEnumValues(type);
-                    String enumType = ((Enum) value).name();
-                    ImInt index = new ImInt(indexOf(enumType, enumValues));
-                    if (ImGui.combo(field.getName(), index, enumValues, enumValues.length)) {
-                        field.set(this, type.getEnumConstants()[index.get()]);
-                    }
-                } else {
+                if (type == int.class)
+                    field.set(this, EditorGUI.field_Int(name, (int) value));
+                else if (type == float.class)
+                    field.set(this, EditorGUI.field_Float(name, (float) value));
+                else if (type == boolean.class)
+                    field.set(this, EditorGUI.field_Boolean(name, (boolean) value));
+                else if (type == String.class)
+                    field.set(this, EditorGUI.field_String(name, (String) value));
+                else if (type == Vector2f.class)
+                    EditorGUI.field_Vector2f(name, (Vector2f) value);
+                else if (type == Vector3f.class)
+                    EditorGUI.field_Vector3f(name, (Vector3f) value);
+                else if (type == Vector4f.class)
+                    EditorGUI.field_Vector4f(name, (Vector4f) value);
+                else if (type == Color.class)
+                    EditorGUI.field_Color(name, (Color) value);
+                else if (type.isEnum())
+                    field.set(this, EditorGUI.field_Enum(name, (Enum<?>) value));
+                else
                     ImGui.text(name + ", " + type.getCanonicalName() + " - Custom inspector not added yet.");
-                }
 
                 if (isPrivate)
                     field.setAccessible(false);

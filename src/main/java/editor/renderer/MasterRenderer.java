@@ -8,7 +8,5 @@ public class MasterRenderer {
 
     public static Shader getCurrentShader() { return MasterRenderer.currentShader; }
 
-    public static void bindShader(Shader shader) {
-        currentShader = shader;
-    }
+    public static void bindShader(Shader shader) { currentShader = shader; }
 }

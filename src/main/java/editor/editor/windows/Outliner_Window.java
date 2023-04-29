@@ -1,30 +1,28 @@
 package editor.editor.windows;
 
+import editor.editor.gui.EditorImGuiWindow;
 import editor.entity.GameObject;
-import editor.eventListeners.Input;
-import editor.eventListeners.KeyCode;
 import editor.physics.physics2D.components.RigidBody2D;
 import editor.physics.physics2D.components.colliders.Box2DCollider;
 import editor.physics.physics2D.components.colliders.Circle2DCollider;
 import editor.physics.physics2D.components.colliders.Pillbox2DCollider;
-import editor.scenes.SceneManager;
-import editor.stuff.Window;
-import editor.stuff.utils.Time;
+import editor.renderer.camera.Camera;
 import imgui.ImGui;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Outliner_Window {
+public class Outliner_Window extends EditorImGuiWindow {
 
     protected static List<GameObject> activeGameObjects = new ArrayList<>();
     protected static GameObject activeGameObject = null;
 
-    public void imgui() {
+    public Outliner_Window() { super("\uEF4E Outliner"); }
+
+    @Override
+    public void drawWindow() {
         if (activeGameObjects.size() == 1 && activeGameObjects.get(0) != null) {
             activeGameObject = activeGameObjects.get(0);
-
-            ImGui.begin("Outliner");
 
             if (ImGui.beginPopupContextWindow("ComponentAdder")) {
                 if (!activeGameObject.hasComponent(RigidBody2D.class))
@@ -43,11 +41,17 @@ public class Outliner_Window {
                     if (ImGui.menuItem("Add Pillbox2DCollider"))
                         activeGameObject.addComponent(new Pillbox2DCollider());
 
+                if (!activeGameObject.hasComponent(Camera.class))
+                    if (ImGui.menuItem("Add Camera"))
+                        activeGameObject.addComponent(new Camera());
+
                 ImGui.endPopup();
             }
 
             activeGameObject.imgui();
-            ImGui.end();
+        } else {
+            ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() / 2 - ImGui.calcTextSize("No selected Object").x / 2, ImGui.getCursorPosY() + ImGui.getStyle().getItemSpacingY() * 4);
+            ImGui.text("No selected Object");
         }
     }
 

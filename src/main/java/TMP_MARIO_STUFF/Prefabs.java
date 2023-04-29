@@ -1,11 +1,9 @@
 package TMP_MARIO_STUFF;
 
 import editor.entity.GameObject;
-import editor.entity.component.components.SpriteRenderer;
-import editor.entity.component.components.Transform;
+import editor.renderer.renderer2D.SpriteRenderer;
 import editor.renderer.renderer2D.sprite.Sprite;
 import editor.scenes.SceneManager;
-import org.joml.Vector3f;
 
 public class Prefabs {
 

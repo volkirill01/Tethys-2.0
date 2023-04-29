@@ -1,7 +1,7 @@
 package editor.renderer.debug;
 
 import editor.assets.AssetPool;
-import editor.renderer.Camera;
+import editor.renderer.camera.BaseCamera;
 import editor.renderer.shader.Shader;
 import editor.scenes.SceneManager;
 import editor.stuff.Maths;
@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class DebugDraw {
 
-    private static final int MAX_LINES = 3000;
+    private static final int MAX_LINES = 5000;
 
     private static final List<DebugLine> lines = new ArrayList<>();
     // 6 floats per vertex, 2 vertices per line
@@ -90,9 +90,12 @@ public class DebugDraw {
 //        glClear(GL_DEPTH_BUFFER_BIT); // TODO MAKE IT FOR USER
 
         glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, Arrays.copyOfRange(vertexArray, 0, lines.size() * 6 * 2));
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertexArray);
+//        glBufferSubData(GL_ARRAY_BUFFER, 0, Arrays.copyOfRange(vertexArray, 0, lines.size() * 6 * 2));
 
+        // =============================================================================================================
         // Rendering
+        // =============================================================================================================
 
         // Bind shader
         shader.use();
@@ -120,19 +123,20 @@ public class DebugDraw {
     // Add line methods
     // =================================================================================================================
     public static void addLine(Vector3f from, Vector3f to) { addLine(from, to, Color.GREEN, 1); }
-
     public static void addLine(Vector3f from, Vector3f to, Color color) { addLine(from, to, color, 1); }
-
     /** @param lifetime in frames */
     public static void addLine(Vector3f from, Vector3f to, Color color, int lifetime) {
-        Camera camera = SceneManager.getCurrentScene().getCamera();
-        Vector2f cameraLeft = new Vector2f(camera.getPosition().x, camera.getPosition().y).sub(2.0f, 2.0f);
-        Vector2f cameraRight = new Vector2f(camera.getPosition().x, camera.getPosition().y).add(new Vector2f(camera.getProjectionSize()).mul(camera.getZoom())).add(new Vector2f(4.0f, 4.0f));
+        BaseCamera camera = SceneManager.getCurrentScene().getCamera();
+
+        Vector2f cameraProjectionSize = new Vector2f(camera.getProjectionSize()).mul(camera.getZoom());
+
+        Vector2f cameraLeft = new Vector2f(camera.getPosition().x - cameraProjectionSize.x / 2, camera.getPosition().y - cameraProjectionSize.y / 2).sub(2.0f, 2.0f);
+        Vector2f cameraRight = new Vector2f(camera.getPosition().x + cameraProjectionSize.x / 2, camera.getPosition().y + cameraProjectionSize.y / 2).add(4.0f, 4.0f);
         boolean lineInView = ((from.x >= cameraLeft.x && from.x <= cameraRight.x) && (from.y >= cameraLeft.y && from.y <= cameraRight.y)) ||
                 ((to.x >= cameraLeft.x && to.x <= cameraRight.x) && (to.y >= cameraLeft.y && to.y <= cameraRight.y));
 
-        if (lines.size() >= MAX_LINES || !lineInView)
-            return;
+//        if (lines.size() >= MAX_LINES || !lineInView)
+//            return;
 
         DebugDraw.lines.add(new DebugLine(from, to, color, lifetime));
     }
@@ -141,13 +145,9 @@ public class DebugDraw {
     // Add box2D methods
     // =================================================================================================================
     public static void addBox2D(Vector3f center, Vector2f size) { addBox2D(center, size, new Vector3f(0.0f), Color.GREEN, 1); }
-
     public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation) { addBox2D(center, size, rotation, Color.GREEN, 1); }
-
     public static void addBox2D(Vector3f center, Vector2f size, Color color) { addBox2D(center, size, new Vector3f(0.0f), color, 1); }
-
     public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation, Color color) { addBox2D(center, size, rotation, color, 1); }
-
     /** @param lifetime in frames */
     public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation, Color color, int lifetime) {
         Vector3f min = new Vector3f(center).sub(size.x / 2.0f, size.y / 2.0f, 0.0f);
@@ -172,13 +172,9 @@ public class DebugDraw {
     // Add cube methods
     // =================================================================================================================
     public static void addCube(Vector3f center, Vector3f size) { addCube(center, size, new Vector3f(0.0f), Color.GREEN, 1); }
-
     public static void addCube(Vector3f center, Vector3f size, Vector3f rotation) { addCube(center, size, rotation, Color.GREEN, 1); }
-
     public static void addCube(Vector3f center, Vector3f size, Color color) { addCube(center, size, new Vector3f(0.0f), color, 1); }
-
     public static void addCube(Vector3f center, Vector3f size, Vector3f rotation, Color color) { addCube(center, size, rotation, color, 1); }
-
     /** @param lifetime in frames */
     public static void addCube(Vector3f center, Vector3f size, Vector3f rotation, Color color, int lifetime) {
         Vector3f halfSize = new Vector3f(size).div(2.0f);
@@ -220,13 +216,9 @@ public class DebugDraw {
     // Add circle2D methods
     // =================================================================================================================
     public static void addCircle2D(Vector3f center, float radius) { addCircle2D(center, radius, new Vector3f(0.0f), Color.GREEN, 1); }
-
     public static void addCircle2D(Vector3f center, float radius, Color color) { addCircle2D(center, radius, new Vector3f(0.0f), color, 1); }
-
     public static void addCircle2D(Vector3f center, float radius, Vector3f rotation) { addCircle2D(center, radius, rotation, Color.GREEN, 1); }
-
     public static void addCircle2D(Vector3f center, float radius, Vector3f rotation, Color color) { addCircle2D(center, radius, rotation, color, 1); }
-
     /** @param lifetime in frames */
     public static void addCircle2D(Vector3f center, float radius, Vector3f rotation, Color color, int lifetime) {
         Vector3f[] points = new Vector3f[30];
@@ -253,13 +245,9 @@ public class DebugDraw {
     // Add sphere methods
     // =================================================================================================================
     public static void addSphere(Vector3f center, float radius) { addSphere(center, radius, new Vector3f(0.0f), Color.GREEN, 1); }
-
     public static void addSphere(Vector3f center, float radius, Color color) { addSphere(center, radius, new Vector3f(0.0f), color, 1); }
-
     public static void addSphere(Vector3f center, float radius, Vector3f rotation) { addSphere(center, radius, rotation, Color.GREEN, 1); }
-
     public static void addSphere(Vector3f center, float radius, Vector3f rotation, Color color) { addSphere(center, radius, rotation, color, 1); }
-
     /** @param lifetime in frames */
     public static void addSphere(Vector3f center, float radius, Vector3f rotation, Color color, int lifetime) {
         Vector3f[] points = new Vector3f[90];

@@ -34,7 +34,7 @@ public class Physics2D {
 
         if (obj.getComponent(RigidBody2D.class).getRawBody() == null) {
             BodyDef bodyDef = new BodyDef();
-            bodyDef.angle = (float) Math.toRadians(obj.transform.rotation);
+            bodyDef.angle = (float) Math.toRadians(obj.transform.rotation.z);
             bodyDef.position.set(obj.transform.position.x, obj.transform.position.y);
             bodyDef.angularDamping = rb.getAngularDamping();
             bodyDef.linearDamping = rb.getLinearDamping();
@@ -148,7 +148,7 @@ public class Physics2D {
 
         Vector2f halfSize = new Vector2f(collider.getSize()).div(2.0f);
         Vector2f offset = collider.getOffset();
-        shape.setAsBox(halfSize.x, halfSize.y, new Vec2(offset.x, offset.y), 0.0f);
+        shape.setAsBox(Math.abs(halfSize.x), Math.abs(halfSize.y), new Vec2(offset.x, offset.y), 0.0f);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -165,7 +165,8 @@ public class Physics2D {
 
         CircleShape shape = new CircleShape();
         shape.setRadius(collider.getRadius() / 2.0f);
-        shape.m_p.set(collider.getOffset().x, collider.getOffset().y);
+        Vector2f offset = collider.getOffset();
+        shape.m_p.set(offset.x, offset.y);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;

@@ -22,8 +22,7 @@ repositories {
 }
 
 dependencies {
-    // Physics (Box2D)
-    implementation name: "jbox2d-library"
+    implementation fileTree('libraries') { include '*.jar' }
 
     // Serialization stuff
     implementation "com.google.code.gson:gson:2.10.1"

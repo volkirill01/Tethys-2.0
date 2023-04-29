@@ -37,6 +37,10 @@ public class Input {
 
     public static float getMousePositionY() { return MouseListener.getMouseY(); }
 
+    public static float getMouseDeltaPositionX() { return MouseListener.getMouseDeltaX(); }
+
+    public static float getMouseDeltaPositionY() { return MouseListener.getMouseDeltaY(); }
+
     public static Vector2f getMouseScreenPosition() { return MouseListener.getScreen(); }
 
     public static float getMouseScreenPositionX() { return MouseListener.getScreenX(); }

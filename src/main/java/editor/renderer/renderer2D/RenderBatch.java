@@ -1,16 +1,12 @@
 package editor.renderer.renderer2D;
 
 import editor.entity.GameObject;
-import editor.entity.component.components.SpriteRenderer;
 import editor.renderer.MasterRenderer;
 import editor.renderer.Texture;
 import editor.renderer.shader.Shader;
-import editor.scenes.SceneManager;
 import editor.stuff.customVariables.Color;
+import org.joml.*;
 import org.joml.Math;
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +34,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private final int ENTITY_ID_OFFSET = TEXTURE_ID_OFFSET + TEXTURE_ID_SIZE * Float.BYTES;
     private final int VERTEX_SIZE = POS_SIZE + COLOR_SIZE + TEXTURE_COORDINATES_SIZE + TEXTURE_ID_SIZE + ENTITY_ID_SIZE;
 
-    private SpriteMasterRenderer renderer;
+    private final SpriteMasterRenderer renderer;
 
     private final SpriteRenderer[] sprites;
     private int numberOfSprites;
@@ -74,7 +70,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
         // Allocate space for vertices
         this.vboID = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, this.vboID);
-        glBufferData(GL_ARRAY_BUFFER, this.vertices.length * Float.BYTES, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, (long) this.vertices.length * Float.BYTES, GL_DYNAMIC_DRAW);
 
         // Create and upload indices buffer
         int eboID = glGenBuffers();
@@ -116,7 +112,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
             this.hasRoom = false;
     }
 
-    public void render() {
+    public void render(Matrix4f projectionMatrix, Matrix4f viewMatrix) {
         boolean rebufferData = false;
         for (int i = 0; i < this.numberOfSprites; i++) {
             SpriteRenderer spr = this.sprites[i];
@@ -148,8 +144,8 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
         // Use shader
         Shader shader = MasterRenderer.getCurrentShader();
-        shader.uploadMat4f("uProjectionMatrix", SceneManager.getCurrentScene().getCamera().getProjectionMatrix());
-        shader.uploadMat4f("uViewMatrix", SceneManager.getCurrentScene().getCamera().getViewMatrix());
+        shader.uploadMat4f("uProjectionMatrix", projectionMatrix);
+        shader.uploadMat4f("uViewMatrix", viewMatrix);
         for (int i = 0; i < this.textures.size(); i++) {
             // TODO CHANGE CONSTANT 8 TEXTURE SLOTS, TO USERS GPU TEXTURES SLOTS COUNT
 //            IntBuffer buffer = BufferUtils.createIntBuffer(1);
@@ -208,11 +204,13 @@ public class RenderBatch implements Comparable<RenderBatch> {
                     break;
                 }
 
-        boolean isRotated = sprite.gameObject.transform.rotation != 0.0f;
+        boolean isRotated = sprite.gameObject.transform.rotation.x != 0.0f || sprite.gameObject.transform.rotation.y != 0.0f || sprite.gameObject.transform.rotation.z != 0.0f;
         Matrix4f transformationMatrix = new Matrix4f().identity();
         if (isRotated) {
             transformationMatrix.translate(sprite.gameObject.transform.position);
-            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation), 0.0f, 0.0f, 1.0f);
+            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.x), 1.0f, 0.0f, 0.0f);
+            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.y), 0.0f, 1.0f, 0.0f);
+            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.z), 0.0f, 0.0f, 1.0f);
             transformationMatrix.scale(sprite.gameObject.transform.scale);
         }
 

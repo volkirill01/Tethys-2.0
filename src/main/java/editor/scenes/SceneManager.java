@@ -6,13 +6,13 @@ public class SceneManager {
 
     private static Scene currentScene;
 
-    public static void changeScene(SceneInitializer newScene) {
+    public static void changeScene(String filepath) {
         if (currentScene != null)
             currentScene.destroy();
 
         Outliner_Window.setActiveGameObject(null);
-        currentScene = new Scene(newScene);
-        currentScene.load();
+        currentScene = new Scene(filepath);
+        currentScene.load(filepath);
         currentScene.init();
         currentScene.start();
     }

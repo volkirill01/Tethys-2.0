@@ -3,6 +3,8 @@ package editor.renderer.renderer2D.sprite;
 import editor.renderer.Texture;
 import org.joml.Vector2f;
 
+import java.util.Arrays;
+
 public class Sprite {
 
     private float width, height;
@@ -14,6 +16,17 @@ public class Sprite {
             new Vector2f(0.0f, 0.0f),
             new Vector2f(0.0f, 1.0f)
     };
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == null) return false;
+        if (!(object instanceof Sprite)) return false;
+
+        if (object == this) return true;
+
+        Sprite s = (Sprite) object;
+        return s.width == this.width && s.height == this.height && s.texture.equals(this.texture) && Arrays.equals(s.textureCoordinates, this.textureCoordinates);
+    }
 
     public Texture getTexture() { return this.texture; }
 

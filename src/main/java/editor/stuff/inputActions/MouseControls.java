@@ -1,5 +1,6 @@
 package editor.stuff.inputActions;
 
+import editor.TestFieldsWindow;
 import editor.editor.windows.Outliner_Window;
 import editor.entity.GameObject;
 import editor.eventListeners.Input;
@@ -46,7 +47,6 @@ public class MouseControls {
 
     public static void update() {
         debounceTime -= Time.deltaTime();
-        Scene currentScene = SceneManager.getCurrentScene();
 
         if (holdingObject != null) {
             if (Input.buttonClick(KeyCode.Escape)) {
@@ -56,8 +56,8 @@ public class MouseControls {
         }
 
         if (holdingObject != null) {
-            holdingObject.transform.position.x = ((int) Math.floor(Input.getMouseWorldPositionX() / Settings.GRID_WIDTH) * Settings.GRID_WIDTH) + Settings.GRID_WIDTH / 2.0f;
-            holdingObject.transform.position.y = ((int) Math.floor(Input.getMouseWorldPositionY() / Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT) + Settings.GRID_HEIGHT / 2.0f;
+            holdingObject.transform.position.x = (int) Math.floor((Input.getMouseWorldPositionX() + Settings.GRID_WIDTH / 2.0f) / Settings.GRID_WIDTH) * Settings.GRID_WIDTH;
+            holdingObject.transform.position.y = (int) Math.floor((Input.getMouseWorldPositionY() + Settings.GRID_HEIGHT / 2.0f) / Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT;
 
             if (Input.buttonDown(KeyCode.Mouse_Button_Left)) {
                 float halfWidth = Settings.GRID_WIDTH / 2.0f;
@@ -90,7 +90,8 @@ public class MouseControls {
             Vector2f boxSelectStartWorld = Input.screenToWorld(boxSelectStart);
             Vector2f boxSelectEndWorld = Input.screenToWorld(boxSelectEnd);
             Vector2f halfSize = new Vector2f(boxSelectEndWorld).sub(boxSelectStartWorld).div(2.0f);
-            DebugDraw.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f));
+            DebugDraw.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.boxSelectionColor);
+            DebugDraw.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.boxSelectionColor);
         } else if (boxSelectSet) {
             boxSelectSet = false;
             int screenStartX = (int) boxSelectStart.x;

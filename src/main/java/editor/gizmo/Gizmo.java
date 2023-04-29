@@ -1,10 +1,9 @@
 package editor.gizmo;
 
 import TMP_MARIO_STUFF.Prefabs;
-import editor.TestFieldsWindow;
 import editor.editor.windows.Outliner_Window;
 import editor.entity.GameObject;
-import editor.entity.component.components.SpriteRenderer;
+import editor.renderer.renderer2D.SpriteRenderer;
 import editor.eventListeners.Input;
 import editor.eventListeners.KeyCode;
 import editor.renderer.renderer2D.sprite.Sprite;
@@ -43,8 +42,8 @@ public class Gizmo {
     }
 
     public void start() {
-        this.xAxisObject.transform.rotation = 90.0f;
-        this.yAxisObject.transform.rotation = 180.0f;
+        this.xAxisObject.transform.rotation.set(0.0f, 0.0f, 90.0f);
+        this.yAxisObject.transform.rotation.set(0.0f, 0.0f, 180.0f);
         this.xAxisObject.transform.setZIndex(1000);
         this.yAxisObject.transform.setZIndex(1000);
         this.xAxisObject.setSerialize(false);

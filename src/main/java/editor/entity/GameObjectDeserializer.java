@@ -2,7 +2,7 @@ package editor.entity;
 
 import com.google.gson.*;
 import editor.entity.component.Component;
-import editor.entity.component.components.Transform;
+import editor.entity.component.Transform;
 
 import java.lang.reflect.Type;
 

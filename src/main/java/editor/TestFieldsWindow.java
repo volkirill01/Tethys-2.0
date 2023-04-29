@@ -10,6 +10,8 @@ import imgui.flag.ImGuiMouseCursor;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.Arrays;
+
 public class TestFieldsWindow {
 
     public static float[] getFloats = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
@@ -19,6 +21,7 @@ public class TestFieldsWindow {
     public static Vector2f[] getVectors2f = { new Vector2f(0.0f), new Vector2f(0.0f), new Vector2f(0.0f) };
     public static Vector3f[] getVectors3f = { new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(0.0f) };
     public static Color[] getColors = { Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy() };
+    public static Color[] themeColors;
 
     static Texture testTexture;
     static Texture testTexture2;
@@ -29,6 +32,14 @@ public class TestFieldsWindow {
     private static float[] color2 = new float[3];
 
     private static boolean start = false;
+
+    static {
+        themeColors = new Color[55];
+        themeColors[0] = Color.BLACK.copy();
+        for (int i = 1; i < 55; i++) {
+            themeColors[i] = Color.WHITE.copy();
+        }
+    }
 
     public static void imgui() {
         ImGui.begin(" Test Fields ");
@@ -79,6 +90,11 @@ public class TestFieldsWindow {
                 ImGui.setMouseCursor(ImGuiMouseCursor.TextInput);
         }
 
+        if (ImGui.collapsingHeader("Theme Set")) {
+            for (int i = 0; i < themeColors.length; i++)
+                EditorGUI.field_Color(ImGui.getStyleColorName(i), themeColors[i]);
+        }
+
 //        if (ImGui.collapsingHeader("Boolean Types")) {
 //            getBooleans[0] = EditorImGui.field_Boolean("True boolean(Switch)", getBooleans[0], EditorImGui.BooleanType.Switch);
 //            getBooleans[1] = !EditorImGui.field_Boolean("False boolean(Switch)", !getBooleans[1], EditorImGui.BooleanType.Switch);
@@ -113,22 +129,21 @@ public class TestFieldsWindow {
                 getFloats[i] = imFloats[0];
         }
 
-//        for (int i = 0; i < getInts.length; i++)
-//            getInts[i] = EditorImGui.field_Int_WithButtons("Test Int (" + i + ")", getInts[i]);
-////                        EditorImGui.field_Int("Tets int", 0);
-//
-//        for (int i = 0; i < getStrings.length; i++)
-//            getStrings[i] = EditorImGui.field_Text("Test String (" + i + ")", getStrings[i], "Test");
-//
-//        for (int i = 0; i < getBooleans.length; i++)
-//            getBooleans[i] = EditorImGui.field_Boolean("Test Boolean (" + i + ")", getBooleans[i]);
-//
-//        for (int i = 0; i < getVectors2f.length; i++)
-//            getVectors2f[i] = EditorImGui.field_Vector2f("Test Vector2 (" + i + ")", getVectors2f[i]);
-//
-//        for (int i = 0; i < getVectors3f.length; i++)
-//            getVectors3f[i] = EditorImGui.field_Vector3f("Test Vector3 (" + i + ")", getVectors3f[i]);
-//
+        for (int i = 0; i < getInts.length; i++)
+            getInts[i] = EditorGUI.field_Int("Test Int (" + i + ")", getInts[i]);
+
+        for (int i = 0; i < getStrings.length; i++)
+            getStrings[i] = EditorGUI.field_String("Test String (" + i + ")", getStrings[i]);
+
+        for (int i = 0; i < getBooleans.length; i++)
+            getBooleans[i] = EditorGUI.field_Boolean("Test Boolean (" + i + ")", getBooleans[i]);
+
+        for (int i = 0; i < getVectors2f.length; i++)
+            EditorGUI.field_Vector2f("Test Vector2 (" + i + ")", getVectors2f[i]);
+
+        for (int i = 0; i < getVectors3f.length; i++)
+            EditorGUI.field_Vector3f("Test Vector3 (" + i + ")", getVectors3f[i]);
+
         for (int i = 0; i < getColors.length; i++)
             EditorGUI.field_Color("Test Color (" + i + ")", getColors[i]);
 

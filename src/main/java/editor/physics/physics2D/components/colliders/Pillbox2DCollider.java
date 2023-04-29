@@ -79,7 +79,7 @@ public class Pillbox2DCollider extends Collider2D {
 
         this.topCircle.setOffset(new Vector2f(this.offset).add(0.0f, boxHeight / 4.0f));
         this.bottomCircle.setOffset(new Vector2f(this.offset).sub(0.0f, boxHeight / 4.0f));
-        this.middleBox.setSize(new Vector2f(this.width, boxHeight / 2.0f));
+        this.middleBox.setSize(new Vector2f(this.width - 0.01f, boxHeight / 2.0f));
         this.middleBox.setOffset(this.offset);
     }
 
@@ -88,7 +88,6 @@ public class Pillbox2DCollider extends Collider2D {
             this.resetFixtureNextFrame = true;
             return;
         }
-
         this.resetFixtureNextFrame = false;
 
         if (this.gameObject.hasComponent(RigidBody2D.class)) {
