@@ -20,9 +20,9 @@ public class Physics2D {
     private final World world = new World(this.gravity);
 
     private float physicsTime = 0.0f;
-    private final float physicsTimeStep = 1.0f / 60.0f; // 60 frames per 1 second
-    private final int velocityIterations = 8;
-    private final int positionIterations = 3;
+    private static final float physicsTimeStep = 1.0f / 60.0f; // 60 frames per 1 second
+    private static final int velocityIterations = 8;
+    private static final int positionIterations = 3;
 
     public Physics2D() { world.setContactListener(new ContactListener2D()); }
 
@@ -78,8 +78,8 @@ public class Physics2D {
     public void update() {
         this.physicsTime += Time.deltaTime();
         if (this.physicsTime >= 0.0f) {
-            this.physicsTime -= this.physicsTimeStep;
-            this.world.step(this.physicsTimeStep, this.velocityIterations, this.positionIterations);
+            this.physicsTime -= physicsTimeStep;
+            this.world.step(physicsTimeStep, velocityIterations, positionIterations);
         }
     }
 
@@ -142,7 +142,7 @@ public class Physics2D {
 
     public void addBox2DCollider(RigidBody2D rb, Box2DCollider collider) {
         Body body = rb.getRawBody();
-        if (body == null) throw new NullPointerException("Raw Body must not be null.");
+        if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.name));
 
         PolygonShape shape = new PolygonShape();
 
@@ -161,7 +161,7 @@ public class Physics2D {
 
     public void addCircle2DCollider(RigidBody2D rb, Circle2DCollider collider) {
         Body body = rb.getRawBody();
-        if (body == null) throw new NullPointerException("Raw Body must not be null.");
+        if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.name));
 
         CircleShape shape = new CircleShape();
         shape.setRadius(collider.getRadius() / 2.0f);
@@ -179,14 +179,14 @@ public class Physics2D {
 
     public void addPillbox2DCollider(RigidBody2D rb, Pillbox2DCollider collider) {
         Body body = rb.getRawBody();
-        if (body == null) throw new NullPointerException("Raw Body must not be null.");
+        if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.name));
 
         addCircle2DCollider(rb, collider.getTopCircle());
         addCircle2DCollider(rb, collider.getBottomCircle());
         addBox2DCollider(rb, collider.getMiddleBox());
     }
 
-    public RayCastInfo raycast(GameObject requestingObject, Vector2f startPoint, Vector2f endPoint) {
+    public RayCastInfo rayCast(GameObject requestingObject, Vector2f startPoint, Vector2f endPoint) {
         RayCastInfo callback = new RayCastInfo(requestingObject);
         world.raycast(callback, new Vec2(startPoint.x, startPoint.y), new Vec2(endPoint.x, endPoint.y));
         return callback;

@@ -1,37 +1,35 @@
 package editor;
 
 import editor.editor.gui.EditorGUI;
-import editor.renderer.Texture;
 import editor.stuff.customVariables.Color;
 import editor.stuff.utils.Time;
 import imgui.ImGui;
 import imgui.flag.ImGuiColorEditFlags;
+import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiMouseCursor;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.util.Arrays;
-
 public class TestFieldsWindow {
 
-    public static float[] getFloats = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-    public static int[] getInts = { 0, 0, 0, 0 };
-    public static String[] getStrings = { "", "", "" };
-    public static boolean[] getBooleans = { false, false, false, false, false, false };
-    public static Vector2f[] getVectors2f = { new Vector2f(0.0f), new Vector2f(0.0f), new Vector2f(0.0f) };
-    public static Vector3f[] getVectors3f = { new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(0.0f) };
-    public static Color[] getColors = { Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy() };
-    public static Color[] themeColors;
+    public static final float[] getFloats = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+    public static final int[] getInts = { 0, 0, 0, 0 };
+    public static final String[] getStrings = { "", "", "" };
+    public static final boolean[] getBooleans = { false, false, false, false, false, false };
+    public static final Vector2f[] getVectors2f = { new Vector2f(0.0f), new Vector2f(0.0f), new Vector2f(0.0f) };
+    public static final Vector3f[] getVectors3f = { new Vector3f(0.0f), new Vector3f(0.0f), new Vector3f(0.0f) };
+    public static final Color[] getColors = { Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy(), Color.WHITE.copy() };
+    public static final Color[] themeColors;
 
-    static Texture testTexture;
-    static Texture testTexture2;
-    static Texture testTexture3;
+//    static Texture testTexture;
+//    static Texture testTexture2;
+//    static Texture testTexture3;
 
     private static float testFloat = 0.0f;
-    private static float[] color = new float[3];
-    private static float[] color2 = new float[3];
+    private static final float[] color = new float[3];
+    private static final float[] color2 = new float[3];
 
-    private static boolean start = false;
+//    private static boolean start = false;
 
     static {
         themeColors = new Color[55];
@@ -44,10 +42,10 @@ public class TestFieldsWindow {
     public static void imgui() {
         ImGui.begin(" Test Fields ");
 
-        if (!start) {
-            ImGui.setNextItemOpen(true);
-            start = true;
-        }
+//        if (!start) {
+        ImGui.setNextItemOpen(true, ImGuiCond.Once);
+//            start = true;
+//        }
         if (ImGui.collapsingHeader("Test")) {
             if (testFloat < 1.0f)
                 testFloat += Time.deltaTime() * 0.15f;
@@ -96,12 +94,12 @@ public class TestFieldsWindow {
         }
 
 //        if (ImGui.collapsingHeader("Boolean Types")) {
-//            getBooleans[0] = EditorImGui.field_Boolean("True boolean(Switch)", getBooleans[0], EditorImGui.BooleanType.Switch);
-//            getBooleans[1] = !EditorImGui.field_Boolean("False boolean(Switch)", !getBooleans[1], EditorImGui.BooleanType.Switch);
-//            getBooleans[2] = EditorImGui.field_Boolean("True boolean(Checkbox)", getBooleans[2], EditorImGui.BooleanType.Checkbox);
-//            getBooleans[3] = !EditorImGui.field_Boolean("False boolean(Checkbox)", !getBooleans[3], EditorImGui.BooleanType.Checkbox);
-//            getBooleans[4] = EditorImGui.field_Boolean("True boolean(Bullet)", getBooleans[4], EditorImGui.BooleanType.Bullet);
-//            getBooleans[5] = !EditorImGui.field_Boolean("False boolean(Bullet)", !getBooleans[5], EditorImGui.BooleanType.Bullet);
+//            getBooleans[0] = EditorGUI.field_Boolean("True boolean(Switch)", getBooleans[0], EditorGUI.BooleanType.Switch);
+//            getBooleans[1] = !EditorGUI.field_Boolean("False boolean(Switch)", !getBooleans[1], EditorGUI.BooleanType.Switch);
+//            getBooleans[2] = EditorGUI.field_Boolean("True boolean(Checkbox)", getBooleans[2], EditorGUI.BooleanType.Checkbox);
+//            getBooleans[3] = !EditorGUI.field_Boolean("False boolean(Checkbox)", !getBooleans[3], EditorGUI.BooleanType.Checkbox);
+//            getBooleans[4] = EditorGUI.field_Boolean("True boolean(Bullet)", getBooleans[4], EditorGUI.BooleanType.Bullet);
+//            getBooleans[5] = !EditorGUI.field_Boolean("False boolean(Bullet)", !getBooleans[5], EditorGUI.BooleanType.Bullet);
 //            ImGui.separator();
 //        }
 

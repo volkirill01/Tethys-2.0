@@ -1,5 +1,7 @@
 package editor.renderer.shader;
 
+import editor.stuff.Settings;
+import editor.stuff.customVariables.Color;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 
@@ -8,9 +10,7 @@ import java.nio.FloatBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 
 public class Shader {
 
@@ -40,16 +40,16 @@ public class Shader {
             if (firstPattern.equals("vertex"))
                 this.vertexSource = splitString[1];
             else if (firstPattern.equals("fragment"))
-                this.fragmentSource = splitString[1];
+                this.fragmentSource = "#version " + Settings.shaderVersion + "\n" + splitString[1];
             else
-                throw new IOException("Unexpected token '" + firstPattern + "'.");
+                throw new IOException(String.format("Unexpected token '%s'", firstPattern));
 
             if (secondPattern.equals("vertex"))
-                this.vertexSource = splitString[2];
+                this.vertexSource = "#version " + Settings.shaderVersion + "\n" + splitString[2];
             else if (secondPattern.equals("fragment"))
                 this.fragmentSource = splitString[2];
             else
-                throw new IOException("Unexpected token '" + secondPattern + "'.");
+                throw new IOException(String.format("Unexpected token '%s'", secondPattern));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -75,7 +75,7 @@ public class Shader {
         int success = glGetShaderi(vertexID, GL_COMPILE_STATUS);
         if (success == GL_FALSE) {
             int len = glGetShaderi(vertexID, GL_INFO_LOG_LENGTH);
-            throw new RuntimeException("'" + this.filepath + "'\n\tVertex shader compilation failed.\n" + glGetShaderInfoLog(vertexID, len));
+            throw new RuntimeException(String.format("'%s'\n\tVertex shader compilation failed.\n%s", this.filepath, glGetShaderInfoLog(vertexID, len)));
         }
 
         // First compile the Vertex Shader
@@ -88,7 +88,7 @@ public class Shader {
         success = glGetShaderi(fragmentID, GL_COMPILE_STATUS);
         if (success == GL_FALSE) {
             int len = glGetShaderi(fragmentID, GL_INFO_LOG_LENGTH);
-            throw new RuntimeException("'" + this.filepath + "'\n\tFragment shader compilation failed.\n" + glGetShaderInfoLog(fragmentID, len));
+            throw new RuntimeException(String.format("'%s'\n\tFragment shader compilation failed.\n%s", this.filepath, glGetShaderInfoLog(fragmentID, len)));
         }
 
         // Link shaders and check for errors
@@ -101,11 +101,11 @@ public class Shader {
         success = glGetProgrami(this.shaderProgramID, GL_LINK_STATUS);
         if (success == GL_FALSE) {
             int len = glGetProgrami(this.shaderProgramID, GL_INFO_LOG_LENGTH);
-            throw new RuntimeException("'" + this.filepath + "'\n\tLinking of shaders failed.\n" + glGetProgramInfoLog(this.shaderProgramID, len));
+            throw new RuntimeException(String.format("'%s'\n\tLinking of shaders failed.\n%s", this.filepath, glGetProgramInfoLog(this.shaderProgramID, len)));
         }
     }
 
-    public void use() {
+    public void bind() {
         if (!this.beingUsed) {
             // Bind shader program
             glUseProgram(this.shaderProgramID);
@@ -113,15 +113,17 @@ public class Shader {
         }
     }
 
-    public void detach() {
+    public void unbind() {
         // Bind nothing
         glUseProgram(0);
         this.beingUsed = false;
     }
 
+    public String getFilepath() { return this.filepath; }
+
     private int uploadVariable(String variableName) {
         if (!this.beingUsed) {
-            use();
+            bind();
 //            throw new RuntimeException("'" + filepath + "' Shader not used for uploading variable '" + variableName + "'");
         }
 
@@ -175,5 +177,10 @@ public class Shader {
     public void uploadVec4f(String variableName, Vector4f vector) {
         int varLocation = uploadVariable(variableName);
         glUniform4f(varLocation, vector.x, vector.y, vector.z, vector.w);
+    }
+
+    public void uploadColor(String variableName, Color color) {
+        int varLocation = uploadVariable(variableName);
+        glUniform4f(varLocation, color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f);
     }
 }

@@ -5,9 +5,9 @@ import org.joml.Vector3f;
 
 public class Transform extends Component {
 
-    public Vector3f position = new Vector3f(0.0f);
-    public Vector3f scale = new Vector3f(1.0f);
-    public Vector3f rotation = new Vector3f(0.0f);
+    public final Vector3f position = new Vector3f(0.0f);
+    public final Vector3f scale = new Vector3f(1.0f);
+    public final Vector3f rotation = new Vector3f(0.0f);
 
     private int zIndex = 0;
 

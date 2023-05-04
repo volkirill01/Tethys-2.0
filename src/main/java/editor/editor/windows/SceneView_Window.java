@@ -1,6 +1,5 @@
 package editor.editor.windows;
 
-import editor.TestFieldsWindow;
 import editor.editor.gui.EditorImGuiWindow;
 import editor.eventListeners.Input;
 import editor.eventListeners.MouseListener;
@@ -30,19 +29,18 @@ public class SceneView_Window extends EditorImGuiWindow {
         rightX = topLeft.x + viewportSize.x;
         topY = topLeft.y + viewportSize.y;
 
-        int textureID = Window.getFramebuffer().getColorTexture();
-//        int textureID = Window.getFramebuffer().getTextureID();
+        int textureID = Window.getScreenFramebuffer().getColorTexture();
         ImVec2 start = new ImVec2();
         ImGui.getCursorPos(start);
         ImGui.image(textureID, viewportSize.x, viewportSize.y, 0, 1, 1, 0);
 
         ImGui.sameLine();
-        ImGui.setCursorPos(ImGui.getCursorPosX() + TestFieldsWindow.getFloats[0], ImGui.getCursorPosY() + TestFieldsWindow.getFloats[1]);
-        if (ImGui.button(SceneManager.getCurrentScene().getCamera().getCameraType().name())) {
-            if (SceneManager.getCurrentScene().getCamera().getCameraType() == CameraType.Perspective)
-                SceneManager.getCurrentScene().getCamera().setCameraType(CameraType.Orthographic);
+        ImGui.setCursorPosX(ImGui.getCursorPosX() - ImGui.calcTextSize(SceneManager.getCurrentScene().getEditorCamera().getCameraType().name()).x - ImGui.getStyle().getFramePaddingX() * 2 - ImGui.getStyle().getItemSpacingX());
+        if (ImGui.button(SceneManager.getCurrentScene().getEditorCamera().getCameraType().name())) {
+            if (SceneManager.getCurrentScene().getEditorCamera().getCameraType() == CameraType.Perspective)
+                SceneManager.getCurrentScene().getEditorCamera().setCameraType(CameraType.Orthographic);
             else
-                SceneManager.getCurrentScene().getCamera().setCameraType(CameraType.Perspective);
+                SceneManager.getCurrentScene().getEditorCamera().setCameraType(CameraType.Perspective);
         }
 
         MouseListener.setGameViewportPos(topLeft);
@@ -73,7 +71,7 @@ public class SceneView_Window extends EditorImGuiWindow {
         return new ImVec2(viewportPositionX + ImGui.getCursorPosX(), viewportPositionY + ImGui.getCursorPosY());
     }
 
-    public static boolean getWantCaptureMouse() {
+    public boolean getWantCaptureMouse() {
         return Input.getMousePositionX() >= leftX && Input.getMousePositionX() <= rightX &&
                 Input.getMousePositionY() >= bottomY && Input.getMousePositionY() <= topY;
     }

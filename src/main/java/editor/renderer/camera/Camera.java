@@ -10,7 +10,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class Camera extends Component {
+public class Camera extends Component { // TODO MAKE BESA CAMERA CLASS AND INHERITANCE TO IT
 
     private transient final Fbo outputFbo = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_TEXTURE);
     private transient final Matrix4f viewMatrix = new Matrix4f().identity();

@@ -6,9 +6,11 @@ import imgui.ImGui;
 public class ThemeChanger_Window {
 
     public static void imgui() {
+        ImGui.begin("Theme Changer");
         if (ImGui.button("Dark"))
-            EditorThemeSystem.changeTheme(EditorThemeSystem.darkTheme());
+            EditorThemeSystem.setDarkTheme();
         if (ImGui.button("Light"))
-            EditorThemeSystem.changeTheme(EditorThemeSystem.lightTheme());
+            EditorThemeSystem.setLightTheme();
+        ImGui.end();
     }
 }

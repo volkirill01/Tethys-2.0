@@ -1,7 +1,7 @@
 package editor.renderer.debug;
 
 import editor.assets.AssetPool;
-import editor.renderer.camera.BaseCamera;
+import editor.renderer.camera.EditorCamera;
 import editor.renderer.shader.Shader;
 import editor.scenes.SceneManager;
 import editor.stuff.Maths;
@@ -55,7 +55,7 @@ public class DebugDraw {
             started = true;
         }
 
-        // Remove dead lines
+        // Remove deadlines
         for (int i = 0; i < lines.size(); i++) {
             if (lines.get(i).beginFrame() < 0) {
                 lines.remove(i);
@@ -98,9 +98,9 @@ public class DebugDraw {
         // =============================================================================================================
 
         // Bind shader
-        shader.use();
-        shader.uploadMat4f("uProjectionMatrix", SceneManager.getCurrentScene().getCamera().getProjectionMatrix());
-        shader.uploadMat4f("uViewMatrix", SceneManager.getCurrentScene().getCamera().getViewMatrix());
+        shader.bind();
+        shader.uploadMat4f("u_ProjectionMatrix", SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix());
+        shader.uploadMat4f("u_ViewMatrix", SceneManager.getCurrentScene().getEditorCamera().getViewMatrix());
 
         // Bind the vao
         glBindVertexArray(vaoID);
@@ -116,7 +116,7 @@ public class DebugDraw {
         glBindVertexArray(0);
 
         // Unbind shader
-        shader.detach();
+        shader.unbind();
     }
 
     // =================================================================================================================
@@ -126,7 +126,7 @@ public class DebugDraw {
     public static void addLine(Vector3f from, Vector3f to, Color color) { addLine(from, to, color, 1); }
     /** @param lifetime in frames */
     public static void addLine(Vector3f from, Vector3f to, Color color, int lifetime) {
-        BaseCamera camera = SceneManager.getCurrentScene().getCamera();
+        EditorCamera camera = SceneManager.getCurrentScene().getEditorCamera();
 
         Vector2f cameraProjectionSize = new Vector2f(camera.getProjectionSize()).mul(camera.getZoom());
 
@@ -135,8 +135,8 @@ public class DebugDraw {
         boolean lineInView = ((from.x >= cameraLeft.x && from.x <= cameraRight.x) && (from.y >= cameraLeft.y && from.y <= cameraRight.y)) ||
                 ((to.x >= cameraLeft.x && to.x <= cameraRight.x) && (to.y >= cameraLeft.y && to.y <= cameraRight.y));
 
-//        if (lines.size() >= MAX_LINES || !lineInView)
-//            return;
+        if (lines.size() >= MAX_LINES || !lineInView)
+            return;
 
         DebugDraw.lines.add(new DebugLine(from, to, color, lifetime));
     }

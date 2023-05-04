@@ -40,14 +40,16 @@ public class MainMenuBar {
         boolean isPlayButtonDisabled = Window.isRuntimePlaying();
         boolean isStopButtonDisabled = !Window.isRuntimePlaying();
 
-        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + (ImGui.getContentRegionMaxX() / 2) - (ImGui.getFrameHeight() * 2));
+        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + (ImGui.getContentRegionMaxX() / 2) - (ImGui.getFrameHeight() * 2) - ImGui.getStyle().getItemInnerSpacingX());
         if (isPlayButtonDisabled)
             ImGui.beginDisabled();
-        if (drawSquareButton("\uEC74", isPlayButtonDisabled, isPlayButtonDisabled ? ImGui.getStyle().getColor(ImGuiCol.Text) : EditorThemeSystem.activeColor))
+        ImVec4 playButtonColor = isPlayButtonDisabled ? ImGui.getStyle().getColor(ImGuiCol.Text) : new ImVec4(EditorThemeSystem.activeColor.r / 255.0f, EditorThemeSystem.activeColor.g / 255.0f, EditorThemeSystem.activeColor.b / 255.0f, EditorThemeSystem.activeColor.a / 255.0f);
+        if (drawSquareButton("\uEC74", isPlayButtonDisabled, playButtonColor))
             EventSystem.notify(null, new Event(EventType.GameEngine_StartPlay));
         if (isPlayButtonDisabled)
             ImGui.endDisabled();
 
+        ImGui.setCursorPosX(ImGui.getCursorPosX() - ImGui.getStyle().getItemSpacingX() + ImGui.getStyle().getItemInnerSpacingX() * 2);
         if (isStopButtonDisabled)
             ImGui.beginDisabled();
         if (drawSquareButton("\uEFFC", isStopButtonDisabled, isStopButtonDisabled ? ImGui.getStyle().getColor(ImGuiCol.Text) : new ImVec4(0.889f, 0.191f, 0.062f, 1.0f)))
@@ -60,7 +62,7 @@ public class MainMenuBar {
 
         float buttonSize = ImGui.getFrameHeight() / 1.2f;
         float startPosY = ImGui.getCursorPosY();
-        ImGui.setCursorPosY(ImGui.getCursorPosY() + (ImGui.getFrameHeight() - buttonSize) / 2);
+        ImGui.setCursorPos(ImGui.getCursorPosX(), ImGui.getCursorPosY() + (ImGui.getFrameHeight() - buttonSize) / 2);
 
         if (!isDisabled)
             if (ImGui.isMouseHoveringRect(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY(), ImGui.getCursorScreenPosX() + buttonSize, ImGui.getCursorScreenPosY() + buttonSize)) {
@@ -81,10 +83,10 @@ public class MainMenuBar {
                 );
             }
 
-        ImGui.setCursorPos(ImGui.getCursorPosX() + ImGui.getStyle().getFramePaddingX(), ImGui.getCursorPosY() + ImGui.getStyle().getFramePaddingY() / 2);
+        ImGui.setCursorPos(ImGui.getCursorPosX() + ImGui.getStyle().getFramePaddingY() / 1.2f + 1.2f, ImGui.getCursorPosY() + ImGui.getStyle().getFramePaddingY() / 1.3f - 1.5f);
         ImGui.textColored(textColor.x, textColor.y, textColor.z, textColor.w, text);
         ImGui.sameLine();
-        ImGui.setCursorPos(ImGui.getCursorPosX() + ImGui.getStyle().getFramePaddingX(), startPosY);
+        ImGui.setCursorPos(ImGui.getCursorPosX() + ImGui.getStyle().getFramePaddingY(), startPosY);
 
         return isClick;
     }

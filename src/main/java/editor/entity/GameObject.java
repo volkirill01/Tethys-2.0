@@ -8,14 +8,15 @@ import editor.renderer.renderer2D.SpriteRenderer;
 import editor.entity.component.Transform;
 import editor.stuff.utils.EditorGson;
 import imgui.ImGui;
+import imgui.flag.ImGuiTreeNodeFlags;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameObject {
 
-    private static int ID_COUNTER = 0;
-    private int uid = -1;
+    private static int ID_COUNTER = 1;
+    private int uid;
 
     public String name;
     public transient Transform transform;
@@ -38,7 +39,7 @@ public class GameObject {
                 try {
                     return componentClass.cast(c);
                 } catch (ClassCastException e) {
-                    throw new ClassCastException("Error of casting component - '" + componentClass.getName() + "' to '" + c.getClass().getName() + "'.");
+                    throw new ClassCastException(String.format("Error of casting component - '%s' to '%s'", componentClass.getName(), c.getClass().getName()));
                 }
         }
         return null;
@@ -64,10 +65,10 @@ public class GameObject {
     }
 
     public void imgui() {
-        this.name = EditorGUI.textFieldNoLabel("GameObject_Name_" + this.uid, this.name);
+        this.name = EditorGUI.textFieldNoLabel("GameObject_Name_" + this.uid, this.name, "Name");
 
         for (Component c : this.components)
-            if (ImGui.collapsingHeader(c.getClass().getSimpleName()))
+            if (ImGui.collapsingHeader(c.getClass().getSimpleName(), c.getClass() == Transform.class ? ImGuiTreeNodeFlags.DefaultOpen : ImGuiTreeNodeFlags.None))
                 c.imgui();
     }
 

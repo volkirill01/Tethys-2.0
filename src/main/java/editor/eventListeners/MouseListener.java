@@ -1,7 +1,8 @@
 package editor.eventListeners;
 
+import editor.editor.gui.ImGuiLayer;
 import editor.editor.windows.SceneView_Window;
-import editor.renderer.camera.BaseCamera;
+import editor.renderer.camera.EditorCamera;
 import editor.scenes.SceneManager;
 import editor.stuff.Window;
 import imgui.ImVec2;
@@ -10,6 +11,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
@@ -17,11 +19,11 @@ import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 public class MouseListener {
 
     private static double scrollX, scrollY;
-    private static double mouseXPos, mouseYPos, lastMouseXPos, lastMouseYPos, mouseWorldXPos, mouseWorldYPos, lastMouseWorldXPos, lastMouseWorldYPos;
+    private static double mousePosX, mousePosY, lastMousePosX, lastMousePosY, mouse2DWorldPosX, mouse2DWorldPosY, lastMouse2DWorldPosX, lastMouse2DWorldPosY;
 
     private static final int MOUSE_BUTTONS_COUNT = 9;
-    private static final boolean[] mouseButtonsDown = new boolean[MOUSE_BUTTONS_COUNT];
-    private static final boolean[] mouseButtonsClick = new boolean[MOUSE_BUTTONS_COUNT];
+    private static final boolean[] buttonsDown = new boolean[MOUSE_BUTTONS_COUNT];
+    private static final boolean[] buttonsClick = new boolean[MOUSE_BUTTONS_COUNT];
     private static int pressedButtonsCount = 0;
     private static boolean isDragging = false;
 
@@ -31,67 +33,67 @@ public class MouseListener {
     private MouseListener() {
         scrollX = 0.0f;
         scrollY = 0.0f;
-        mouseXPos = 0.0f;
-        mouseYPos = 0.0f;
-        lastMouseXPos = 0.0f;
-        lastMouseYPos = 0.0f;
+        mousePosX = 0.0f;
+        mousePosY = 0.0f;
+        lastMousePosX = 0.0f;
+        lastMousePosY = 0.0f;
     }
 
     public static void endFrame() {
         scrollX = 0.0f;
         scrollY = 0.0f;
-        lastMouseXPos = mouseXPos;
-        lastMouseYPos = mouseYPos;
-        lastMouseWorldXPos = mouseWorldXPos;
-        lastMouseWorldYPos = mouseWorldYPos;
-        Arrays.fill(mouseButtonsClick, false);
+        lastMousePosX = mousePosX;
+        lastMousePosY = mousePosY;
+        lastMouse2DWorldPosX = mouse2DWorldPosX;
+        lastMouse2DWorldPosY = mouse2DWorldPosY;
+        Arrays.fill(buttonsClick, false);
     }
 
     public static void clear() {
         scrollX = 0.0f;
         scrollY = 0.0f;
-        mouseXPos = 0.0f;
-        mouseYPos = 0.0f;
-        lastMouseXPos = 0.0f;
-        lastMouseYPos = 0.0f;
+        mousePosX = 0.0f;
+        mousePosY = 0.0f;
+        lastMousePosX = 0.0f;
+        lastMousePosY = 0.0f;
         pressedButtonsCount = 0;
         isDragging = false;
-        Arrays.fill(mouseButtonsDown, false);
-        Arrays.fill(mouseButtonsClick, false);
+        Arrays.fill(buttonsDown, false);
+        Arrays.fill(buttonsClick, false);
     }
 
     protected static void mousePositionCallback(long window, double mouseXPos, double mouseYPos) {
-        if (!SceneView_Window.getWantCaptureMouse())
+        if (!((SceneView_Window) Objects.requireNonNull(ImGuiLayer.getWindow(SceneView_Window.class))).getWantCaptureMouse())
             clear();
 
         if (pressedButtonsCount > 0)
             isDragging = true;
 
-        MouseListener.lastMouseXPos = MouseListener.mouseXPos;
-        MouseListener.lastMouseYPos = MouseListener.mouseYPos;
+        MouseListener.lastMousePosX = MouseListener.mousePosX;
+        MouseListener.lastMousePosY = MouseListener.mousePosY;
 
-        MouseListener.lastMouseWorldXPos = MouseListener.mouseWorldXPos;
-        MouseListener.lastMouseWorldYPos = MouseListener.mouseWorldYPos;
+        MouseListener.lastMouse2DWorldPosX = MouseListener.mouse2DWorldPosX;
+        MouseListener.lastMouse2DWorldPosY = MouseListener.mouse2DWorldPosY;
 
-        MouseListener.mouseXPos = mouseXPos;
-        MouseListener.mouseYPos = mouseYPos;
+        MouseListener.mousePosX = mouseXPos;
+        MouseListener.mousePosY = mouseYPos;
 
         MouseListener.calculateOrthographicPos();
     }
 
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
         if (button > MOUSE_BUTTONS_COUNT)
-            throw new IndexOutOfBoundsException("'" + button + "' - button out of range.");
+            throw new IndexOutOfBoundsException(String.format("'%d' - button out of range.", button));
 
         if (action == GLFW_PRESS) {
             pressedButtonsCount++;
 
-            mouseButtonsDown[button] = true;
-            mouseButtonsClick[button] = true;
+            buttonsDown[button] = true;
+            buttonsClick[button] = true;
         } else if (action == GLFW_RELEASE) {
             pressedButtonsCount--;
 
-            mouseButtonsDown[button] = false;
+            buttonsDown[button] = false;
             isDragging = pressedButtonsCount != 0 && isDragging;
         }
     }
@@ -108,7 +110,7 @@ public class MouseListener {
         );
 
         normalizedDeviceCoordinates.mul(2.0f).sub(1.0f, 1.0f);
-        BaseCamera camera = SceneManager.getCurrentScene().getCamera();
+        EditorCamera camera = SceneManager.getCurrentScene().getEditorCamera();
         Vector4f tmp = new Vector4f(normalizedDeviceCoordinates.x, normalizedDeviceCoordinates.y, 0.0f, 1.0f);
         Matrix4f inverseView = new Matrix4f(camera.getInverseViewMatrix());
         Matrix4f inverseProjection = new Matrix4f(camera.getInverseProjectionMatrix());
@@ -117,7 +119,7 @@ public class MouseListener {
     }
 
     protected static Vector2f worldToScreen(Vector2f worldCoordinates) {
-        BaseCamera camera = SceneManager.getCurrentScene().getCamera();
+        EditorCamera camera = SceneManager.getCurrentScene().getEditorCamera();
         Vector4f normalizeDeviceCoordinates = new Vector4f(worldCoordinates.x, worldCoordinates.y, 0.0f, 1.0f);
         Matrix4f viewMatrix = new Matrix4f(camera.getViewMatrix());
         Matrix4f projectionMatrix = new Matrix4f(camera.getProjectionMatrix());
@@ -128,9 +130,9 @@ public class MouseListener {
         return windowSpace;
     }
 
-    protected static float getMouseX() { return (float) mouseXPos; }
+    protected static float getMouseX() { return (float) mousePosX; }
 
-    protected static float getMouseY() { return (float) mouseYPos; }
+    protected static float getMouseY() { return (float) mousePosY; }
 
     protected static Vector2f getScreen() {
         float currentX = getMouseX() - gameViewportPos.x;
@@ -153,28 +155,28 @@ public class MouseListener {
 
         Vector4f tmp = new Vector4f(currentX, currentY, 0.0f, 1.0f);
 
-        BaseCamera camera = SceneManager.getCurrentScene().getCamera();
+        EditorCamera camera = SceneManager.getCurrentScene().getEditorCamera();
         Matrix4f viewProjection = new Matrix4f();
         camera.getInverseViewMatrix().mul(camera.getInverseProjectionMatrix(), viewProjection);
         tmp.mul(viewProjection);
 
-        mouseWorldXPos = tmp.x;
-        mouseWorldYPos = tmp.y;
+        mouse2DWorldPosX = tmp.x;
+        mouse2DWorldPosY = tmp.y;
     }
 
-    protected static Vector2f getOrthographicPos() { return new Vector2f((float) mouseWorldXPos, (float) mouseWorldYPos); }
+    protected static float getMouseDeltaX() { return (float) (lastMousePosX - mousePosX); }
 
-    protected static float getOrthographicXPos() { return (float) mouseWorldXPos; }
+    protected static float getMouseDeltaY() { return (float) (lastMousePosY - mousePosY); }
 
-    protected static float getOrthographicYPos() { return (float) mouseWorldYPos; }
+    protected static Vector2f get2DWorldPos() { return new Vector2f((float) mouse2DWorldPosX, (float) mouse2DWorldPosY); }
 
-    protected static float getMouseDeltaX() { return (float) (lastMouseXPos - mouseXPos); }
+    protected static float get2DWorldPosX() { return (float) mouse2DWorldPosX; }
 
-    protected static float getMouseDeltaY() { return (float) (lastMouseYPos - mouseYPos); }
+    protected static float get2DWorldPosY() { return (float) mouse2DWorldPosY; }
 
-    protected static float getMouseWorldDeltaXPosition() { return (float) (lastMouseWorldXPos - mouseWorldXPos); }
+    protected static float getMouse2DWorldDeltaPosX() { return (float) (lastMouse2DWorldPosX - mouse2DWorldPosX); }
 
-    protected static float getMouseWorldDeltaYPosition() { return (float) (lastMouseWorldYPos - mouseWorldYPos); }
+    protected static float getMouse2DWorldDeltaPosY() { return (float) (lastMouse2DWorldPosY - mouse2DWorldPosY); }
 
     protected static float getScrollX() { return (float) scrollX; }
 
@@ -182,16 +184,23 @@ public class MouseListener {
 
     protected static boolean isButtonDown(int button) {
         if (button > MOUSE_BUTTONS_COUNT)
-            throw new IndexOutOfBoundsException("'" + button + "' - button out of range.");
+            throw new IndexOutOfBoundsException(String.format("'%d' - button out of range.", button));
 
-        return mouseButtonsDown[button];
+        return buttonsDown[button];
     }
 
     protected static boolean isButtonClick(int button) {
         if (button > MOUSE_BUTTONS_COUNT)
-            throw new IndexOutOfBoundsException("'" + button + "' - button out of range.");
+            throw new IndexOutOfBoundsException(String.format("'%d' - button out of range.", button));
 
-        return mouseButtonsClick[button];
+        return buttonsClick[button];
+    }
+
+    protected static boolean isAnyButtonDown() {
+        for (boolean button : buttonsDown)
+            if (button)
+                return true;
+        return false;
     }
 
     protected static boolean isDragging() { return isDragging; }

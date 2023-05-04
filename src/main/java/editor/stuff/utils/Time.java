@@ -6,7 +6,7 @@ public class Time {
 
     private static float deltaTime = -1.0f;
 
-    public static float timeProgramStarted = (float) glfwGetTime();
+    public static final float timeProgramStarted = (float) glfwGetTime();
 
     public static float getTime() { return (float) glfwGetTime() - timeProgramStarted; }
 

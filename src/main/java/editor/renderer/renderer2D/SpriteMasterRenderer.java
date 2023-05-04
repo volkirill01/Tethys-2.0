@@ -1,7 +1,7 @@
 package editor.renderer.renderer2D;
 
 import editor.entity.GameObject;
-import editor.renderer.MasterRenderer;
+import editor.renderer.EntityRenderer;
 import editor.renderer.Texture;
 import org.joml.Matrix4f;
 
@@ -11,13 +11,10 @@ import java.util.List;
 
 public class SpriteMasterRenderer {
 
-    private final int MAX_BATCH_SIZE = 1_000;
+    private static final int MAX_BATCH_SIZE = 1_000;
     private final List<RenderBatch> batches = new ArrayList<>();
 
-    public void add(GameObject go) {
-        if (go.hasComponent(SpriteRenderer.class))
-            add(go.getComponent(SpriteRenderer.class));
-    }
+    public void add(GameObject go) { add(go.getComponent(SpriteRenderer.class)); }
 
     private void add(SpriteRenderer renderer) {
         boolean added = false;
@@ -42,16 +39,15 @@ public class SpriteMasterRenderer {
     }
 
     public void destroyGameObject(GameObject obj) {
-        if (!obj.hasComponent(SpriteRenderer.class)) return;
         for (RenderBatch batch : this.batches)
             if (batch.destroyIfExists(obj))
                 return;
     }
 
     public void render(Matrix4f projectionMatrix, Matrix4f viewMatrix) {
-        MasterRenderer.getCurrentShader().use();
-        for (RenderBatch batch : this.batches)
-            batch.render(projectionMatrix, viewMatrix);
-        MasterRenderer.getCurrentShader().detach();
+        EntityRenderer.getCurrentShader().bind();
+        for (int i = 0; i < this.batches.size(); i++)
+            this.batches.get(i).render(projectionMatrix, viewMatrix);
+        EntityRenderer.getCurrentShader().unbind();
     }
 }

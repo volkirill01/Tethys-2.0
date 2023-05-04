@@ -1,6 +1,5 @@
 package editor.editor.gui;
 
-import editor.TestFieldsWindow;
 import editor.stuff.Settings;
 import editor.stuff.customVariables.Color;
 import imgui.ImGui;
@@ -12,8 +11,6 @@ import imgui.type.ImString;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-
-import java.util.Arrays;
 
 public class EditorGUI {
 
@@ -34,31 +31,37 @@ public class EditorGUI {
         ImGui.popID();
     }
 
-    public static String textFieldNoLabel(String id, String text) {
+    public static String textFieldNoLabel(String id, String text) { return textFieldNoLabel(id, text, ""); }
+    public static String textFieldNoLabel(String id, String text, String hint) {
         ImGui.pushID("TextField_NoLabel_" + id);
 
-        ImString result = new ImString(text, 256);
+        ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
+        ImString ImString = new ImString(text, 256);
 
-        if (ImGui.inputText("##TextField_NoLabel_" + id, result))
-            text = result.get();
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() * 1.5f, ImGui.getStyle().getFramePaddingY());
+        ImGui.inputTextWithHint("##TextField_NoLabel_" + id, hint, ImString);
+        ImGui.popStyleVar();
 
         ImGui.popID();
 
-        return text;
+        return ImString.get();
     }
 
-    public static String field_String(String label, String field) {
+    public static String field_String(String label, String field) { return field_String(label, field, ""); }
+    public static String field_String(String label, String field, String hint) {
         beginField(label);
 
         ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
         ImString ImString = new ImString(field, 256);
-        if (ImGui.inputText("##field_String_" + label, ImString))
-            field = ImString.get();
+
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() * 1.5f, ImGui.getStyle().getFramePaddingY());
+        ImGui.inputTextWithHint("##field_String_" + label, hint, ImString);
+        ImGui.popStyleVar();
         ImGui.popItemWidth();
 
         endField();
 
-        return field;
+        return ImString.get();
     }
 
     public static boolean field_Boolean(String label, boolean field) {
@@ -72,12 +75,13 @@ public class EditorGUI {
         return field;
     }
 
-    public static float field_Float(String label, float field) {
+    public static float field_Float(String label, float field) { return field_Float(label, field, "%.3f%"); }
+    public static float field_Float(String label, float field, String format) {
         beginField(label);
 
         ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
         float[] ImFloat = { field };
-        if (ImGui.dragFloat("##field_Float_" + label, ImFloat))
+        if (ImGui.dragFloat("##field_Float_" + label, ImFloat, 0.1f, -Float.MAX_VALUE, Float.MAX_VALUE, format))
             field = ImFloat[0];
         ImGui.popItemWidth();
 
@@ -86,12 +90,13 @@ public class EditorGUI {
         return field;
     }
 
-    public static int field_Int(String label, int field) {
+    public static int field_Int(String label, int field) { return field_Int(label, field, "%d%"); }
+    public static int field_Int(String label, int field, String format) {
         beginField(label);
 
         ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
         int[] ImInt = { field };
-        if (ImGui.dragInt("##field_Int_" + label, ImInt))
+        if (ImGui.dragInt("##field_Int_" + label, ImInt, 1, -Integer.MAX_VALUE, Integer.MAX_VALUE, format))
             field = ImInt[0];
         ImGui.popItemWidth();
 
@@ -128,7 +133,7 @@ public class EditorGUI {
 
         ImGui.setCursorPos(startCursorPos.x, startCursorPos.y);
         ImGui.alignTextToFramePadding();
-        ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getFramePaddingX() * 2.0f);
+        ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getFramePaddingY() * 1.1f + 4.0f);
         ImGui.text(label);
         ImGui.setCursorPos(endCursorPos.x, endCursorPos.y);
 
@@ -170,8 +175,7 @@ public class EditorGUI {
 
         ImBoolean isValueChanged = new ImBoolean(false);
 
-        float spacing = ImGui.getStyle().getItemSpacingX();
-        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() * 2 - spacing) / 2.0f; // 2 buttons, 1 spacing between them
+        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() * 2 - ImGui.getStyle().getItemInnerSpacingX()) / 2; // 2 buttons, 1 spacing between them
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
         ImGui.pushItemWidth(widthEach);
 
@@ -180,7 +184,7 @@ public class EditorGUI {
         field.x = drawVectorField(field.x, resetValue.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach);
 
         ImGui.sameLine();
-        ImGui.setCursorPosX(ImGui.getCursorPosX() + spacing);
+        ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int yButtonColorU32 = ImGui.getColorU32(Settings.yAxisColor.r / 255.0f, Settings.yAxisColor.g / 255.0f, Settings.yAxisColor.b / 255.0f, Settings.yAxisColor.a / 255.0f);
         int yButtonHoverColorU32 = ImGui.getColorU32(Settings.yAxisColor_Hover.r / 255.0f, Settings.yAxisColor_Hover.g / 255.0f, Settings.yAxisColor_Hover.b / 255.0f, Settings.yAxisColor_Hover.a / 255.0f);
         field.y = drawVectorField(field.y, resetValue.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach);
@@ -201,8 +205,7 @@ public class EditorGUI {
 
         ImBoolean isValueChanged = new ImBoolean(false);
 
-        float spacing = ImGui.getStyle().getItemSpacingX();
-        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() * 3 - spacing * 2) / 3.0f; // 3 buttons, 2 spacing between them
+        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() * 3 - ImGui.getStyle().getItemInnerSpacingX() * 2) / 3; // 3 buttons, 2 spacing between them
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
         ImGui.pushItemWidth(widthEach);
 
@@ -211,13 +214,13 @@ public class EditorGUI {
         field.x = drawVectorField(field.x, resetValue.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach);
 
         ImGui.sameLine();
-        ImGui.setCursorPosX(ImGui.getCursorPosX() + spacing);
+        ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int yButtonColorU32 = ImGui.getColorU32(Settings.yAxisColor.r / 255.0f, Settings.yAxisColor.g / 255.0f, Settings.yAxisColor.b / 255.0f, Settings.yAxisColor.a / 255.0f);
         int yButtonHoverColorU32 = ImGui.getColorU32(Settings.yAxisColor_Hover.r / 255.0f, Settings.yAxisColor_Hover.g / 255.0f, Settings.yAxisColor_Hover.b / 255.0f, Settings.yAxisColor_Hover.a / 255.0f);
         field.y = drawVectorField(field.y, resetValue.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach);
 
         ImGui.sameLine();
-        ImGui.setCursorPosX(ImGui.getCursorPosX() + spacing);
+        ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int zButtonColorU32 = ImGui.getColorU32(Settings.zAxisColor.r / 255.0f, Settings.zAxisColor.g / 255.0f, Settings.zAxisColor.b / 255.0f, Settings.zAxisColor.a / 255.0f);
         int zButtonHoverColorU32 = ImGui.getColorU32(Settings.zAxisColor_Hover.r / 255.0f, Settings.zAxisColor_Hover.g / 255.0f, Settings.zAxisColor_Hover.b / 255.0f, Settings.zAxisColor_Hover.a / 255.0f);
         field.z = drawVectorField(field.z, resetValue.z, isValueChanged, "Z", zButtonColorU32, zButtonHoverColorU32, widthEach);
@@ -238,8 +241,7 @@ public class EditorGUI {
 
         ImBoolean isValueChanged = new ImBoolean(false);
 
-        float spacing = ImGui.getStyle().getItemSpacingX();
-        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() * 4 - spacing * 3) / 4.0f; // 4 buttons, 3 spacing between them
+        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() * 4 - ImGui.getStyle().getItemInnerSpacingX() * 3) / 4; // 4 buttons, 3 spacing between them
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
         ImGui.pushItemWidth(widthEach);
 
@@ -248,19 +250,19 @@ public class EditorGUI {
         field.x = drawVectorField(field.x, resetValue.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach);
 
         ImGui.sameLine();
-        ImGui.setCursorPosX(ImGui.getCursorPosX() + spacing);
+        ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int yButtonColorU32 = ImGui.getColorU32(Settings.yAxisColor.r / 255.0f, Settings.yAxisColor.g / 255.0f, Settings.yAxisColor.b / 255.0f, Settings.yAxisColor.a / 255.0f);
         int yButtonHoverColorU32 = ImGui.getColorU32(Settings.yAxisColor_Hover.r / 255.0f, Settings.yAxisColor_Hover.g / 255.0f, Settings.yAxisColor_Hover.b / 255.0f, Settings.yAxisColor_Hover.a / 255.0f);
         field.y = drawVectorField(field.y, resetValue.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach);
 
         ImGui.sameLine();
-        ImGui.setCursorPosX(ImGui.getCursorPosX() + spacing);
+        ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int zButtonColorU32 = ImGui.getColorU32(Settings.zAxisColor.r / 255.0f, Settings.zAxisColor.g / 255.0f, Settings.zAxisColor.b / 255.0f, Settings.zAxisColor.a / 255.0f);
         int zButtonHoverColorU32 = ImGui.getColorU32(Settings.zAxisColor_Hover.r / 255.0f, Settings.zAxisColor_Hover.g / 255.0f, Settings.zAxisColor_Hover.b / 255.0f, Settings.zAxisColor_Hover.a / 255.0f);
         field.z = drawVectorField(field.z, resetValue.z, isValueChanged, "Z", zButtonColorU32, zButtonHoverColorU32, widthEach);
 
         ImGui.sameLine();
-        ImGui.setCursorPosX(ImGui.getCursorPosX() + spacing);
+        ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int wButtonColorU32 = ImGui.getColorU32(Settings.wAxisColor.r / 255.0f, Settings.wAxisColor.g / 255.0f, Settings.wAxisColor.b / 255.0f, Settings.wAxisColor.a / 255.0f);
         int wButtonHoverColorU32 = ImGui.getColorU32(Settings.wAxisColor_Hover.r / 255.0f, Settings.wAxisColor_Hover.g / 255.0f, Settings.wAxisColor_Hover.b / 255.0f, Settings.wAxisColor_Hover.a / 255.0f);
         field.w = drawVectorField(field.w, resetValue.w, isValueChanged, "W", wButtonColorU32, wButtonHoverColorU32, widthEach);
@@ -319,7 +321,7 @@ public class EditorGUI {
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.0f, 0.0f, 0.0f, 0.0f);
 
         ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
-        String[] enumValues = getEnumValues(field.getClass());
+        String[] enumValues = getEnumValues(field);
         String enumType = field.name();
         ImInt index = new ImInt(indexOf(enumType, enumValues));
         if (ImGui.combo("##field_Enum_" + label, index, enumValues, enumValues.length))
@@ -331,10 +333,10 @@ public class EditorGUI {
         endField();
         return field;
     }
-    private static <T extends Enum<T>> String[] getEnumValues(Class<T> enumType) {
-        String[] enumValues = new String[enumType.getEnumConstants().length];
+    private static <T extends Enum<T>> String[] getEnumValues(Enum<?> enumType) {
+        String[] enumValues = new String[enumType.getClass().getEnumConstants().length];
         int i = 0;
-        for (T enumIntegerValue : enumType.getEnumConstants()) {
+        for (Enum<?> enumIntegerValue : enumType.getClass().getEnumConstants()) {
             enumValues[i] = enumIntegerValue.name();
             i++;
         }

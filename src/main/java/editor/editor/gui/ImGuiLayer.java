@@ -1,11 +1,14 @@
 package editor.editor.gui;
 
 import editor.TestFieldsWindow;
+import editor.eventListeners.Input;
 import editor.editor.windows.*;
 import editor.eventListeners.KeyCode;
 import editor.eventListeners.KeyListener;
 import editor.eventListeners.MouseListener;
 import editor.scenes.SceneManager;
+import editor.stuff.Maths;
+import editor.stuff.Settings;
 import editor.stuff.Window;
 import editor.stuff.utils.Time;
 import imgui.ImGui;
@@ -17,6 +20,8 @@ import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImBoolean;
+import imgui.type.ImInt;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 
@@ -37,13 +42,8 @@ public class ImGuiLayer {
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
 
-//    private SceneView_Window sceneView_Window;
-//    private GameView_Window gameView_Window;
-//    private Outliner_Window outliner_Window;
-//    private SceneHierarchy_Window sceneHierarchy_Window;
-
     private static int windowId = 0;
-    private final Map<Integer, Map.Entry<ImBoolean, EditorImGuiWindow>> windows = new LinkedHashMap<>();
+    private static final Map<Integer, Map.Entry<ImBoolean, EditorImGuiWindow>> windows = new LinkedHashMap<>();
     private SceneView_Window sceneView_Window;
     private static EditorImGuiWindow windowOnFullscreen = null;
 
@@ -58,12 +58,6 @@ public class ImGuiLayer {
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), sceneView_Window));
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Outliner_Window()));
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new SceneHierarchy_Window()));
-
-
-//        this.sceneView_Window = new SceneView_Window();
-//        this.gameView_Window = new GameView_Window();
-//        this.outliner_Window = new Outliner_Window();
-//        this.sceneHierarchy_Window = new SceneHierarchy_Window();
     }
 
     // Initialize Dear ImGui.
@@ -125,7 +119,7 @@ public class ImGuiLayer {
 
         // ------------------------------------------------------------
         // GLFW callbacks to handle user input
-        glfwSetKeyCallback(glfwWindow, (w, key, scancode, action, mods) -> {
+        GLFW.glfwSetKeyCallback(glfwWindow, (w, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS)
                 io.setKeysDown(key, true);
             else if (action == GLFW_RELEASE)
@@ -159,7 +153,7 @@ public class ImGuiLayer {
             if (!io.getWantCaptureMouse() && mouseDown[1])
                 ImGui.setWindowFocus(null);
 
-            if ((!io.getWantCaptureMouse() || sceneView_Window.getWantCaptureMouse()) && sceneView_Window.isVisible())
+            if ((!io.getWantCaptureMouse() || ((SceneView_Window) Objects.requireNonNull(getWindow(SceneView_Window.class))).getWantCaptureMouse()) && sceneView_Window.isVisible())
                 MouseListener.mouseButtonCallback(w, button, action, mods);
         });
 
@@ -167,7 +161,7 @@ public class ImGuiLayer {
             io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
             io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
 
-            if ((!io.getWantCaptureMouse() || sceneView_Window.getWantCaptureMouse()) && sceneView_Window.isVisible())
+            if ((!io.getWantCaptureMouse() || ((SceneView_Window) Objects.requireNonNull(getWindow(SceneView_Window.class))).getWantCaptureMouse()) && sceneView_Window.isVisible())
                 MouseListener.mouseScrollCallback(w, xOffset, yOffset);
         });
 
@@ -192,9 +186,10 @@ public class ImGuiLayer {
         // This method SHOULD be called after you've initialized your ImGui configuration (fonts and so on).
         // ImGui context should be created as well.
         imGuiGlfw.init(glfwWindow, false);
-        imGuiGl3.init("#version 330 core");
+        imGuiGl3.init("#version " + Settings.shaderVersion);
     }
 
+    private final ImInt testTextureID = new ImInt(0);
     public void update() {
         startFrame(Time.deltaTime());
 
@@ -203,10 +198,21 @@ public class ImGuiLayer {
             setupDockSpace(menuBarHeight);
             // TODO DELETE DRAWING OF CURRENT SCENE
             SceneManager.getCurrentScene().imgui();
-            ImGui.showDemoWindow();      // TODO Delete this
-            ImGui.showStackToolWindow(); // TODO Delete this
-            ImGui.showMetricsWindow(); // TODO Delete this
-            TestFieldsWindow.imgui(); // TODO Delete this
+            if (Window.debugMode) { // TODO Delete this
+                ThemeChanger_Window.imgui();
+
+                ImGui.begin("_Debug_");
+                ImGui.inputInt("Test Texture ID", testTextureID);
+                testTextureID.set(Maths.clamp(testTextureID.get(), 0, Integer.MAX_VALUE));
+                ImGui.image(testTextureID.get(), ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailX(), 0, 1, 1, 0);
+                ImGui.text("Hover GameObject ID: " + Window.getPickingTexture().readPixel((int) Input.getMouseScreenPositionX(), (int) Input.getMouseScreenPositionY()));
+                ImGui.end();
+
+                ImGui.showDemoWindow();
+                ImGui.showStackToolWindow();
+                ImGui.showMetricsWindow();
+                TestFieldsWindow.imgui();
+            }
 
             try {
                 for (int windowId : windows.keySet())
@@ -298,26 +304,26 @@ public class ImGuiLayer {
         ImGui.end(); // End of Editor DockSpace
     }
 
-    public static void setWindowOnFullscreen(EditorImGuiWindow windowOnFullscreen) {
-//        if (windowOnFullscreen != null) // TODO FIX THIS
+    public static void setWindowOnFullscreen(EditorImGuiWindow windowOnFullscreen) { // TODO FIX THIS
+//        if (windowOnFullscreen != null)
 //            windowOnFullscreen = new EditorImGuiWindow<T>();
 //        else
-        windowOnFullscreen = null;
+//        windowOnFullscreen = null;
     }
 
     public static EditorImGuiWindow getWindowOnFullscreen() { return windowOnFullscreen; }
 
-    public <T extends EditorImGuiWindow> EditorImGuiWindow getWindow(Class<T> window) {
-        if (!window.isAssignableFrom(EditorImGuiWindow.class)) throw new RuntimeException("This class not assignable from EditorImGUiWindow.");
+    public static  <T extends EditorImGuiWindow> EditorImGuiWindow getWindow(Class<T> window) {
+//        if (!window.isAssignableFrom(EditorImGuiWindow.class)) throw new RuntimeException("This class not assignable from EditorImGUiWindow.");
 
-        for (int windowId : this.windows.keySet())
-            if (this.windows.get(windowId).getValue().getClass() == window)
-                return this.windows.get(windowId).getValue();
+        for (int windowId : windows.keySet())
+            if (windows.get(windowId).getValue().getClass() == window)
+                return windows.get(windowId).getValue();
 
         return null;
     }
 
-    public EditorImGuiWindow getWindow(int windowId) { return this.windows.get(windowId).getValue(); }
+    public static EditorImGuiWindow getWindow(int windowId) { return windows.get(windowId).getValue(); }
 
     public static void selectWindow(EditorImGuiWindow window) { // TODO FIX THIS METHOD
 //        Map<Integer, Map.Entry<ImBoolean, EditorImGuiWindow>> tmp = new HashMap<>(this.windows);
@@ -333,12 +339,12 @@ public class ImGuiLayer {
 //        this.windows = tmpMap;
     }
 
-    public <T extends EditorImGuiWindow> boolean setWindowOpen(Class<T> window, boolean state) {
-        if (!window.isAssignableFrom(EditorImGuiWindow.class)) throw new RuntimeException("This class not assignable from EditorImGUiWindow.");
+    public static  <T extends EditorImGuiWindow> boolean setWindowOpen(Class<T> window, boolean state) {
+//        if (!window.isAssignableFrom(EditorImGuiWindow.class)) throw new RuntimeException("This class not assignable from EditorImGUiWindow.");
 
-        for (int windowId : this.windows.keySet())
-            if (this.windows.get(windowId).getValue().getClass() == window) {
-                this.windows.get(windowId).getKey().set(state);
+        for (int windowId : windows.keySet())
+            if (windows.get(windowId).getValue().getClass() == window) {
+                windows.get(windowId).getKey().set(state);
                 return true;
             }
         return false;

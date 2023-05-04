@@ -7,6 +7,7 @@ import editor.physics.physics2D.components.colliders.Box2DCollider;
 import editor.physics.physics2D.components.colliders.Circle2DCollider;
 import editor.physics.physics2D.components.colliders.Pillbox2DCollider;
 import editor.renderer.camera.Camera;
+import editor.renderer.renderer3D.MeshRenderer;
 import imgui.ImGui;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 
 public class Outliner_Window extends EditorImGuiWindow {
 
-    protected static List<GameObject> activeGameObjects = new ArrayList<>();
+    protected static final List<GameObject> activeGameObjects = new ArrayList<>();
     protected static GameObject activeGameObject = null;
 
     public Outliner_Window() { super("\uEF4E Outliner"); }
@@ -44,6 +45,10 @@ public class Outliner_Window extends EditorImGuiWindow {
                 if (!activeGameObject.hasComponent(Camera.class))
                     if (ImGui.menuItem("Add Camera"))
                         activeGameObject.addComponent(new Camera());
+
+                if (!activeGameObject.hasComponent(MeshRenderer.class))
+                    if (ImGui.menuItem("Add MeshRender"))
+                        activeGameObject.addComponent(new MeshRenderer());
 
                 ImGui.endPopup();
             }

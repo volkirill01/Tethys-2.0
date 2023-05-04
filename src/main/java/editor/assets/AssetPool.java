@@ -1,26 +1,13 @@
 package editor.assets;
 
-import de.javagl.obj.*;
-import editor.audio.Sound;
+import editor.parsers.ModelParser;
 import editor.renderer.Texture;
+import editor.audio.Sound;
 import editor.renderer.renderer2D.sprite.SpriteSheet;
+import editor.renderer.renderer3D.mesh.Mesh;
 import editor.renderer.shader.Shader;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL33;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.*;
-
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class AssetPool {
 
@@ -54,7 +41,7 @@ public class AssetPool {
 
     public static SpriteSheet getSpriteSheet(String filepath) {
         if (!spriteSheets.containsKey(filepath))
-            throw new NullPointerException("SpriteSheet not found - '" + filepath + "'.");
+            throw new NullPointerException(String.format("SpriteSheet not found - '%s'", filepath));
 
         return spriteSheets.getOrDefault(filepath, null);
     }
@@ -78,4 +65,6 @@ public class AssetPool {
         sounds.put(filepath, newSound);
         return newSound;
     }
+
+    public static Mesh getMesh(String filepath) { return ModelParser.loadFromFile(filepath); }
 }

@@ -5,6 +5,7 @@ import editor.editor.gui.EditorThemeSystem;
 import editor.editor.windows.Outliner_Window;
 import editor.entity.GameObject;
 import editor.eventListeners.Input;
+import editor.eventListeners.KeyCode;
 import editor.eventListeners.KeyListener;
 import editor.eventListeners.MouseListener;
 import editor.editor.gui.ImGuiLayer;
@@ -12,22 +13,21 @@ import editor.observers.EventSystem;
 import editor.observers.Observer;
 import editor.observers.events.Event;
 import editor.physics.physics2D.Physics2D;
+import editor.renderer.EntityRenderer;
+import editor.renderer.RenderCommand;
 import editor.renderer.camera.Camera;
-import editor.renderer.Framebuffer;
-import editor.renderer.MasterRenderer;
 import editor.renderer.debug.DebugDraw;
-import editor.renderer.debug.DebugGrid;
 import editor.renderer.shader.Shader;
 import editor.renderer.stuff.Fbo;
 import editor.renderer.stuff.PickingTexture;
 import editor.scenes.SceneManager;
-import editor.stuff.inputActions.KeyboardControls;
-import editor.stuff.inputActions.MouseControls;
+import editor.stuff.customVariables.Color;
 import editor.stuff.utils.Time;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
@@ -53,6 +53,7 @@ public class Window implements Observer {
     private static int width, height;
     private static int screen_width, screen_height;
     private static final String title = "Tethys";
+    private static boolean isMinimized = false;
 
     private static long glfwWindow;
 
@@ -61,11 +62,12 @@ public class Window implements Observer {
 
     private static ImGuiLayer imguiLayer;
 
-    private static Fbo framebuffer;
-//    private static Framebuffer framebuffer;
+    private static Fbo screenFramebuffer;
     private static PickingTexture pickingTexture;
 
     private static boolean runtimePlaying = false;
+
+    public static boolean debugMode = false; // TODO DELETE THIS
 
     public void run() {
         EventSystem.addObserver(this);
@@ -85,7 +87,7 @@ public class Window implements Observer {
     }
 
     private void init() {
-        // Setup an Error callback
+        // Set up an Error callback
         GLFWErrorCallback.createPrint(System.err).set();
 
         // Initialize GLFW
@@ -142,10 +144,9 @@ public class Window implements Observer {
         imguiLayer = new ImGuiLayer(glfwWindow);
         imguiLayer.initImGui();
 
-        EditorThemeSystem.changeTheme(EditorThemeSystem.darkTheme());
+        EditorThemeSystem.setDarkTheme();
 
-        framebuffer = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_RENDER_BUFFER);
-//        framebuffer = new Framebuffer(Window.getScreenWidth(), Window.getScreenHeight());
+        screenFramebuffer = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_RENDER_BUFFER);
         pickingTexture = new PickingTexture(Window.getScreenWidth(), Window.getScreenHeight());
         glViewport(0, 0, Window.getScreenWidth(), Window.getScreenHeight());
 
@@ -167,52 +168,52 @@ public class Window implements Observer {
             // Poll events
             glfwPollEvents();
 
-            // Update Listeners
-            KeyboardControls.update();
-            MouseControls.update();
+            if (!isMinimized) {
+                // Render pass 1. Render to picking texture
+                glDisable(GL_BLEND);
+                pickingTexture.bind();
 
-            // Render pass 1. Render to picking texture
-            glDisable(GL_BLEND);
-            pickingTexture.bind();
+                glViewport(0, 0, Window.getScreenWidth(), Window.getScreenHeight());
+                RenderCommand.setClearColor(Color.BLACK);
+                RenderCommand.clear(RenderCommand.BufferBit.ColorAndDepthBuffer);
 
-            glViewport(0, 0, Window.getScreenWidth(), Window.getScreenHeight());
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                renderPass(pickingShader, SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix(), SceneManager.getCurrentScene().getEditorCamera().getViewMatrix());
 
-            renderPass(pickingShader, SceneManager.getCurrentScene().getCamera().getProjectionMatrix(), SceneManager.getCurrentScene().getCamera().getViewMatrix());
+                pickingTexture.unbind();
+                glEnable(GL_BLEND);
 
-            pickingTexture.unbind();
-            glEnable(GL_BLEND);
+                // Render pass 2. Render actual scene
+                DebugDraw.beginFrame();
 
-            // Render pass 2. Render actual scene
-            DebugDraw.beginFrame();
+                glfwSetWindowTitle(glfwWindow, title + " FPS: " + (1.0f / Time.deltaTime()));
 
-            glfwSetWindowTitle(glfwWindow, title + " FPS: " + (1.0f / Time.deltaTime()));
+                screenFramebuffer.bind();
 
-            framebuffer.bind();
-            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                if (Time.deltaTime() >= 0.0f) {
+//                    DebugGrid.addGrid(); // TODO FIX GRID DRAWING
 
-            if (Time.deltaTime() >= 0.0f) {
-                DebugGrid.addGrid();
+                    if (runtimePlaying)
+                        SceneManager.getCurrentScene().update();
+                    else
+                        SceneManager.getCurrentScene().editorUpdate();
 
-                if (runtimePlaying)
-                    SceneManager.getCurrentScene().update();
-                else
-                    SceneManager.getCurrentScene().editorUpdate();
+                    renderPass(defaultShader, SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix(), SceneManager.getCurrentScene().getEditorCamera().getViewMatrix());
 
-                renderPass(defaultShader, SceneManager.getCurrentScene().getCamera().getProjectionMatrix(), SceneManager.getCurrentScene().getCamera().getViewMatrix());
+                    DebugDraw.draw();
+                }
 
-                DebugDraw.draw();
-            }
-            framebuffer.unbind();
+                if (Input.buttonDown(KeyCode.Left_Alt) && Input.buttonDown(KeyCode.Left_Shift) && Input.buttonClick(KeyCode.B))
+                    debugMode = !debugMode;
 
-            for (Camera c : SceneManager.getCurrentScene().getAllCameras()) {
-                c.getFob().bind();
-                glClearColor(c.getBackgroundColor().r / 255.0f, c.getBackgroundColor().g / 255.0f, c.getBackgroundColor().b / 255.0f, 1.0f);
-                glClear(GL_COLOR_BUFFER_BIT);
-                renderPass(defaultShader, c.getProjectionMatrix(), c.getViewMatrix());
-                c.getFob().unbind();
+                screenFramebuffer.unbind();
+
+                for (Camera c : SceneManager.getCurrentScene().getAllCameras()) {
+                    c.getFob().bind();
+                    glClearColor(c.getBackgroundColor().r / 255.0f, c.getBackgroundColor().g / 255.0f, c.getBackgroundColor().b / 255.0f, 1.0f);
+                    glClear(GL_COLOR_BUFFER_BIT);
+                    renderPass(defaultShader, c.getProjectionMatrix(), c.getViewMatrix());
+                    c.getFob().unbind();
+                }
             }
 
             // Display Editors GUI
@@ -232,7 +233,7 @@ public class Window implements Observer {
     }
 
     private static void renderPass(Shader shader, Matrix4f projectionMatrix, Matrix4f viewMatrix) {
-        MasterRenderer.bindShader(shader);
+        EntityRenderer.setShader(shader);
         SceneManager.getCurrentScene().render(projectionMatrix, viewMatrix);
     }
 
@@ -243,9 +244,11 @@ public class Window implements Observer {
         windowResizeCallback(glfwWindow, width[0], height[0]);
     }
 
-    private static void windowResizeCallback(long w, int newWidth, int newHeight) {
+    private static void windowResizeCallback(long window, int newWidth, int newHeight) {
         Window.setWidth(newWidth);
         Window.setHeight(newHeight);
+
+        isMinimized = width == 0 || height == 0;
     }
 
     private static void closeWindow() {
@@ -294,8 +297,7 @@ public class Window implements Observer {
 
     public static void setHeight(int height) { Window.height = height; }
 
-    public static Fbo getFramebuffer() { return Window.framebuffer; }
-//    public static Framebuffer getFramebuffer() { return Window.framebuffer; }
+    public static Fbo getScreenFramebuffer() { return Window.screenFramebuffer; }
 
     public static float getTargetAspectRatio() { return 16.0f / 9.0f; }
 
@@ -321,12 +323,8 @@ public class Window implements Observer {
                 SceneManager.changeScene("tmpRuntimeScene.scene"); // TODO LOAD FROM TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
                 Outliner_Window.clearSelected();
             }
-            case GameEngine_SaveScene -> {
-                SceneManager.getCurrentScene().saveAs("level.scene");
-            }
-            case GameEngine_ReloadScene -> {
-                SceneManager.changeScene("level.scene");
-            }
+            case GameEngine_SaveScene -> SceneManager.getCurrentScene().saveAs("level.scene");
+            case GameEngine_ReloadScene -> SceneManager.changeScene("level.scene");
         }
     }
 }

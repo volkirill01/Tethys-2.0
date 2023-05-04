@@ -2,6 +2,7 @@ package editor.stuff.inputActions;
 
 import editor.editor.windows.Outliner_Window;
 import editor.entity.GameObject;
+import editor.entity.component.Component;
 import editor.eventListeners.Input;
 import editor.eventListeners.KeyCode;
 import editor.scenes.SceneManager;
@@ -10,18 +11,19 @@ import editor.stuff.utils.Time;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class KeyboardControls {
+public class KeyboardControls extends Component {
 
-    private static final float startDebounce = 0.2f;
-    private static float debounce = startDebounce;
+    private final float startDebounce = 0.2f;
+    private float debounce = this.startDebounce;
 
     private static final float smallMoveMultiplayer = 0.1f;
     private static final float normalMoveMultiplayer = 1.0f;
-    private static float currentMoveMultiplayer = normalMoveMultiplayer;
 
-    public static void update() {
-        debounce -= Time.deltaTime();
+    @Override
+    public void update() {
+        this.debounce -= Time.deltaTime();
 
         List<GameObject> activeGameObjects = Outliner_Window.getActiveGameObjects();
 
@@ -36,7 +38,7 @@ public class KeyboardControls {
                     Outliner_Window.addActiveGameObject(copy);
                 }
             } else {
-                GameObject copy = Outliner_Window.getActiveGameObject().copy();
+                GameObject copy = Objects.requireNonNull(Outliner_Window.getActiveGameObject()).copy();
                 copy.transform.position.add(Settings.GRID_WIDTH, 0.0f, 0.0f);
                 SceneManager.getCurrentScene().addGameObjectToScene(copy);
                 Outliner_Window.setActiveGameObject(copy);
@@ -52,49 +54,48 @@ public class KeyboardControls {
             return;
         }
 
-        if (Input.buttonDown(KeyCode.Page_Down) && debounce < 0.0f) {
-            debounce = startDebounce;
+        if (Input.buttonDown(KeyCode.Page_Down) && this.debounce < 0.0f) {
+            this.debounce = this.startDebounce;
 
             for (GameObject obj : activeGameObjects)
                 obj.transform.setZIndex(obj.transform.getZIndex() - 1);
             return;
         }
-        if (Input.buttonDown(KeyCode.Page_Up) && debounce < 0.0f) {
-            debounce = startDebounce;
+        if (Input.buttonDown(KeyCode.Page_Up) && this.debounce < 0.0f) {
+            this.debounce = this.startDebounce;
 
             for (GameObject obj : activeGameObjects)
                 obj.transform.setZIndex(obj.transform.getZIndex() + 1);
             return;
         }
 
+        float currentMoveMultiplayer = normalMoveMultiplayer;
         if (Input.buttonDown(KeyCode.Left_Shift) || Input.buttonDown(KeyCode.Right_Shift))
             currentMoveMultiplayer = smallMoveMultiplayer;
-        else
-            currentMoveMultiplayer = normalMoveMultiplayer;
 
-        if (Input.buttonDown(KeyCode.Arrow_Up) && debounce < 0.0f) {
-            debounce = startDebounce;
+        if (Input.buttonDown(KeyCode.Arrow_Up) && this.debounce < 0.0f) {
+            this.debounce = this.startDebounce;
 
             for (GameObject obj : activeGameObjects)
                 obj.transform.position.y += Settings.GRID_HEIGHT * currentMoveMultiplayer;
             return;
         }
-        if (Input.buttonDown(KeyCode.Arrow_Down) && debounce < 0.0f) {
-            debounce = startDebounce;
+        if (Input.buttonDown(KeyCode.Arrow_Down) && this.debounce < 0.0f) {
+            this.debounce = this.startDebounce;
 
             for (GameObject obj : activeGameObjects)
                 obj.transform.position.y -= Settings.GRID_HEIGHT * currentMoveMultiplayer;
             return;
         }
-        if (Input.buttonDown(KeyCode.Arrow_Left) && debounce < 0.0f) {
-            debounce = startDebounce;
+        if (Input.buttonDown(KeyCode.Arrow_Left) && this.debounce < 0.0f) {
+            this.debounce = this.startDebounce;
 
             for (GameObject obj : activeGameObjects)
                 obj.transform.position.x -= Settings.GRID_WIDTH * currentMoveMultiplayer;
             return;
         }
-        if (Input.buttonDown(KeyCode.Arrow_Right) && debounce < 0.0f) {
-            debounce = startDebounce;
+        if (Input.buttonDown(KeyCode.Arrow_Right) && this.debounce < 0.0f) {
+            this.debounce = this.startDebounce;
 
             for (GameObject obj : activeGameObjects)
                 obj.transform.position.x += Settings.GRID_WIDTH * currentMoveMultiplayer;

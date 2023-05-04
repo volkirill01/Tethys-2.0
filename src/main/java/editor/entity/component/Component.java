@@ -31,7 +31,7 @@ public abstract class Component {
                 if (isPrivate)
                     field.setAccessible(true);
 
-                Class type = field.getType();
+                Class<?> type = field.getType();
                 Object value = field.get(this);
                 String name = field.getName();
                 if (Settings.variableNamesStartsUpperCase)
@@ -64,23 +64,6 @@ public abstract class Component {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-    }
-
-    private <T extends Enum<T>> String[] getEnumValues(Class<T> enumType) {
-        String[] enumValues = new String[enumType.getEnumConstants().length];
-        int i = 0;
-        for (T enumIntegerValue : enumType.getEnumConstants()) {
-            enumValues[i] = enumIntegerValue.name();
-            i++;
-        }
-        return enumValues;
-    }
-
-    private int indexOf(String str, String[] array) {
-        for (int i = 0; i < array.length; i++)
-            if (str.equals(array[i]))
-                return i;
-        return -1;
     }
 
     public void start() { }

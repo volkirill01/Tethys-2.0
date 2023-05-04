@@ -10,9 +10,9 @@ import static org.lwjgl.system.libc.LibCStdlib.free;
 
 public class Sound {
 
-    private int bufferID;
-    private int sourceID;  // TODO MOVE THIS IN SEPARATE COMPONENT
-    private String filepath;
+    private final int bufferID;
+    private final int sourceID;  // TODO MOVE THIS IN SEPARATE COMPONENT
+    private final String filepath;
 
     private boolean isPlaying = false;
 
@@ -29,7 +29,7 @@ public class Sound {
         if (rawAudioBuffer == null) {
             stackPop();
             stackPop();
-            throw new RuntimeException("Could not load sound - '" + filepath + "'");
+            throw new RuntimeException(String.format("Could not load sound - '%s'", filepath));
         }
 
         // Retrieve the extra information that was stored in the buffers by stb
@@ -45,7 +45,7 @@ public class Sound {
         switch (channels) {
             case 1 -> format = AL_FORMAT_MONO16;
             case 2 -> format = AL_FORMAT_STEREO16;
-            default -> throw new RuntimeException("Sound contains unknown number of channels - '" + filepath + "'");
+            default -> throw new IllegalStateException(String.format("Sound contains unknown number of channels - '%s'", filepath));
         }
 
         this.bufferID = alGenBuffers();

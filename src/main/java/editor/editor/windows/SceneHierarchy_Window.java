@@ -26,6 +26,9 @@ public class SceneHierarchy_Window extends EditorImGuiWindow {
 
             ImGui.pushID("SceneHierarchy_GO_" + index);
             boolean treeNodeOpen = drawTreeNode(obj, index);
+            // GameObject1
+            // =========== // TODO ADD SEPARATORS
+            // GameObject2
             ImGui.popID();
 
             if (treeNodeOpen)

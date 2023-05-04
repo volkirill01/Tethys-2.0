@@ -1,19 +1,24 @@
 package editor.renderer.renderer2D;
 
 import editor.entity.GameObject;
-import editor.renderer.MasterRenderer;
+import editor.renderer.EntityRenderer;
 import editor.renderer.Texture;
+import editor.renderer.buffers.VertexArray;
+import editor.renderer.buffers.bufferLayout.BufferElement;
+import editor.renderer.buffers.bufferLayout.BufferLayout;
+import editor.renderer.buffers.bufferLayout.ShaderDataType;
 import editor.renderer.shader.Shader;
+import editor.renderer.buffers.IndexBuffer;
+import editor.renderer.buffers.VertexBuffer;
 import editor.stuff.customVariables.Color;
 import org.joml.*;
 import org.joml.Math;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
 
 public class RenderBatch implements Comparable<RenderBatch> {
 
@@ -27,11 +32,6 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private final int TEXTURE_ID_SIZE = 1;
     private final int ENTITY_ID_SIZE = 1;
 
-    private final int POS_OFFSET = 0;
-    private final int COLOR_OFFSET = POS_OFFSET + POS_SIZE * Float.BYTES;
-    private final int TEXTURE_COORDINATES_OFFSET = COLOR_OFFSET + COLOR_SIZE * Float.BYTES;
-    private final int TEXTURE_ID_OFFSET = TEXTURE_COORDINATES_OFFSET + TEXTURE_COORDINATES_SIZE * Float.BYTES;
-    private final int ENTITY_ID_OFFSET = TEXTURE_ID_OFFSET + TEXTURE_ID_SIZE * Float.BYTES;
     private final int VERTEX_SIZE = POS_SIZE + COLOR_SIZE + TEXTURE_COORDINATES_SIZE + TEXTURE_ID_SIZE + ENTITY_ID_SIZE;
 
     private final SpriteMasterRenderer renderer;
@@ -43,7 +43,7 @@ public class RenderBatch implements Comparable<RenderBatch> {
     private final int[] texSlots = { 0, 1, 2, 3, 4, 5, 6, 7 };
 
     private final List<Texture> textures;
-    private int vaoID, vboID;
+    private VertexArray vao;
     private final int maxBathSize;
     private final int zIndex;
 
@@ -64,46 +64,37 @@ public class RenderBatch implements Comparable<RenderBatch> {
 
     public void start() {
         // Generate and bind a Vertex Array Object (VAO)
-        this.vaoID = glGenVertexArrays();
-        glBindVertexArray(this.vaoID);
+        this.vao = new VertexArray();
 
-        // Allocate space for vertices
-        this.vboID = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, this.vboID);
-        glBufferData(GL_ARRAY_BUFFER, (long) this.vertices.length * Float.BYTES, GL_DYNAMIC_DRAW);
+        // Create and upload vertices buffer (VBO)
+        VertexBuffer vbo = new VertexBuffer(this.vertices);
+        BufferLayout layout = new BufferLayout(Arrays.asList(
+                new BufferElement(ShaderDataType.Float3, "a_Position"),
+                new BufferElement(ShaderDataType.Float4, "a_Color"),
+                new BufferElement(ShaderDataType.Float2, "a_TextureCoordinates"),
+                new BufferElement(ShaderDataType.Float, "a_TextureID"),
+                new BufferElement(ShaderDataType.Float, "a_EntityID")
+        ));
+        vbo.setLayout(layout);
+        this.vao.setVertexBuffer(vbo);
 
-        // Create and upload indices buffer
-        int eboID = glGenBuffers();
-        int[] indices = generateIndices();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eboID);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+        // Create and upload elements buffer (EBO)
+        int[] elements = generateIndices();
+        IndexBuffer ebo = new IndexBuffer(elements, elements.length);
+        this.vao.setIndexBuffer(ebo);
 
-        // Enable the buffer attributes pointers
-        glVertexAttribPointer(0, POS_SIZE, GL_FLOAT, false, VERTEX_SIZE * Float.BYTES, POS_OFFSET);
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, COLOR_SIZE, GL_FLOAT, false, VERTEX_SIZE * Float.BYTES, COLOR_OFFSET);
-        glEnableVertexAttribArray(1);
-
-        glVertexAttribPointer(2, TEXTURE_COORDINATES_SIZE, GL_FLOAT, false, VERTEX_SIZE * Float.BYTES, TEXTURE_COORDINATES_OFFSET);
-        glEnableVertexAttribArray(2);
-
-        glVertexAttribPointer(3, TEXTURE_ID_SIZE, GL_FLOAT, false, VERTEX_SIZE * Float.BYTES, TEXTURE_ID_OFFSET);
-        glEnableVertexAttribArray(3);
-
-        glVertexAttribPointer(4, ENTITY_ID_SIZE, GL_FLOAT, false, VERTEX_SIZE * Float.BYTES, ENTITY_ID_OFFSET);
-        glEnableVertexAttribArray(4);
+        this.vao.unbind();
     }
 
-    public void addSprite(SpriteRenderer spr) {
+    public void addSprite(SpriteRenderer renderer) {
         // Get index and add render object
         int index = this.numberOfSprites;
-        this.sprites[index] = spr;
+        this.sprites[index] = renderer;
         this.numberOfSprites++;
 
-        if (spr.getTexture() != null)
-            if (!textures.contains(spr.getTexture()))
-                textures.add(spr.getTexture());
+        if (renderer.getTexture() != null)
+            if (!textures.contains(renderer.getTexture()))
+                textures.add(renderer.getTexture());
 
         // Add properties to local vertices array
         loadVertexProperties(index);
@@ -115,22 +106,22 @@ public class RenderBatch implements Comparable<RenderBatch> {
     public void render(Matrix4f projectionMatrix, Matrix4f viewMatrix) {
         boolean rebufferData = false;
         for (int i = 0; i < this.numberOfSprites; i++) {
-            SpriteRenderer spr = this.sprites[i];
-            if (spr.isDirty()) {
-                if (!hasTexture(spr.getTexture())) {
-                    this.renderer.destroyGameObject(spr.gameObject);
-                    this.renderer.add(spr.gameObject);
+            SpriteRenderer renderer = this.sprites[i];
+            if (renderer.isDirty()) {
+                if (!hasTexture(renderer.getTexture())) {
+                    this.renderer.destroyGameObject(renderer.gameObject);
+                    this.renderer.add(renderer.gameObject);
                 } else {
                     loadVertexProperties(i);
-                    spr.setDirty(false);
+                    renderer.setDirty(false);
                     rebufferData = true;
                 }
             }
 
             // TODO GET BETTER SOLUTION FOR THIS
-            if (spr.gameObject.transform.getZIndex() != this.zIndex) {
-                destroyIfExists(spr.gameObject);
-                renderer.add(spr.gameObject);
+            if (renderer.gameObject.transform.getZIndex() != this.zIndex) {
+                destroyIfExists(renderer.gameObject);
+                this.renderer.add(renderer.gameObject);
                 i--;
             }
         }
@@ -138,14 +129,15 @@ public class RenderBatch implements Comparable<RenderBatch> {
         // Send data tu GPU only if data is changed
         if (rebufferData) {
             // TODO SEND ONLY CHANGED DATA, NOT ALL DATA
-            glBindBuffer(GL_ARRAY_BUFFER, this.vboID);
+            this.vao.getVertexBuffer().bind();
             glBufferSubData(GL_ARRAY_BUFFER, 0, this.vertices);
         }
 
-        // Use shader
-        Shader shader = MasterRenderer.getCurrentShader();
-        shader.uploadMat4f("uProjectionMatrix", projectionMatrix);
-        shader.uploadMat4f("uViewMatrix", viewMatrix);
+        Shader shader = EntityRenderer.getCurrentShader();
+        shader.uploadFloat("u_EntityID", -1);
+        shader.uploadMat4f("u_TransformationMatrix", new Matrix4f().identity());
+        shader.uploadMat4f("u_ProjectionMatrix", projectionMatrix);
+        shader.uploadMat4f("u_ViewMatrix", viewMatrix);
         for (int i = 0; i < this.textures.size(); i++) {
             // TODO CHANGE CONSTANT 8 TEXTURE SLOTS, TO USERS GPU TEXTURES SLOTS COUNT
 //            IntBuffer buffer = BufferUtils.createIntBuffer(1);
@@ -154,22 +146,16 @@ public class RenderBatch implements Comparable<RenderBatch> {
             glActiveTexture(GL_TEXTURE0 + i + 1);
             this.textures.get(i).bind();
         }
-        shader.uploadIntArray("uTextureIDs", this.texSlots);
+        shader.uploadIntArray("u_TextureIDs", this.texSlots);
 
-        glBindVertexArray(this.vaoID);
-//        glEnableVertexAttribArray(0);
-//        glEnableVertexAttribArray(1);
+        EntityRenderer.submit(this.vao, this.numberOfSprites * 6); // 6 indices per quad
 
-        glDrawElements(GL_TRIANGLES, this.numberOfSprites * 6, GL_UNSIGNED_INT, 0); // 6 indices per quad
-
-//        glDisableVertexAttribArray(0);
-//        glDisableVertexAttribArray(1);
-        glBindVertexArray(0); // Bind nothing
+        this.vao.getVertexBuffer().unbind();
 
         for (Texture texture : textures)
             texture.unbind();
 
-        shader.detach();
+        shader.unbind();
     }
 
     public boolean destroyIfExists(GameObject obj) {

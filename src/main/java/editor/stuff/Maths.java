@@ -3,7 +3,6 @@ package editor.stuff;
 import org.joml.*;
 
 import java.lang.Math;
-import java.util.Arrays;
 
 public class Maths {
 
@@ -83,22 +82,6 @@ public class Maths {
 
         vec.x = xPrime;
         vec.y = yPrime;
-    }
-
-    public static boolean compare(float a, float b, float epsilon) {
-        return Math.abs(a - b) <= epsilon * Math.max(1.0f, Math.max(Math.abs(a), Math.abs(b)));
-    }
-
-    public static boolean compare(Vector2f vec1, Vector2f vec2, float epsilon) {
-        return compare(vec1.x, vec2.x, epsilon) && compare(vec1.y, vec2.y, epsilon);
-    }
-
-    public static boolean compare(float a, float b) {
-        return Math.abs(a - b) <= Float.MIN_VALUE * Math.max(1.0f, Math.max(Math.abs(a), Math.abs(b)));
-    }
-
-    public static boolean compare(Vector2f vec1, Vector2f vec2) {
-        return compare(vec1.x, vec2.x) && compare(vec1.y, vec2.y);
     }
 
     public static float clamp(float value, float min, float max) { return Math.max(min, Math.min(max, value)); }

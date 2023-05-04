@@ -1,7 +1,6 @@
 package editor.renderer.debug;
 
-import editor.TestFieldsWindow;
-import editor.renderer.camera.BaseCamera;
+import editor.renderer.camera.EditorCamera;
 import editor.renderer.camera.CameraType;
 import editor.scenes.SceneManager;
 import editor.stuff.Settings;
@@ -14,7 +13,7 @@ public class DebugGrid {
     private static final Color gridColor = new Color(35.0f, 35.0f, 35.0f);
 
     public static void addGrid() {
-        BaseCamera camera = SceneManager.getCurrentScene().getCamera();
+        EditorCamera camera = SceneManager.getCurrentScene().getEditorCamera();
         if (camera.getZoom() > 5.0f || camera.getCameraType() == CameraType.Perspective)
             return;
 

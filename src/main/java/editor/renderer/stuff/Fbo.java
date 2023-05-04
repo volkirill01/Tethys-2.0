@@ -50,11 +50,11 @@ public class Fbo {
 		initialiseFrameBuffer(depthBufferType);
 	}
 
-	public Fbo(int width, int height, boolean multiSample) {
+	public Fbo(int width, int height, int depthBufferType, boolean multiSample) {
 		this.width = width;
 		this.height = height;
 		this.multiSample = multiSample;
-		initialiseFrameBuffer(DEPTH_RENDER_BUFFER);
+		initialiseFrameBuffer(depthBufferType);
 	}
 
 	public Fbo(int width, int height, boolean multiSample, boolean multiTarget) {
@@ -69,12 +69,12 @@ public class Fbo {
 	 * Deletes the frame buffer and its attachments when the game closes.
 	 */
 	public void cleanUp() {
-		glDeleteFramebuffers(frameBuffer);
-		glDeleteTextures(colorTexture);
-		glDeleteTextures(depthTexture);
-		glDeleteRenderbuffers(depthBuffer);
-		glDeleteRenderbuffers(colourBuffer);
-		glDeleteRenderbuffers(colourBuffer2);
+		glDeleteFramebuffers(this.frameBuffer);
+		glDeleteTextures(this.colorTexture);
+		glDeleteTextures(this.depthTexture);
+		glDeleteRenderbuffers(this.depthBuffer);
+		glDeleteRenderbuffers(this.colourBuffer);
+		glDeleteRenderbuffers(this.colourBuffer2);
 	}
 
 	/**
@@ -82,8 +82,8 @@ public class Fbo {
 	 * rendered after this will be rendered to this FBO, and not to the screen.
 	 */
 	public void bind() {
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer);
-		glViewport(0, 0, width, height);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this.frameBuffer);
+		glViewport(0, 0, this.width, this.height);
 	}
 
 	/**
@@ -101,25 +101,25 @@ public class Fbo {
 	 */
 	public void bindToRead() {
 		glBindTexture(GL_TEXTURE_2D, 0);
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, frameBuffer);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, this.frameBuffer);
 		glReadBuffer(GL_COLOR_ATTACHMENT0);
 	}
 
 	/**
 	 * @return The ID of the texture containing the colour buffer of the FBO.
 	 */
-	public int getColorTexture() { return colorTexture; }
+	public int getColorTexture() { return this.colorTexture; }
 
 	/**
 	 * @return The texture containing the FBOs depth buffer.
 	 */
-	public int getDepthTexture() { return depthTexture; }
+	public int getDepthTexture() { return this.depthTexture; }
 
 	public void resolveToFbo(int readBuffer, Fbo outputFbo) {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, outputFbo.frameBuffer);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, this.frameBuffer);
 		glReadBuffer(readBuffer);
-		glBlitFramebuffer(0, 0, width, height, 0, 0, outputFbo.width, outputFbo.height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		glBlitFramebuffer(0, 0, this.width, this.height, 0, 0, outputFbo.width, outputFbo.height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 		this.unbind();
 	}
 
@@ -127,7 +127,7 @@ public class Fbo {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, this.frameBuffer);
 		glDrawBuffer(GL_BACK);
-		glBlitFramebuffer(0, 0, width, height, 0, 0, Window.getWidth(), Window.getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		glBlitFramebuffer(0, 0, this.width, this.height, 0, 0, Window.getWidth(), Window.getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		this.unbind();
 	}
 
@@ -141,12 +141,12 @@ public class Fbo {
 	 */
 	private void initialiseFrameBuffer(int type) {
 		createFrameBuffer();
-		if (!multiSample)
+		if (!this.multiSample)
 			createTextureAttachment();
 		else {
-			colourBuffer = createMultisampleColorAttachment(GL_COLOR_ATTACHMENT0);
-			if (multiTarget)
-				colourBuffer2 = createMultisampleColorAttachment(GL_COLOR_ATTACHMENT1);
+			this.colourBuffer = createMultisampleColorAttachment(GL_COLOR_ATTACHMENT0);
+			if (this.multiTarget)
+				this.colourBuffer2 = createMultisampleColorAttachment(GL_COLOR_ATTACHMENT1);
 		}
 
 		if (type == DEPTH_RENDER_BUFFER)
@@ -164,15 +164,15 @@ public class Fbo {
 	 * 
 	 */
 	private void createFrameBuffer() {
-		frameBuffer = glGenFramebuffers();
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+		this.frameBuffer = glGenFramebuffers();
+		glBindFramebuffer(GL_FRAMEBUFFER, this.frameBuffer);
 		determineDrawBuffers();
 	}
 
 	private void determineDrawBuffers() {
 		IntBuffer drawBuffers = BufferUtils.createIntBuffer(2);
 		drawBuffers.put(GL_COLOR_ATTACHMENT0);
-		if (multiTarget)
+		if (this.multiTarget)
 			drawBuffers.put(GL_COLOR_ATTACHMENT1);
 		drawBuffers.flip();
 
@@ -184,14 +184,14 @@ public class Fbo {
 	 * FBO.
 	 */
 	private void createTextureAttachment() {
-		colorTexture = glGenTextures();
-		glBindTexture(GL_TEXTURE_2D, colorTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (ByteBuffer) null);
+		this.colorTexture = glGenTextures();
+		glBindTexture(GL_TEXTURE_2D, this.colorTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, this.width, this.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (ByteBuffer) null);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this.colorTexture, 0);
 	}
 
 	/**
@@ -199,18 +199,18 @@ public class Fbo {
 	 * be sampled.
 	 */
 	private void createDepthTextureAttachment() {
-		depthTexture = glGenTextures();
-		glBindTexture(GL_TEXTURE_2D, depthTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer) null);
+		this.depthTexture = glGenTextures();
+		glBindTexture(GL_TEXTURE_2D, this.depthTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, this.width, this.height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, (ByteBuffer) null);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, this.depthTexture, 0);
 	}
 
 	private int createMultisampleColorAttachment(int attachment) {
 		int colourBuffer = glGenRenderbuffers();
 		glBindRenderbuffer(GL_RENDERBUFFER, colourBuffer);
-		glRenderbufferStorageMultisample(GL_RENDERBUFFER, samplesCount, GL_RGBA16F, width, height);
+		glRenderbufferStorageMultisample(GL_RENDERBUFFER, this.samplesCount, GL_RGBA16F, this.width, this.height);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment, GL_RENDERBUFFER, colourBuffer);
 		return colourBuffer;
 	}
@@ -220,13 +220,13 @@ public class Fbo {
 	 * be used for sampling in the shaders.
 	 */
 	private void createDepthBufferAttachment() {
-		depthBuffer = glGenRenderbuffers();
-		glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-		if (!multiSample)
-			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height);
+		this.depthBuffer = glGenRenderbuffers();
+		glBindRenderbuffer(GL_RENDERBUFFER, this.depthBuffer);
+		if (!this.multiSample)
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, this.width, this.height);
 		else
-			glRenderbufferStorageMultisample(GL_RENDERBUFFER, samplesCount, GL_DEPTH_COMPONENT24, width, height);
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, this.samplesCount, GL_DEPTH_COMPONENT24, this.width, this.height);
 
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, this.depthBuffer);
 	}
 }

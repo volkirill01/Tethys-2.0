@@ -6,17 +6,18 @@ import editor.assets.AssetPool;
 import editor.audio.Sound;
 import editor.entity.GameObject;
 import editor.entity.component.Component;
+import editor.renderer.EntityRenderer;
 import editor.renderer.renderer2D.SpriteRenderer;
 import editor.entity.component.Transform;
 import editor.gizmo.GizmoSystem;
 import editor.physics.physics2D.Physics2D;
-import editor.renderer.camera.BaseCamera;
-import editor.renderer.camera.Camera;
 import editor.renderer.camera.EditorCamera;
-import editor.renderer.renderer2D.SpriteMasterRenderer;
+import editor.renderer.camera.Camera;
 import editor.renderer.renderer2D.sprite.Sprite;
 import editor.renderer.renderer2D.sprite.SpriteSheet;
+import editor.renderer.renderer3D.MeshRenderer;
 import editor.stuff.Settings;
+import editor.stuff.inputActions.KeyboardControls;
 import editor.stuff.inputActions.MouseControls;
 import editor.stuff.utils.EditorGson;
 import imgui.ImGui;
@@ -36,19 +37,16 @@ import java.util.Optional;
 
 public class Scene {
 
-    private BaseCamera camera;
     private final String filepath;
     private boolean isRunning = false;
 
-    private final SpriteMasterRenderer spriteRenderer = new SpriteMasterRenderer(); // TODO COMBINE SPRITE RENDERER AND MESH RENDER AND CREATE ENTITY RENDERER
+    private final EntityRenderer renderer = new EntityRenderer();
     private final Physics2D physics2D = new Physics2D();
 
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final List<GameObject> pendingGameObjects = new ArrayList<>(); // Object we want to add to scene, but not in middle of the frame(Decrease chance for bugs)
 
-    private EditorCamera editorCamera;
-
-    private GizmoSystem gizmoSystem;
+    private final GameObject editorStuff = new GameObject("EditorStuff");
 
     private SpriteSheet sprites;
 
@@ -56,13 +54,14 @@ public class Scene {
 
     public void init() {
         loadResources();
-        this.camera = new BaseCamera(new Vector3f(0.0f, 0.0f, 0.0f));
-        this.editorCamera = new EditorCamera(SceneManager.getCurrentScene().getCamera());
+        this.editorStuff.addComponent(new KeyboardControls());
+        this.editorStuff.addComponent(new MouseControls());
+        this.editorStuff.addComponent(new EditorCamera(new Vector3f(0.0f)));
+        this.editorStuff.addComponent(new GizmoSystem());
 
-        gizmoSystem = new GizmoSystem();
-        gizmoSystem.init();
+        this.editorStuff.start();
 
-        sprites = AssetPool.getSpriteSheet("Assets/decorationsAndBlocks.png");
+        this.sprites = AssetPool.getSpriteSheet("Assets/decorationsAndBlocks.png");
     }
 
     private void loadResources() {
@@ -97,14 +96,18 @@ public class Scene {
                     // Load Textures from AssetPool and replacing saved textures because Gson loads Textures and creates separate Object, with broken data
                     renderer.setTexture(AssetPool.getTexture(renderer.getTexture().getFilepath()));
             }
+            if (go.hasComponent(MeshRenderer.class)) {
+                MeshRenderer renderer = go.getComponent(MeshRenderer.class);
+                if (renderer.getMesh() != null)
+                    // Load Meshes from AssetPool and replacing saved meshes because Gson loads Meshes and creates separate Object, with broken data
+                    renderer.setMesh(AssetPool.getMesh(renderer.getMesh().getFilepath()));
+            }
         }
     }
 
     public void editorUpdate() {
-        this.editorCamera.update();
-        SceneManager.getCurrentScene().getCamera().adjustProjection();
-
-        gizmoSystem.update();
+        this.editorStuff.update();
+        SceneManager.getCurrentScene().getEditorCamera().adjustProjection();
 
         for (int i = 0; i < this.gameObjects.size(); i++) {
             GameObject obj = this.gameObjects.get(i);
@@ -112,7 +115,7 @@ public class Scene {
 
             if (obj.isDeath()) {
                 this.gameObjects.remove(i);
-                this.spriteRenderer.destroyGameObject(obj);
+                this.renderer.destroyGameObject(obj);
                 this.physics2D.destroyGameObject(obj);
                 i--;
             }
@@ -121,17 +124,14 @@ public class Scene {
         for (GameObject obj : this.pendingGameObjects) {
             this.gameObjects.add(obj);
             obj.start();
-            this.spriteRenderer.add(obj);
+            this.renderer.add(obj);
             this.physics2D.add(obj);
         }
         this.pendingGameObjects.clear();
     }
 
     public void update() {
-        this.editorCamera.update();
-        SceneManager.getCurrentScene().getCamera().adjustProjection();
-
-        gizmoSystem.update();
+        this.editorStuff.update();
 
         // Update physics only in runtime
         this.physics2D.update();
@@ -142,7 +142,7 @@ public class Scene {
 
             if (obj.isDeath()) {
                 this.gameObjects.remove(i);
-                this.spriteRenderer.destroyGameObject(obj);
+                this.renderer.destroyGameObject(obj);
                 this.physics2D.destroyGameObject(obj);
                 i--;
             }
@@ -151,34 +151,34 @@ public class Scene {
         for (GameObject obj : this.pendingGameObjects) {
             this.gameObjects.add(obj);
             obj.start();
-            this.spriteRenderer.add(obj);
+            this.renderer.add(obj);
             this.physics2D.add(obj);
         }
         this.pendingGameObjects.clear();
     }
 
     public void render(Matrix4f projectionMatrix, Matrix4f viewMatrix) {
-        this.spriteRenderer.render(projectionMatrix, viewMatrix);
+        this.renderer.render(projectionMatrix, viewMatrix);
     }
 
     public void start() {
-        for (GameObject go : this.gameObjects) {
-            go.start();
-            this.spriteRenderer.add(go);
-            this.physics2D.add(go);
+        for (GameObject obj : this.gameObjects) {
+            obj.start();
+            this.renderer.add(obj);
+            this.physics2D.add(obj);
         }
         this.isRunning = true;
     }
 
     public GameObject createGameObject(String name) {
-        GameObject go = new GameObject(name);
-        go.addComponent(new Transform());
-        go.transform = go.getComponent(Transform.class);
-        return go;
+        GameObject obj = new GameObject(name);
+        obj.addComponent(new Transform());
+        obj.transform = obj.getComponent(Transform.class);
+        return obj;
     }
 
     public void addGameObjectToScene(GameObject obj) {
-        if (!isRunning)
+        if (!this.isRunning)
             this.gameObjects.add(obj);
         else
             this.pendingGameObjects.add(obj);
@@ -198,7 +198,6 @@ public class Scene {
         for (GameObject obj : this.gameObjects)
             if (obj.hasComponent(_class))
                 return obj;
-
         return null;
     }
 
@@ -226,7 +225,7 @@ public class Scene {
 
     public String getFilepath() { return this.filepath; }
 
-    public BaseCamera getCamera() { return this.camera; }
+    public EditorCamera getEditorCamera() { return this.editorStuff.getComponent(EditorCamera.class); }
 
     public void imgui() { // TODO MOVE THIS, ITS NOT BE THERE
         ImGui.begin("Test Window");
@@ -242,8 +241,8 @@ public class Scene {
         ImGui.beginTabBar("Objects");
 
         if (ImGui.beginTabItem("Tiles")) {
-            for (int i = 0; i < sprites.size(); i++) {
-                Sprite sprite = sprites.getSprite(i);
+            for (int i = 0; i < this.sprites.size(); i++) {
+                Sprite sprite = this.sprites.getSprite(i);
                 float spriteWidth = sprite.getWidth() * 3;
                 float spriteHeight = sprite.getHeight() * 3;
                 int id = sprite.getTextureID();
@@ -252,7 +251,7 @@ public class Scene {
                 ImGui.pushID("TileButton_" + i);
                 if (ImGui.imageButton(id, spriteWidth, spriteHeight, texCoordinates[2].x, texCoordinates[0].y, texCoordinates[0].x, texCoordinates[2].y)) {
                     GameObject obj = Prefabs.generateSpriteObject(sprite, Settings.GRID_WIDTH, Settings.GRID_HEIGHT);
-                    MouseControls.pickUpObject(obj);
+                    this.editorStuff.getComponent(MouseControls.class).pickUpObject(obj);
                 }
                 ImGui.popID();
 
@@ -260,7 +259,7 @@ public class Scene {
                 ImGui.getItemRectMax(lasButtonPos);
                 float lastButtonX2 = lasButtonPos.x;
                 float nextButtonX2 = lastButtonX2 + itemSpacing.x + spriteWidth;
-                if (i + 1 < sprites.size() && nextButtonX2 < windowX2)
+                if (i + 1 < this.sprites.size() && nextButtonX2 < windowX2)
                     ImGui.sameLine();
             }
             ImGui.endTabItem();
@@ -313,7 +312,7 @@ public class Scene {
             writer.write(gson.toJson(objectsToSerialize));
             writer.close();
         } catch (IOException e) {
-            throw new RuntimeException("Error in saving Scene - '" + filepath + "'", e);
+            throw new RuntimeException(String.format("Error in saving Scene - '%s'", filepath), e);
         }
     }
 
@@ -348,10 +347,11 @@ public class Scene {
             maxComponentID++;
             GameObject.init(maxGameObjectID);
             Component.init(maxComponentID);
-        } else {
-            // TODO LOAD DEFAULT EMPTY SCENE
-//            throw new NullPointerException("Scene is Empty - '" + "level.txt" + "'");
         }
+//        else {
+//            // TODO LOAD DEFAULT EMPTY SCENE
+//            throw new NullPointerException("Scene is Empty - '" + "level.txt" + "'");
+//        }
     }
 
     public Physics2D getPhysics2D() { return this.physics2D; }
