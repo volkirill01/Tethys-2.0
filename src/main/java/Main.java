@@ -1,4 +1,4 @@
-import editor.stuff.Window;
+import engine.stuff.Window;
 
 public class Main {
 

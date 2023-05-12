@@ -1,0 +1,42 @@
+package engine.editor.windows;
+
+import engine.editor.gui.EditorImGuiWindow;
+import engine.entity.GameObject;
+import imgui.ImGui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Outliner_Window extends EditorImGuiWindow {
+
+    protected static final List<GameObject> activeGameObjects = new ArrayList<>();
+    protected static GameObject activeGameObject = null;
+
+    public Outliner_Window() { super("\uEF4E Outliner"); }
+
+    @Override
+    public void drawWindow() {
+        if (activeGameObjects.size() == 1 && activeGameObjects.get(0) != null) {
+            activeGameObject = activeGameObjects.get(0);
+            activeGameObject.imgui();
+        } else {
+            ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() / 2 - ImGui.calcTextSize("No selected Object").x / 2, ImGui.getCursorPosY() + ImGui.getStyle().getItemSpacingY() * 4);
+            ImGui.text("No selected Object");
+        }
+    }
+
+    public static GameObject getActiveGameObject() { return activeGameObjects.size() == 1 ? activeGameObjects.get(0) : null; }
+
+    public static List<GameObject> getActiveGameObjects() { return activeGameObjects; }
+
+    public static void clearSelected() { activeGameObjects.clear(); }
+
+    public static void setActiveGameObject(GameObject obj) {
+        if (obj != null) {
+            clearSelected();
+            activeGameObjects.add(obj);
+        }
+    }
+
+    public static void addActiveGameObject(GameObject obj) { activeGameObjects.add(obj); }
+}
