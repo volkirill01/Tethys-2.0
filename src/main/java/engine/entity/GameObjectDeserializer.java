@@ -3,6 +3,7 @@ package engine.entity;
 import com.google.gson.*;
 import engine.entity.component.Component;
 import engine.entity.component.Transform;
+import engine.profiling.Profiler;
 
 import java.lang.reflect.Type;
 
@@ -14,12 +15,15 @@ public class GameObjectDeserializer implements JsonDeserializer<GameObject> {
         String name = jsonObject.get("name").getAsString();
         JsonArray components = jsonObject.getAsJsonArray("components");
 
+        Profiler.startTimer(String.format("Deserialize GameObject - '%s'", name));
         GameObject go = new GameObject(name);
         for (JsonElement e : components) {
             Component c = context.deserialize(e, Component.class);
             go.addComponent(c);
         }
         go.transform = go.getComponent(Transform.class);
+
+        Profiler.stopTimer(String.format("Deserialize GameObject - '%s'", name));
 
         return go;
     }

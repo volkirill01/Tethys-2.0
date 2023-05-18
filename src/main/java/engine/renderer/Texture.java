@@ -32,7 +32,7 @@ public abstract class Texture {
 
     public int getHeight() { return this.height; }
 
-    public abstract void bind();
+    public abstract void bind(int textureSlot);
 
     public abstract void unbind();
 }

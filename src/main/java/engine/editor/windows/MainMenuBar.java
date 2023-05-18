@@ -1,9 +1,11 @@
 package engine.editor.windows;
 
 import engine.editor.gui.EditorThemeSystem;
+import engine.editor.gui.ImGuiLayer;
 import engine.observers.EventSystem;
 import engine.observers.events.Event;
 import engine.observers.events.EventType;
+import engine.profiling.Profiler_Window;
 import engine.renderer.camera.ed_BaseCamera;
 import engine.scenes.SceneManager;
 import engine.stuff.Window;
@@ -125,6 +127,21 @@ public class MainMenuBar {
                 EventSystem.notify(null, new Event(EventType.GameEngine_SaveScene));
             if (ImGui.menuItem("Reload"))
                 EventSystem.notify(null, new Event(EventType.GameEngine_ReloadScene));
+            ImGui.endMenu();
+        }
+        if (ImGui.beginMenu("Windows")) {
+            if (ImGui.menuItem("Open Profiler"))
+                ImGuiLayer.setWindowOpen(Profiler_Window.class, true);
+            ImGui.endMenu();
+        }
+
+        if (ImGui.beginMenu("Editor")) {
+            if (ImGui.menuItem("Minimize"))
+                Window.minimize();
+            if (ImGui.menuItem("Maximize"))
+                Window.maximize();
+            if (ImGui.menuItem("Close"))
+                Window.close();
             ImGui.endMenu();
         }
     }

@@ -1,13 +1,14 @@
 package engine.editor.gui;
 
 import engine.TestFieldsWindow;
-import engine.assets.AssetPool;
 import engine.editor.console.Console_Window;
 import engine.eventListeners.Input;
 import engine.editor.windows.*;
 import engine.eventListeners.KeyCode;
 import engine.eventListeners.KeyListener;
 import engine.eventListeners.MouseListener;
+import engine.profiling.Profiler;
+import engine.profiling.Profiler_Window;
 import engine.scenes.SceneManager;
 import engine.stuff.Maths;
 import engine.stuff.Settings;
@@ -54,16 +55,23 @@ public class ImGuiLayer {
     }
 
     private void createEditorWindows() {
+        Profiler.startTimer("Create EditorImGui Windows");
+
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new GameView_Window()));
         this.sceneView_Window = new SceneView_Window();
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), sceneView_Window));
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Outliner_Window()));
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new SceneHierarchy_Window()));
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Console_Window()));
+
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(false), new Profiler_Window()));
+
+        Profiler.stopTimer("Create EditorImGui Windows");
     }
 
     // Initialize Dear ImGui.
     public void initImGui() {
+        Profiler.startTimer("Init ImGui");
         // IMPORTANT!!
         // This line is critical for Dear ImGui to work.
         ImGui.createContext();
@@ -155,7 +163,7 @@ public class ImGuiLayer {
             if (!io.getWantCaptureMouse() && mouseDown[1])
                 ImGui.setWindowFocus(null);
 
-            if ((!io.getWantCaptureMouse() || ((SceneView_Window) Objects.requireNonNull(getWindow(SceneView_Window.class))).getWantCaptureMouse()) && sceneView_Window.isVisible())
+            if (!io.getWantCaptureMouse() || getWantCaptureMouse())
                 MouseListener.mouseButtonCallback(w, button, action, mods);
         });
 
@@ -163,7 +171,7 @@ public class ImGuiLayer {
             io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
             io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
 
-            if ((!io.getWantCaptureMouse() || ((SceneView_Window) Objects.requireNonNull(getWindow(SceneView_Window.class))).getWantCaptureMouse()) && sceneView_Window.isVisible())
+            if ((!io.getWantCaptureMouse() || getWantCaptureMouse()))
                 MouseListener.mouseScrollCallback(w, xOffset, yOffset);
         });
 
@@ -189,10 +197,13 @@ public class ImGuiLayer {
         // ImGui context should be created as well.
         imGuiGlfw.init(glfwWindow, false);
         imGuiGl3.init("#version " + Settings.shaderVersion);
+
+        Profiler.stopTimer("Init ImGui");
     }
 
     private final ImInt testTextureID = new ImInt(0);
     public void update() {
+        Profiler.startTimer("Update ImGui");
         startFrame(Time.deltaTime());
 
         if (windowOnFullscreen == null) {
@@ -232,9 +243,12 @@ public class ImGuiLayer {
             windowOnFullscreen.imgui(new ImBoolean(true));
         }
         endFrame();
+        Profiler.stopTimer("Update ImGui");
     }
 
     private void startFrame(final float deltaTime) {
+        Profiler.startTimer("ImGui StartFrame");
+
         imGuiGlfw.newFrame();
 
         // Get window properties and mouse position
@@ -256,9 +270,13 @@ public class ImGuiLayer {
         glfwSetCursor(glfwWindow, mouseCursors[imguiCursor]);
         glfwSetInputMode(glfwWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         ImGui.newFrame();
+
+        Profiler.stopTimer("ImGui StartFrame");
     }
 
     private void endFrame() {
+        Profiler.startTimer("ImGui EndFrame");
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glViewport(0, 0, Window.getWidth(), Window.getHeight());
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -274,6 +292,7 @@ public class ImGuiLayer {
 //        ImGui.updatePlatformWindows();
 //        ImGui.renderPlatformWindowsDefault();
 //        glfwMakeContextCurrent(backupWindowPointer);
+        Profiler.stopTimer("ImGui EndFrame");
     }
 
     // If you want to clean a room after yourself - do it by yourself
@@ -316,26 +335,46 @@ public class ImGuiLayer {
 
     public static EditorImGuiWindow getWindowOnFullscreen() { return windowOnFullscreen; }
 
-    public static  <T extends EditorImGuiWindow> EditorImGuiWindow getWindow(Class<T> window) {
-        for (int windowId : windows.keySet())
-            if (windows.get(windowId).getValue().getClass() == window)
-                return windows.get(windowId).getValue();
+    public static  <T extends EditorImGuiWindow> List<EditorImGuiWindow> getWindowsByType(Class<T> windowType, boolean includeNonVisible) {
+        List<EditorImGuiWindow> result = new ArrayList<>();
 
-        return null;
+        for (int windowId : windows.keySet())
+            if (windows.get(windowId).getKey().get() && windows.get(windowId).getValue().getClass() == windowType)
+                if (includeNonVisible) {
+                    if (windows.get(windowId).getValue().isVisible())
+                        result.add(windows.get(windowId).getValue());
+                } else
+                    result.add(windows.get(windowId).getValue());
+
+        return result;
     }
 
     public static EditorImGuiWindow getWindow(int windowId) { return windows.get(windowId).getValue(); }
 
-    public static void selectWindow(EditorImGuiWindow window) { ImGui.setWindowFocus(window.actualWindowTitle); }
-
-    public static  <T extends EditorImGuiWindow> boolean setWindowOpen(Class<T> window, boolean state) {
+    public static <T extends EditorImGuiWindow> boolean isAnyWindowVisible(Class<T> windowType) {
         for (int windowId : windows.keySet())
-            if (windows.get(windowId).getValue().getClass() == window) {
-                windows.get(windowId).getKey().set(state);
-                return true;
-            }
+            if (windows.get(windowId).getKey().get() && windows.get(windowId).getValue().getClass() == windowType)
+                if (windows.get(windowId).getValue().isVisible())
+                    return true;
         return false;
     }
 
+    public static void selectWindow(EditorImGuiWindow window) { ImGui.setWindowFocus(window.actualWindowTitle); }
+
+    public static  <T extends EditorImGuiWindow> void setWindowOpen(Class<T> window, boolean state) {
+        for (int windowId : windows.keySet())
+            if (windows.get(windowId).getValue().getClass() == window) {
+                windows.get(windowId).getKey().set(state);
+                return;
+            }
+    }
+
     public static int getNextWindowId() { return windowId++; }
+
+    public static boolean getWantCaptureMouse() {
+        for (EditorImGuiWindow window : getWindowsByType(SceneView_Window.class, false))
+            if (((SceneView_Window) window).getWantCaptureMouse())
+                return true;
+        return false;
+    }
 }

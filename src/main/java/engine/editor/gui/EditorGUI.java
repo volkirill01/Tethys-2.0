@@ -4,6 +4,7 @@ import engine.stuff.Settings;
 import engine.stuff.customVariables.Color;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.ImVec4;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
@@ -21,6 +22,14 @@ public class EditorGUI {
     public static final String DEFAULT_FLOAT_FORMAT = "%.3f";
     private static final String DEFAULT_INTEGER_FORMAT = "%d";
     private static final float DRAG_SPEED = 0.1f;
+
+    public static void separator() {
+        ImVec4 color = ImGui.getStyle().getColor(ImGuiCol.Separator);
+
+        ImGui.pushStyleColor(ImGuiCol.Separator, color.x / 2, color.y / 2, color.z / 2, color.w);
+        ImGui.separator();
+        ImGui.popStyleColor();
+    }
 
     private static void beginField(String label) {
         ImGui.pushID(label);

@@ -1,6 +1,7 @@
 package engine.renderer.camera;
 
 import engine.entity.component.Component;
+import engine.profiling.Profiler;
 import engine.renderer.stuff.Fbo;
 import engine.stuff.Window;
 import engine.stuff.customVariables.Color;
@@ -40,21 +41,35 @@ public class ed_BaseCamera extends Component {
         this.viewMatrix = new Matrix4f();
         this.inverseProjectionMatrix = new Matrix4f();
         this.inverseViewMatrix = new Matrix4f();
-        adjustProjection();
+        adjustMatrices();
 
-        outputFbo = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_RENDER_BUFFER);
+        outputFbo = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_TEXTURE);
     }
 
     @Override
-    public void start() { adjustProjection(); }
+    public void start() { adjustMatrices(); }
 
     @Override
     public void editorUpdate() { this.update(); }
 
     @Override
-    public void update() { adjustProjection(); }
+    public void update() { adjustMatrices(); }
 
-    public Matrix4f getViewMatrix() {
+    public Matrix4f getViewMatrix() { return this.viewMatrix; }
+
+    public void adjustMatrices() {
+        Profiler.startTimer("BaseCamera AdjustProjection");
+        if (this.cameraType == CameraType.Orthographic) {
+            this.projectionMatrix.identity();
+            this.projectionMatrix.ortho(-(this.orthographicProjectionSize.x / 2) * this.zoom, this.orthographicProjectionSize.x / 2 * this.zoom, -(this.orthographicProjectionSize.y / 2) * this.zoom, this.orthographicProjectionSize.y / 2 * this.zoom, this.nearPlane, this.farPlane);
+        } else {
+            this.projectionMatrix.identity();
+            this.projectionMatrix.perspective((float) Math.toRadians(this.fov), Window.getTargetAspectRatio() + 0.15f, this.nearPlane, this.farPlane); // TODO FIND WHY THIS VALUE(0.15f), ADD THIS VALUE TO ASPECT RATION TO REMOVE STRETCH EFFECT
+        }
+        this.projectionMatrix.invert(this.inverseProjectionMatrix);
+        Profiler.stopTimer("BaseCamera AdjustProjection");
+
+        Profiler.startTimer("BaseCamera AdjustView");
         Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
         Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
         this.viewMatrix.identity();
@@ -66,18 +81,7 @@ public class ed_BaseCamera extends Component {
         }
 
         this.viewMatrix.invert(this.inverseViewMatrix);
-        return this.viewMatrix;
-    }
-
-    public void adjustProjection() {
-        if (this.cameraType == CameraType.Orthographic) {
-            this.projectionMatrix.identity();
-            this.projectionMatrix.ortho(-(this.orthographicProjectionSize.x / 2) * this.zoom, this.orthographicProjectionSize.x / 2 * this.zoom, -(this.orthographicProjectionSize.y / 2) * this.zoom, this.orthographicProjectionSize.y / 2 * this.zoom, this.nearPlane, this.farPlane);
-        } else {
-            this.projectionMatrix.identity();
-            this.projectionMatrix.perspective((float) Math.toRadians(this.fov), Window.getTargetAspectRatio() + 0.15f, this.nearPlane, this.farPlane); // TODO FIND WHY THIS VALUE(0.15f), ADD THIS VALUE TO ASPECT RATION TO REMOVE STRETCH EFFECT
-        }
-        this.projectionMatrix.invert(this.inverseProjectionMatrix);
+        Profiler.stopTimer("BaseCamera AdjustView");
     }
 
     public Matrix4f getProjectionMatrix() { return this.projectionMatrix; }

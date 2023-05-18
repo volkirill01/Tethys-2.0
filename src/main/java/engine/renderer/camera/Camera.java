@@ -34,6 +34,9 @@ public class Camera extends ed_BaseCamera {
         EditorGUI.field_Vector2f("Size", this.orthographicProjectionSize, new Vector2f(6.0f, 3.0f));
 
         this.zoom = EditorGUI.field_Float("Zoom", this.zoom);
+
+        this.cameraType = (CameraType) EditorGUI.field_Enum("Projection Type", this.cameraType);
+
         ImGui.image(this.outputFbo.getColorTexture(), ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailX() / Window.getTargetAspectRatio(), 0, 1, 1, 0);
     }
 

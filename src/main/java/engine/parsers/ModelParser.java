@@ -3,6 +3,7 @@ package engine.parsers;
 import de.javagl.obj.*;
 import engine.editor.console.Console;
 import engine.editor.console.LogType;
+import engine.profiling.Profiler;
 import engine.renderer.buffers.IndexBuffer;
 import engine.renderer.buffers.VertexArray;
 import engine.renderer.buffers.VertexBuffer;
@@ -31,6 +32,7 @@ public class ModelParser {
     }
 
     private static Mesh loadOBJ(String filepath) {
+        Profiler.startTimer("Parse OBJ File");
         List<RawModel> models = new ArrayList<>();
 
         InputStream inputStream;
@@ -68,6 +70,7 @@ public class ModelParser {
             models.add(loadToVAO(verticesB, texCoordsB, normalsB, indicesB, "Material"));
         }
 
+        Profiler.stopTimer("Parse OBJ File");
         return new Mesh(models, filepath);
     }
 

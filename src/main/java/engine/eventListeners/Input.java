@@ -2,6 +2,7 @@ package engine.eventListeners;
 
 import engine.editor.console.Console;
 import engine.editor.console.LogType;
+import engine.profiling.Profiler;
 import engine.stuff.Window;
 import org.joml.Vector2f;
 
@@ -10,11 +11,13 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Input {
 
     public static void setInputCallbacks() {
+        Profiler.startTimer("Set Input Callbacks");
         glfwSetCursorPosCallback(Window.getGlfwWindow(), MouseListener::mousePositionCallback);
         glfwSetMouseButtonCallback(Window.getGlfwWindow(), MouseListener::mouseButtonCallback);
         glfwSetScrollCallback(Window.getGlfwWindow(), MouseListener::mouseScrollCallback);
 
         glfwSetKeyCallback(Window.getGlfwWindow(), KeyListener::keyCallback);
+        Profiler.stopTimer("Set Input Callbacks");
     }
 
     public static boolean buttonDown(int keyCode) {

@@ -6,6 +6,7 @@ import engine.physics.physics2D.components.RigidBody2D;
 import engine.physics.physics2D.components.colliders.Box2DCollider;
 import engine.physics.physics2D.components.colliders.Circle2DCollider;
 import engine.physics.physics2D.components.colliders.Pillbox2DCollider;
+import engine.profiling.Profiler;
 import engine.stuff.Settings;
 import engine.stuff.utils.Time;
 import org.jbox2d.collision.shapes.CircleShape;
@@ -30,11 +31,12 @@ public class Physics2D {
         if (!obj.hasComponent(RigidBody2D.class) || !obj.hasComponent(ed_Collider2D.class))
             return;
 
+        Profiler.startTimer(String.format("Physics2D Add GameObject - '%s'", obj.name));
         RigidBody2D rb = obj.getComponent(RigidBody2D.class);
 
         if (obj.getComponent(RigidBody2D.class).getRawBody() == null) {
             BodyDef bodyDef = new BodyDef();
-            bodyDef.angle = (float) Math.toRadians(obj.transform.rotation.z);
+            bodyDef.angle = (float) Math.toRadians(obj.transform.rotation.z); // TODO DEBUG COLLISIONS AND FIX ROTATION OR SOMETHING ELSE
             bodyDef.position.set(obj.transform.position.x, obj.transform.position.y);
             bodyDef.angularDamping = rb.getAngularDamping();
             bodyDef.linearDamping = rb.getLinearDamping();
@@ -63,9 +65,11 @@ public class Physics2D {
             if (obj.hasComponent(Pillbox2DCollider.class))
                 addPillbox2DCollider(rb, obj.getComponent(Pillbox2DCollider.class));
         }
+        Profiler.stopTimer(String.format("Physics2D Add GameObject - '%s'", obj.name));
     }
 
     public void destroyGameObject(GameObject obj) {
+        Profiler.startTimer(String.format("Physics2D Destroy GameObject - '%s'", obj.name));
         if (!obj.hasComponent(RigidBody2D.class)) return;
 
         RigidBody2D rb = obj.getComponent(RigidBody2D.class);
@@ -73,14 +77,17 @@ public class Physics2D {
             this.world.destroyBody(rb.getRawBody());
             rb.setRawBody(null);
         }
+        Profiler.stopTimer(String.format("Physics2D Destroy GameObject - '%s'", obj.name));
     }
 
     public void update() {
+        Profiler.startTimer("Physics2D Update");
         this.physicsTime += Time.deltaTime();
         if (this.physicsTime >= 0.0f) {
             this.physicsTime -= physicsTimeStep;
             this.world.step(physicsTimeStep, velocityIterations, positionIterations);
         }
+        Profiler.stopTimer("Physics2D Update");
     }
 
     public void setIsTrigger(RigidBody2D rb, boolean isTrigger) {
@@ -141,12 +148,13 @@ public class Physics2D {
     }
 
     public void addBox2DCollider(RigidBody2D rb, Box2DCollider collider) {
+        Profiler.startTimer(String.format("Physics2D Add BoxCollider2D - '%s'", rb.gameObject.name));
         Body body = rb.getRawBody();
         if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.name));
 
         PolygonShape shape = new PolygonShape();
 
-        Vector2f halfSize = new Vector2f(collider.getSize()).div(2.0f);
+        Vector2f halfSize = new Vector2f(collider.getSize()).div(2.0f).sub(0.0074f, 0.0074f);
         Vector2f offset = collider.getOffset();
         shape.setAsBox(Math.abs(halfSize.x), Math.abs(halfSize.y), new Vec2(offset.x, offset.y), 0.0f);
 
@@ -157,9 +165,11 @@ public class Physics2D {
         fixtureDef.userData = collider.gameObject;
         fixtureDef.isSensor = rb.isTrigger();
         body.createFixture(fixtureDef);
+        Profiler.stopTimer(String.format("Physics2D Add BoxCollider2D - '%s'", rb.gameObject.name));
     }
 
     public void addCircle2DCollider(RigidBody2D rb, Circle2DCollider collider) {
+        Profiler.startTimer(String.format("Physics2D Add CircleCollider2D - '%s'", rb.gameObject.name));
         Body body = rb.getRawBody();
         if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.name));
 
@@ -175,20 +185,25 @@ public class Physics2D {
         fixtureDef.userData = collider.gameObject;
         fixtureDef.isSensor = rb.isTrigger();
         body.createFixture(fixtureDef);
+        Profiler.stopTimer(String.format("Physics2D Add CircleCollider2D - '%s'", rb.gameObject.name));
     }
 
     public void addPillbox2DCollider(RigidBody2D rb, Pillbox2DCollider collider) {
+        Profiler.startTimer(String.format("Physics2D Add PillboxCollider2D - '%s'", rb.gameObject.name));
         Body body = rb.getRawBody();
         if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.name));
 
         addCircle2DCollider(rb, collider.getTopCircle());
         addCircle2DCollider(rb, collider.getBottomCircle());
         addBox2DCollider(rb, collider.getMiddleBox());
+        Profiler.stopTimer(String.format("Physics2D Add PillboxCollider2D - '%s'", rb.gameObject.name));
     }
 
     public RayCastInfo rayCast(GameObject requestingObject, Vector2f startPoint, Vector2f endPoint) {
+        Profiler.startTimer(String.format("Physics2D RayCast - RequestingObject: '%s'", requestingObject.name));
         RayCastInfo callback = new RayCastInfo(requestingObject);
         world.raycast(callback, new Vec2(startPoint.x, startPoint.y), new Vec2(endPoint.x, endPoint.y));
+        Profiler.stopTimer(String.format("Physics2D RayCast - RequestingObject: '%s'", requestingObject.name));
         return callback;
     }
 

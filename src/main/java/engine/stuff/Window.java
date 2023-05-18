@@ -16,10 +16,13 @@ import engine.observers.Observer;
 import engine.observers.events.Event;
 import engine.observers.events.EventType;
 import engine.physics.physics2D.Physics2D;
+import engine.profiling.Profiler;
+import engine.profiling.SessionReplay;
 import engine.renderer.EntityRenderer;
 import engine.renderer.RenderCommand;
 import engine.renderer.camera.Camera;
 import engine.renderer.debug.DebugDraw;
+import engine.renderer.debug.DebugGrid;
 import engine.renderer.shader.Shader;
 import engine.renderer.stuff.Fbo;
 import engine.scenes.SceneManager;
@@ -40,12 +43,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.GL_MAX_TEXTURE_IMAGE_UNITS;
@@ -57,6 +59,7 @@ public class Window implements Observer {
     private static int screen_width, screen_height;
     private static final String title = "Tethys";
     private static boolean isMinimized = false;
+    private static boolean isClosed = false;
 
     private static long glfwWindow;
 
@@ -79,14 +82,21 @@ public class Window implements Observer {
         width = screen_width;
         height = screen_height;
 
+        SessionReplay.beginSession("Startup", String.format("%sProfile-Startup.json", Window.getTitle()));
         init();
+        SessionReplay.endSession();
+        SessionReplay.beginSession("Runtime", String.format("%sProfile-Runtime.json", Window.getTitle()));
         loop();
+        SessionReplay.endSession();
 
         // If Window should be closed, runs this method
+        SessionReplay.beginSession("Shutdown", String.format("%sProfile-Shutdown.json", Window.getTitle()));
         closeWindow();
+        SessionReplay.endSession();
     }
 
     private void init() {
+        Profiler.startTimer("Window Init");
         // Set up an Error callback
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -150,43 +160,53 @@ public class Window implements Observer {
         SceneManager.changeScene("level.scene"); // Load default Scene
 
         printMachineInfo();
+        Profiler.stopTimer("Window Init");
     }
 
     private void loop() {
+        Profiler.startTimer("Window Loop");
+
         float beginTime = Time.getTime();
         float endTime;
 
-        List<Float> times = new ArrayList<>();
-        float averageTime = 0.0f;
+        while (!glfwWindowShouldClose(glfwWindow)) {
+            if (isClosed)
+                break;
 
-        while (!glfwWindowShouldClose(glfwWindow) && times.size() < 100) {
+            Profiler.startTimer("Engine Update");
             glfwWindowResizeCallback();
 
             // Poll events
             glfwPollEvents();
 
-            if (Input.buttonClick(KeyCode.E))
-                Console.log("Test", LogType.Error);
+            glfwSetWindowTitle(glfwWindow, title + " FPS: " + (1.0f / Time.deltaTime()));
 
-            if (!isMinimized) {
+            if (!isMinimized) { // && (ImGuiLayer.getWindow(SceneView_Window.class).isVisible() || ImGuiLayer.getWindow(GameView_Window.class).isVisible()) // TODO SEPARATE UPDATE AND RENDERING
+                EntityRenderer.resetStats();
+
                 DebugDraw.beginFrame();
-
-                glfwSetWindowTitle(glfwWindow, title + " FPS: " + (1.0f / Time.deltaTime()));
 
                 SceneManager.getCurrentScene().getEditorCamera().getOutputFob().bind();
 
                 if (Time.deltaTime() >= 0.0f) {
-//                    DebugGrid.addGrid(); // TODO FIX GRID DRAWING
+                    DebugGrid.addGrid(); // TODO FIX GRID DRAWING
 
-                    if (runtimePlaying)
+                    if (runtimePlaying) {
+                        Profiler.startTimer("Game Update");
                         SceneManager.getCurrentScene().update();
-                    else
+                        Profiler.stopTimer("Game Update");
+                    } else {
+                        Profiler.startTimer("Editor Update");
                         SceneManager.getCurrentScene().editorUpdate();
+                        Profiler.stopTimer("Editor Update");
+                    }
 
+                    Profiler.startTimer("Render Scene");
                     renderPass(
                             SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix(),
                             SceneManager.getCurrentScene().getEditorCamera().getViewMatrix(),
                             Settings.editorBackgroundColor);
+                    Profiler.stopTimer("Render Scene");
 
                     DebugDraw.draw();
                 }
@@ -196,6 +216,7 @@ public class Window implements Observer {
 
                 SceneManager.getCurrentScene().getEditorCamera().getOutputFob().unbind();
 
+                Profiler.startTimer("Render Game Cameras");
                 for (Camera c : SceneManager.getCurrentScene().getAllCameras()) {
                     c.getOutputFob().bind();
                     Color backgroundColor = new Color(c.getBackgroundColor());
@@ -203,6 +224,7 @@ public class Window implements Observer {
                     renderPass(c.getProjectionMatrix(), c.getViewMatrix(), backgroundColor);
                     c.getOutputFob().unbind();
                 }
+                Profiler.stopTimer("Render Game Cameras");
             }
 
             // Display Editors GUI
@@ -216,14 +238,12 @@ public class Window implements Observer {
             endTime = Time.getTime();
             Time.setDeltaTime(endTime - beginTime);
             beginTime = endTime;
-//            times.add(Time.deltaTime());
-//            averageTime += Time.deltaTime();
+
+            Profiler.stopTimer("Engine Update");
         }
 
-//        System.out.println(times);
-//        System.out.println(averageTime / times.size());
-
         SceneManager.getCurrentScene().saveAs("level.scene");
+        Profiler.startTimer("Window Loop");
     }
 
     private static void renderPass(Matrix4f projectionMatrix, Matrix4f viewMatrix, Color backgroundColor) {
@@ -278,7 +298,7 @@ public class Window implements Observer {
         System.out.printf((ColoredText.YELLOW + "  LWJGL Version: " + ColoredText.RESET + "%s\n"), Version.getVersion());
         IntBuffer buffer = BufferUtils.createIntBuffer(1);
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, buffer);
-        System.out.printf((ColoredText.YELLOW + "  Texture Slots count: " + ColoredText.RESET + "%d\n"), buffer.get(0));
+        System.out.printf((ColoredText.YELLOW + "  Texture Slots count: " + ColoredText.RESET + "%d\n\n"), buffer.get(0));
     }
 
     public static boolean isClose() { return glfwWindowShouldClose(glfwWindow); }
@@ -299,11 +319,15 @@ public class Window implements Observer {
 
     public static void setHeight(int height) { Window.height = height; }
 
+    public static void minimize() { } // TODO MINIMIZE WINDOW
+
+    public static void maximize() { glfwMaximizeWindow(glfwWindow); }
+
+    public static void close() { isClosed = true; }
+
     public static Fbo getScreenFramebuffer() { return SceneManager.getCurrentScene().getEditorCamera().getOutputFob(); }
 
     public static float getTargetAspectRatio() { return 16.0f / 9.0f; }
-
-//    public static PickingTexture getPickingTexture() { return Window.pickingTexture; }
 
     public static boolean isRuntimePlaying() { return Window.runtimePlaying; }
 
@@ -322,13 +346,13 @@ public class Window implements Observer {
         switch (event.type) {
             case GameEngine_StartPlay -> {
                 runtimePlaying = true;
-                SceneManager.getCurrentScene().saveAs("tmpRuntimeScene.scene"); // TODO SAVE TO TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
+                SceneManager.getCurrentScene().saveAs("tmpRuntimeScene.scene"); // Save to tmp scene file, to provide user not save scene before he starts playing
                 SceneManager.changeScene("tmpRuntimeScene.scene");
                 Outliner_Window.clearSelected();
             }
             case GameEngine_StopPlay -> {
                 runtimePlaying = false;
-                SceneManager.changeScene("tmpRuntimeScene.scene"); // TODO LOAD FROM TMP SCENE FILE, TO PROVIDE USER NOT SAVE SCENE BEFORE HE STAT PLAYING
+                SceneManager.changeScene("tmpRuntimeScene.scene"); // Load from tmp scene file, to provide user not save scene before he starts playing
                 Outliner_Window.clearSelected();
             }
             case GameEngine_SaveScene -> SceneManager.getCurrentScene().saveAs("level.scene");

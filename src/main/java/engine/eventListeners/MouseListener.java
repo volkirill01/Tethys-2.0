@@ -2,6 +2,7 @@ package engine.eventListeners;
 
 import engine.editor.gui.ImGuiLayer;
 import engine.editor.windows.SceneView_Window;
+import engine.profiling.Profiler;
 import engine.renderer.camera.ed_EditorCamera;
 import engine.scenes.SceneManager;
 import engine.stuff.Window;
@@ -63,9 +64,9 @@ public class MouseListener {
     }
 
     protected static void mousePositionCallback(long window, double mouseXPos, double mouseYPos) {
-        if (!((SceneView_Window) Objects.requireNonNull(ImGuiLayer.getWindow(SceneView_Window.class))).getWantCaptureMouse())
+        if (!ImGuiLayer.getWantCaptureMouse())
             clear();
-        if (!Objects.requireNonNull(ImGuiLayer.getWindow(SceneView_Window.class)).isVisible())
+        if (!ImGuiLayer.isAnyWindowVisible(SceneView_Window.class))
             return;
 
         if (pressedButtonsCount > 0)
@@ -84,6 +85,8 @@ public class MouseListener {
     }
 
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
+        String profileLog = String.format("MouseButton Callback - (button: '%d', action: '%s')", button, action == GLFW_PRESS ? "Press" : "Release");
+        Profiler.startTimer(profileLog);
         if (button > MOUSE_BUTTONS_COUNT)
             throw new IndexOutOfBoundsException(String.format("'%d' - button out of range.", button));
 
@@ -98,6 +101,7 @@ public class MouseListener {
             buttonsDown[button] = false;
             isDragging = pressedButtonsCount != 0 && isDragging;
         }
+        Profiler.stopTimer(profileLog);
     }
 
     public static void mouseScrollCallback(long window, double xOffset, double yOffset) {

@@ -1,12 +1,14 @@
 package engine.scenes;
 
 import engine.editor.windows.Outliner_Window;
+import engine.profiling.Profiler;
 
 public class SceneManager {
 
     private static Scene currentScene;
 
     public static void changeScene(String filepath) {
+        Profiler.startTimer(String.format("SceneManager Change Scene - '%s'", filepath));
         if (currentScene != null)
             currentScene.destroy();
 
@@ -15,6 +17,7 @@ public class SceneManager {
         currentScene.load(filepath);
         currentScene.init();
         currentScene.start();
+        Profiler.stopTimer(String.format("SceneManager Change Scene - '%s'", filepath));
     }
 
     public static Scene getCurrentScene() { return currentScene; }

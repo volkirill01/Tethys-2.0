@@ -1,9 +1,8 @@
 package TMP_MARIO_STUFF;
 
 import engine.entity.GameObject;
-import engine.renderer.Texture;
-import engine.renderer.Texture2D;
 import engine.renderer.renderer2D.SpriteRenderer;
+import engine.renderer.renderer2D.SubTexture2D;
 import engine.renderer.renderer2D.sprite.Sprite;
 import engine.scenes.SceneManager;
 

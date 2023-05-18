@@ -7,6 +7,7 @@ import engine.editor.console.Console;
 import engine.editor.console.LogType;
 import engine.editor.gui.EditorGUI;
 import engine.entity.component.Component;
+import engine.profiling.Profiler;
 import engine.renderer.renderer2D.SpriteRenderer;
 import engine.entity.component.Transform;
 import engine.stuff.utils.EditorGson;
@@ -99,7 +100,6 @@ public class GameObject {
             ImGui.endPopup();
         }
         //</editor-fold>
-        ImGui.separator();
 
         for (Component c : this.components)
             if (EditorGUI.beginCollapsingHeader(c.getClass().getSimpleName(), c.getClass() == Transform.class ? ImGuiTreeNodeFlags.DefaultOpen : ImGuiTreeNodeFlags.None)) {
@@ -124,26 +124,30 @@ public class GameObject {
     }
 
     public void destroy() {
+        Profiler.startTimer(String.format("Destroy GameObject - '%s'", this.name));
         this.isDeath = true;
         for (Component component : this.components)
             component.destroy();
+        Profiler.stopTimer(String.format("Destroy GameObject - '%s'", this.name));
     }
 
     public GameObject copy() {
+        Profiler.startTimer(String.format("Copy GameObject - '%s'", this.name));
         Gson gson = EditorGson.getGsonBuilder();
 
         String objAsGson = gson.toJson(this);
         GameObject copy = gson.fromJson(objAsGson, GameObject.class);
-        
+
         copy.generateUid();
         for (Component c : copy.components)
             c.generateID();
 
         if (copy.hasComponent(SpriteRenderer.class)) {
             SpriteRenderer renderer = copy.getComponent(SpriteRenderer.class);
-            if (renderer.getTexture() != null)
-                renderer.setTexture(AssetPool.getTexture(renderer.getTexture().getFilepath()));
+            if (renderer.getSprite().getTexture() != null)
+                renderer.getSprite().setTexture(AssetPool.getTexture(renderer.getSprite().getTexture().getFilepath()));
         }
+        Profiler.stopTimer(String.format("Copy GameObject - '%s'", this.name));
         return copy;
     }
 

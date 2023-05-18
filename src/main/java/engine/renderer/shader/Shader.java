@@ -1,5 +1,6 @@
 package engine.renderer.shader;
 
+import engine.profiling.Profiler;
 import engine.stuff.Settings;
 import engine.stuff.customVariables.Color;
 import org.joml.*;
@@ -23,6 +24,7 @@ public class Shader {
     private final String filepath;
 
     public Shader(String filepath) {
+        Profiler.startTimer(String.format("Create new Shader - '%s'", filepath));
         this.filepath = filepath;
         try {
             String source = new String(Files.readAllBytes(Paths.get(filepath)));
@@ -58,6 +60,7 @@ public class Shader {
         }
 
         compile();
+        Profiler.stopTimer(String.format("Create new Shader - '%s'", filepath));
     }
 
     private String buildFragmentShaderSource(String fragmentSource) {
@@ -88,6 +91,7 @@ public class Shader {
     }
 
     public void compile() {
+        Profiler.startTimer(String.format("Compile Shader - '%s'", this.filepath));
         // ============================================================
         // Compile and link Shaders
         // ============================================================
@@ -131,6 +135,7 @@ public class Shader {
             int len = glGetProgrami(this.shaderProgramID, GL_INFO_LOG_LENGTH);
             throw new RuntimeException(String.format("'%s'\n\tLinking of shaders failed.\n%s", this.filepath, glGetProgramInfoLog(this.shaderProgramID, len)));
         }
+        Profiler.stopTimer(String.format("Compile Shader - '%s'", this.filepath));
     }
 
     public void bind() {

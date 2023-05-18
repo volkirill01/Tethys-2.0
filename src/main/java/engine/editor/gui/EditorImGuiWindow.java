@@ -1,9 +1,9 @@
 package engine.editor.gui;
 
+import engine.profiling.Profiler;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiHoveredFlags;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
@@ -38,6 +38,7 @@ public abstract class EditorImGuiWindow {
     }
 
     public void imgui(ImBoolean isOpen) {
+        Profiler.startTimer("Draw EditorImGui Window");
         this.isOpen = isOpen;
         this.isClicked = false;
 
@@ -112,6 +113,7 @@ public abstract class EditorImGuiWindow {
             this.isVisible = true;
             drawWindow();
         }
+        Profiler.stopTimer("Draw EditorImGui Window");
     }
 
     public abstract void drawWindow();

@@ -1,5 +1,6 @@
 package engine.editor.gui;
 
+import engine.profiling.Profiler;
 import engine.stuff.customVariables.Color;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -84,6 +85,7 @@ public class EditorThemeSystem {
     private static float indentSpacing = 0.0f;
 
     public static void updateTheme() {
+        Profiler.startTimer("Update Theme");
         ImGui.getStyle().setFrameRounding(frameRounding);
         ImGui.getStyle().setPopupRounding(popupRounding);
         ImGui.getStyle().setWindowRounding(windowRounding);
@@ -183,6 +185,7 @@ public class EditorThemeSystem {
         ImGui.getStyle().setColor(ImGuiCol.NavWindowingDimBg, navWindowingDimBgColor.r / 255.0f, navWindowingDimBgColor.g / 255.0f, navWindowingDimBgColor.b / 255.0f, navWindowingDimBgColor.a / 255.0f);
 
         ImGui.getStyle().setColor(ImGuiCol.ModalWindowDimBg, modalWindowDimBgColor.r / 255.0f, modalWindowDimBgColor.g / 255.0f, modalWindowDimBgColor.b / 255.0f, modalWindowDimBgColor.a / 255.0f);
+        Profiler.stopTimer("Update Theme");
     }
 
     public static void setDarkTheme() {
@@ -288,9 +291,7 @@ public class EditorThemeSystem {
 
         modalWindowDimBgColor.set(0.0f, 0.0f, 0.0f, 150.0f);
         updateTheme();
-        updateTheme();
     }
-
 
     public static void setLightTheme() {
         textColor.set(0.0f, 0.0f, 0.0f, 255.0f);

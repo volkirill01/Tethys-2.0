@@ -3,7 +3,7 @@ package engine.renderer;
 import engine.renderer.buffers.VertexArray;
 import engine.stuff.customVariables.Color;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL30.*;
 
 public class RenderCommand {
 
@@ -28,9 +28,11 @@ public class RenderCommand {
 
     public static void drawIndexed(VertexArray vao) {
         glDrawElements(GL_TRIANGLES, vao.getIndexBuffer().getCount(), GL_UNSIGNED_INT, 0);
+        EntityRenderer.addDrawCall();
     }
 
-    public static void drawIndexed(int verticesCount) {
-        glDrawElements(GL_TRIANGLES, verticesCount, GL_UNSIGNED_INT, 0);
+    public static void drawIndexed(int indicesCount) {
+        glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, 0);
+        EntityRenderer.addDrawCall();
     }
 }

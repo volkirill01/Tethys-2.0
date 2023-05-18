@@ -1,6 +1,7 @@
 package engine.entity.component;
 
 import com.google.gson.*;
+import engine.profiling.Profiler;
 
 import java.lang.reflect.Type;
 
@@ -13,7 +14,10 @@ public class ComponentDeserializer implements JsonSerializer<Component>, JsonDes
         JsonElement element = jsonObject.get("properties");
 
         try {
-            return context.deserialize(element, Class.forName(type));
+            Profiler.startTimer(String.format("Deserialize Component - '%s'", type));
+            Component c = context.deserialize(element, Class.forName(type));
+            Profiler.stopTimer(String.format("Deserialize Component - '%s'", type));
+            return c;
         } catch (ClassNotFoundException e) {
             throw new JsonParseException(String.format("Unknown element type - '%s'", type), e);
         }
@@ -21,9 +25,12 @@ public class ComponentDeserializer implements JsonSerializer<Component>, JsonDes
 
     @Override
     public JsonElement serialize(Component src, Type typeOfSrc, JsonSerializationContext context) {
+        Profiler.startTimer(String.format("Serialize Component - '%s'", src.getClass().getCanonicalName()));
         JsonObject result = new JsonObject();
         result.add("type", new JsonPrimitive(src.getClass().getCanonicalName()));
         result.add("properties", context.serialize(src, src.getClass()));
+
+        Profiler.stopTimer(String.format("Serialize Component - '%s'", src.getClass().getCanonicalName()));
         return result;
     }
 }

@@ -6,6 +6,7 @@ import engine.assets.AssetPool;
 import engine.audio.Sound;
 import engine.entity.GameObject;
 import engine.entity.component.Component;
+import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
 import engine.renderer.renderer2D.SpriteRenderer;
 import engine.entity.component.Transform;
@@ -50,6 +51,7 @@ public class Scene {
     public Scene(String filepath) { this.filepath = filepath; }
 
     public void init() {
+        Profiler.startTimer(String.format("Init Scene - '%s'", this.filepath));
         loadResources();
         this.editorStuff.addComponent(new ed_KeyboardControls());
         this.editorStuff.addComponent(new ed_MouseControls());
@@ -59,6 +61,7 @@ public class Scene {
         this.editorStuff.start();
 
         this.sprites = AssetPool.getSpriteSheet("Assets/decorationsAndBlocks.png");
+        Profiler.stopTimer(String.format("Init Scene - '%s'", this.filepath));
     }
 
     private void loadResources() {
@@ -89,9 +92,9 @@ public class Scene {
         for (GameObject go : this.gameObjects) {
             if (go.hasComponent(SpriteRenderer.class)) {
                 SpriteRenderer renderer = go.getComponent(SpriteRenderer.class);
-                if (renderer.getTexture() != null)
+                if (renderer.getSprite().getTexture() != null)
                     // Load Textures from AssetPool and replacing saved textures because Gson loads Textures and creates separate Object, with broken data
-                    renderer.setTexture(AssetPool.getTexture(renderer.getTexture().getFilepath()));
+                    renderer.getSprite().setTexture(AssetPool.getTexture(renderer.getSprite().getTexture().getFilepath()));
             }
             if (go.hasComponent(MeshRenderer.class)) {
                 MeshRenderer renderer = go.getComponent(MeshRenderer.class);
@@ -103,8 +106,9 @@ public class Scene {
     }
 
     public void editorUpdate() {
+        Profiler.startTimer(String.format("Scene EditorUpdate - '%s'", this.filepath));
         this.editorStuff.update();
-        SceneManager.getCurrentScene().getEditorCamera().adjustProjection();
+        SceneManager.getCurrentScene().getEditorCamera().adjustMatrices();
 
         for (int i = 0; i < this.gameObjects.size(); i++) {
             GameObject obj = this.gameObjects.get(i);
@@ -125,9 +129,11 @@ public class Scene {
             this.physics2D.add(obj);
         }
         this.pendingGameObjects.clear();
+        Profiler.stopTimer(String.format("Scene EditorUpdate - '%s'", this.filepath));
     }
 
     public void update() {
+        Profiler.startTimer(String.format("Scene RuntimeUpdate - '%s'", this.filepath));
         this.editorStuff.update();
 
         // Update physics only in runtime
@@ -152,15 +158,18 @@ public class Scene {
             this.physics2D.add(obj);
         }
         this.pendingGameObjects.clear();
+        Profiler.stopTimer(String.format("Scene RuntimeUpdate - '%s'", this.filepath));
     }
 
     public void start() {
+        Profiler.startTimer(String.format("Scene Start - '%s'", this.filepath));
         for (GameObject obj : this.gameObjects) {
             obj.start();
             EntityRenderer.add(obj);
             this.physics2D.add(obj);
         }
         this.isRunning = true;
+        Profiler.stopTimer(String.format("Scene Start - '%s'", this.filepath));
     }
 
     public GameObject createGameObject(String name) {
@@ -244,7 +253,7 @@ public class Scene {
                 Sprite sprite = this.sprites.getSprite(i);
                 float spriteWidth = sprite.getWidth() * 3;
                 float spriteHeight = sprite.getHeight() * 3;
-                int id = sprite.getTextureID();
+                int id = sprite.getTexture().getTextureID();
                 Vector2f[] texCoordinates = sprite.getTextureCoordinates();
 
                 ImGui.pushID("TileButton_" + i);

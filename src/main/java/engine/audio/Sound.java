@@ -1,5 +1,7 @@
 package engine.audio;
 
+import engine.profiling.Profiler;
+
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
@@ -17,6 +19,7 @@ public class Sound {
     private boolean isPlaying = false;
 
     public Sound(String filepath, boolean loops) {
+        Profiler.startTimer(String.format("Load Sound - '%s'", filepath));
         this.filepath = filepath;
 
         // Allocate space to store the return information from stb
@@ -25,7 +28,9 @@ public class Sound {
         stackPush();
         IntBuffer sampleRateBuffer = stackMallocInt(1);
 
+        Profiler.startTimer("Load Sound From File");
         ShortBuffer rawAudioBuffer = stb_vorbis_decode_filename(filepath, channelsBuffer, sampleRateBuffer);
+        Profiler.stopTimer("Load Sound From File");
         if (rawAudioBuffer == null) {
             stackPop();
             stackPop();
@@ -61,6 +66,7 @@ public class Sound {
 
         // Free stb raw audio buffer
         free(rawAudioBuffer);
+        Profiler.stopTimer(String.format("Load Sound - '%s'", filepath));
     }
 
     public void delete() {

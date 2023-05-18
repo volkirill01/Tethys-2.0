@@ -1,5 +1,7 @@
 package engine.eventListeners;
 
+import engine.profiling.Profiler;
+
 import java.util.Arrays;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
@@ -14,12 +16,15 @@ public class KeyListener {
     public static void endFrame() { Arrays.fill(keysClick, false); }
 
     public static void keyCallback(long window, int key, int scancode, int action, int mods) {
+        String profileLog = String.format("KeyboardButton Callback - (key: '%d', action: '%s')", key, action == GLFW_PRESS ? "Press" : "Release");
+        Profiler.startTimer(profileLog);
         if (action == GLFW_PRESS) {
             keysDown[key] = true;
             keysClick[key] = true;
         } else if (action == GLFW_RELEASE) {
             keysDown[key] = false;
         }
+        Profiler.stopTimer(profileLog);
     }
 
     protected static boolean isKeyDown(int keyCode) {

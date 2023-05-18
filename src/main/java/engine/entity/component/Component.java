@@ -2,6 +2,7 @@ package engine.entity.component;
 
 import engine.editor.gui.EditorGUI;
 import engine.entity.GameObject;
+import engine.profiling.Profiler;
 import engine.stuff.Settings;
 import engine.stuff.customVariables.Color;
 import imgui.ImGui;
@@ -23,6 +24,7 @@ public abstract class Component {
 
     private static final List<Component> allComponents = new ArrayList<>();
     static {
+        Profiler.startTimer("Collect All Build In Components");
         Reflections reflections = new Reflections("engine");
         Set<Class<? extends Component>> allClasses = reflections.getSubTypesOf(Component.class);
 
@@ -34,6 +36,7 @@ public abstract class Component {
                 System.out.println("Error " + c);
             }
         }
+        Profiler.stopTimer("Collect All Build In Components");
     }
 
     public void imgui() {

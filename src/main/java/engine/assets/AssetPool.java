@@ -2,10 +2,14 @@ package engine.assets;
 
 import engine.parsers.ModelParser;
 import engine.audio.Sound;
+import engine.renderer.Texture;
 import engine.renderer.Texture2D;
+import engine.renderer.renderer2D.SubTexture2D;
+import engine.renderer.renderer2D.sprite.Sprite;
 import engine.renderer.renderer2D.sprite.SpriteSheet;
 import engine.renderer.renderer3D.mesh.Mesh;
 import engine.renderer.shader.Shader;
+import org.joml.Vector2f;
 
 import java.util.*;
 
@@ -18,16 +22,16 @@ public class AssetPool {
     private static final Map<String, SpriteSheet> spriteSheets = new HashMap<>();
     private static final Map<String, Sound> sounds = new HashMap<>();
 
-    private static final int whiteTexture;
+    private static final Texture2D whiteTexture;
+    private static final Sprite defaultSprite;
     static {
         // Generate white OpenGL texture.
-        whiteTexture = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, whiteTexture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, new int[]{ 0xFFFFFFFF });
+        whiteTexture = new Texture2D(1, 1, new int[]{ 0xFFFFFFFF }, false);
+
+        defaultSprite = new Sprite();
+        defaultSprite.setTexture(whiteTexture);
+        defaultSprite.setWidth(1);
+        defaultSprite.setHeight(1);
     }
 
     public static Texture2D getTexture(String filepath) {
@@ -39,7 +43,7 @@ public class AssetPool {
         return newTexture;
     }
 
-    public static int getWhiteTexture() { return whiteTexture; }
+    public static Texture2D getWhiteTexture() { return whiteTexture; }
 
     public static Shader getShader(String filepath) {
         if (shaders.containsKey(filepath))
@@ -82,4 +86,6 @@ public class AssetPool {
     }
 
     public static Mesh getMesh(String filepath) { return ModelParser.loadFromFile(filepath); }
+
+    public static Sprite getDefaultSprite() { return defaultSprite; }
 }

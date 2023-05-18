@@ -13,4 +13,6 @@ public class Time {
     public static void setDeltaTime(float deltaTime) { Time.deltaTime = deltaTime; }
 
     public static float deltaTime() { return deltaTime; }
+
+    public static int getFPS() { return (int) (1.0f / deltaTime); }
 }

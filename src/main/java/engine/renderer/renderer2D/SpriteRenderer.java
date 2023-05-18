@@ -1,9 +1,9 @@
 package engine.renderer.renderer2D;
 
+import engine.assets.AssetPool;
 import engine.editor.gui.EditorGUI;
 import engine.entity.component.Component;
 import engine.entity.component.Transform;
-import engine.renderer.Texture2D;
 import engine.renderer.renderer2D.sprite.Sprite;
 import engine.stuff.customVariables.Color;
 import org.joml.Vector2f;
@@ -11,10 +11,12 @@ import org.joml.Vector2f;
 public class SpriteRenderer extends Component {
 
     private final Color color = Color.WHITE.copy();
-    private Sprite sprite = new Sprite();
+    private Sprite sprite = AssetPool.getDefaultSprite();
 
     private transient Transform lastTransform;
     private transient boolean isDirty = true;
+
+    private final Vector2f tiling = new Vector2f(1.0f); // TODO MOVE THIS IN MATERIAL
 
     @Override
     public void start() { this.lastTransform = gameObject.transform.copy(); }
@@ -40,6 +42,8 @@ public class SpriteRenderer extends Component {
     @Override
     public void imgui() {
         if (EditorGUI.field_Color("Color", this.color))
+            this.isDirty = true;
+        if (EditorGUI.field_Vector2f("Tiling", this.tiling, new Vector2f(1.0f)))
             this.isDirty = true;
     }
 
@@ -68,13 +72,9 @@ public class SpriteRenderer extends Component {
         }
     }
 
-    public Texture2D getTexture() { return this.sprite.getTexture(); }
-
-    public void setTexture(Texture2D texture) { this.sprite.setTexture(texture); }
-
-    public Vector2f[] getTextureCoordinates() { return this.sprite.getTextureCoordinates(); }
-
     public boolean isDirty() { return this.isDirty; }
 
     public void setDirty(boolean dirty) { this.isDirty = dirty; }
+
+    public Vector2f getTiling() { return this.tiling; } // TODO MOVE THIS IN MATERIAL
 }

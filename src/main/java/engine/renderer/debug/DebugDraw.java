@@ -1,7 +1,7 @@
 package engine.renderer.debug;
 
-import engine.TestFieldsWindow;
 import engine.assets.AssetPool;
+import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
 import engine.renderer.camera.ed_EditorCamera;
 import engine.renderer.shader.Shader;
@@ -70,6 +70,7 @@ public class DebugDraw {
         if (lines.size() == 0)
             return;
 
+        Profiler.startTimer("Debug Render");
         int index = 0;
         for (DebugLine line : lines) {
             for (int i = 0; i < 2; i++) {
@@ -121,6 +122,7 @@ public class DebugDraw {
 
         // Unbind shader
         shader.unbind();
+        Profiler.stopTimer("Debug Render");
     }
 
     // =================================================================================================================
