@@ -4,71 +4,35 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="Add Camera Component;&#10;Add engine Console;&#10;Add Footer;">
-      <change afterPath="$PROJECT_DIR$/TethysProfile-Runtime.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TethysProfile-Shutdown.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TethysProfile-Startup.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/engine/profiling/Profiler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/engine/profiling/Profiler_Window.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/engine/profiling/SessionReplay.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/engine/profiling/Timer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/SubTexture2D.java" afterDir="false" />
+    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="Add Profiling and Session replay;&#10;Refactor Code;">
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorImGuiWindowDeserializer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EngineGuiLayer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/layerStack/EngineLayer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/layerStack/Layer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/layerStack/LayerStack.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/stuff/Window_old.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/window.ini" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TethysProfile-Runtime.json" beforeDir="false" afterPath="$PROJECT_DIR$/TethysProfile-Runtime.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TethysProfile-Startup.json" beforeDir="false" afterPath="$PROJECT_DIR$/TethysProfile-Startup.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/shaders/2D/defaultSprite.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/editorFiles/shaders/2D/defaultSprite.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/gui.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/level.scene" beforeDir="false" afterPath="$PROJECT_DIR$/level.scene" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/TMP_MARIO_STUFF/Prefabs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/TMP_MARIO_STUFF/Prefabs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/TestFieldsWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/TestFieldsWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/assets/AssetPool.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/assets/AssetPool.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/audio/Sound.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/audio/Sound.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/console/Console_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/console/Console_Window.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorImGuiWindow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorImGuiWindow.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorThemeSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorThemeSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/GuiFont.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/GuiFont.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/ImGuiLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/ImGuiLayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/ImGuiLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/ImGuiLayer_old.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/GameView_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/GameView_Window.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/MainMenuBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/MainMenuBar.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/GameObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/GameObject.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/GameObjectDeserializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/GameObjectDeserializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/component/Component.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/component/Component.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/component/ComponentDeserializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/component/ComponentDeserializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/eventListeners/Input.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/eventListeners/Input.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/eventListeners/KeyListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/eventListeners/KeyListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/SceneView_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/SceneView_Window.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/eventListeners/MouseListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/eventListeners/MouseListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/observers/EventSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/observers/EventSystem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/parsers/ModelParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/parsers/ModelParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/parsers/TextureParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/parsers/TextureParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/ContactListener2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/ContactListener2D.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/Physics2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/Physics2D.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/colliders/Box2DCollider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/colliders/Box2DCollider.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/EntityRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/EntityRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/RenderCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/RenderCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/Texture.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/Texture.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/Texture2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/Texture2D.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/buffers/VertexBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/buffers/VertexBuffer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/Camera.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/ed_BaseCamera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/ed_BaseCamera.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/ed_EditorCamera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/ed_EditorCamera.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/debug/DebugDraw.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/debug/DebugDraw.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/debug/DebugGrid.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/debug/DebugGrid.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/RenderBatch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/RenderBatch2D.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/SpriteMasterRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/SpriteMasterRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/SpriteRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/SpriteRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/sprite/SpriteSheet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/sprite/SpriteSheet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer3D/MeshMasterRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer3D/MeshMasterRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/shader/Shader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/shader/Shader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/scenes/Scene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/scenes/Scene.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/scenes/SceneManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/scenes/SceneManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/stuff/Maths.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/stuff/Maths.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/stuff/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/stuff/Window.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/stuff/utils/Time.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/stuff/utils/Time.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,11 +102,11 @@
       <recent name="" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="engine.stuff" />
+      <recent name="engine.editor.gui" />
       <recent name="engine.renderer" />
       <recent name="editor.renderer.renderer3D" />
       <recent name="editor.renderer.renderer3D.mesh" />
-      <recent name="editor.editor.windows" />
-      <recent name="editor.gizmo" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Main">
@@ -294,7 +258,14 @@
       <option name="project" value="LOCAL" />
       <updated>1683889783074</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Add Profiling and Session replay;&#10;Refactor Code;">
+      <created>1684378183861</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1684378183861</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -326,6 +297,7 @@
     <MESSAGE value="Add Cameras system(Editor camera separated, and engine has Camera component);&#10;Add GameView window;&#10;Start reworking editor GUI;" />
     <MESSAGE value="Start adding 3D rendering;&#10;Refactor code;" />
     <MESSAGE value="Add Camera Component;&#10;Add engine Console;&#10;Add Footer;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add Camera Component;&#10;Add engine Console;&#10;Add Footer;" />
+    <MESSAGE value="Add Profiling and Session replay;&#10;Refactor Code;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Profiling and Session replay;&#10;Refactor Code;" />
   </component>
 </project>

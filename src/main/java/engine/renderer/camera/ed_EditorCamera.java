@@ -1,6 +1,7 @@
 package engine.renderer.camera;
 
-import engine.editor.gui.ImGuiLayer;
+import engine.editor.gui.EngineGuiLayer;
+import engine.editor.gui.ImGuiLayer_old;
 import engine.editor.windows.SceneView_Window;
 import engine.eventListeners.Input;
 import engine.eventListeners.KeyCode;
@@ -37,7 +38,7 @@ public class ed_EditorCamera extends ed_BaseCamera {
 
     @Override
     public void update() {
-        if (!ImGuiLayer.isAnyWindowVisible(SceneView_Window.class))
+        if (!EngineGuiLayer.isAnyWindowVisible(SceneView_Window.class))
             return;
 
         if (Input.anyButtonDown() && !Input.buttonDown(KeyCode.F) || Input.getMouseScrollX() != 0.0f || Input.getMouseScrollY() != 0.0f) {

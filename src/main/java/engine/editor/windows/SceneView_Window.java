@@ -1,7 +1,8 @@
 package engine.editor.windows;
 
 import engine.editor.gui.EditorImGuiWindow;
-import engine.editor.gui.ImGuiLayer;
+import engine.editor.gui.EngineGuiLayer;
+import engine.editor.gui.ImGuiLayer_old;
 import engine.entity.GameObject;
 import engine.eventListeners.Input;
 import engine.eventListeners.MouseListener;
@@ -80,6 +81,6 @@ public class SceneView_Window extends EditorImGuiWindow implements Observer {
     @Override
     public void onNotify(GameObject object, Event event) {
         if (event.type == EventType.GameEngine_StopPlay)
-            ImGuiLayer.selectWindow(this);
+            EngineGuiLayer.selectWindow(this);
     }
 }

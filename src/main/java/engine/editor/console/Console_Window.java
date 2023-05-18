@@ -1,7 +1,8 @@
 package engine.editor.console;
 
 import engine.editor.gui.EditorImGuiWindow;
-import engine.editor.gui.ImGuiLayer;
+import engine.editor.gui.EngineGuiLayer;
+import engine.editor.gui.ImGuiLayer_old;
 import engine.entity.GameObject;
 import engine.observers.EventSystem;
 import engine.observers.Observer;
@@ -102,6 +103,6 @@ public class Console_Window extends EditorImGuiWindow implements Observer {
     @Override
     public void onNotify(GameObject object, Event event) {
         if (event.type == EventType.ConsoleSendMessage)
-            ImGuiLayer.selectWindow(this);
+            EngineGuiLayer.selectWindow(this);
     }
 }

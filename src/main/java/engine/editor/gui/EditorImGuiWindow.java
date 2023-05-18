@@ -10,7 +10,7 @@ import imgui.type.ImBoolean;
 
 public abstract class EditorImGuiWindow {
 
-    protected final int id;
+    protected int id;
     protected final String windowTitle;
     protected final String actualWindowTitle;
     protected final int windowFlags;
@@ -22,7 +22,7 @@ public abstract class EditorImGuiWindow {
     private boolean isClicked = false;
 
     public EditorImGuiWindow(String windowTitle) {
-        this.id = ImGuiLayer.getNextWindowId() - 1;
+        this.id = EngineGuiLayer.getNextWindowId() - 1;
         this.windowTitle = windowTitle;
         this.windowFlags = ImGuiWindowFlags.None;
 
@@ -30,7 +30,7 @@ public abstract class EditorImGuiWindow {
     }
 
     public EditorImGuiWindow(String windowTitle, int windowFlags) {
-        this.id = ImGuiLayer.getNextWindowId() - 1;
+        this.id = EngineGuiLayer.getNextWindowId() - 1;
         this.windowTitle = windowTitle;
         this.windowFlags = windowFlags;
 
@@ -54,14 +54,14 @@ public abstract class EditorImGuiWindow {
             ImGui.pushStyleColor(ImGuiCol.TabHovered, tabHoverColor.x, tabHoverColor.y, tabHoverColor.z, tabHoverColor.w);
             if (ImGui.begin(this.actualWindowTitle, this.isOpen, this.windowFlags)) {
                 ImGui.popStyleColor(5);
-//              ImGui.text("" + this.id);
                 if (ImGui.isItemHovered())
                     if (ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
-                        if (ImGuiLayer.getWindowOnFullscreen() == null)
+                        if (EngineGuiLayer.getWindowOnFullscreen() == null)
                             setOnFullscreen(this);
                         else
                             setOnFullscreen(null);
                     }
+//                ImGui.text("" + this.id);
 
                 if (ImGui.isWindowHovered()) {
                     if (ImGui.isMouseClicked(ImGuiMouseButton.Right) || ImGui.isMouseClicked(ImGuiMouseButton.Middle))
@@ -70,7 +70,7 @@ public abstract class EditorImGuiWindow {
                     this.isHover = true;
                     if (ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
                         this.isClicked = true;
-                        ImGuiLayer.selectWindow(this);
+                        EngineGuiLayer.selectWindow(this);
                     } else
                         this.isClicked = false;
                 } else
@@ -90,7 +90,7 @@ public abstract class EditorImGuiWindow {
         } else {
             if (ImGui.isItemHovered())
                 if (ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
-                    if (ImGuiLayer.getWindowOnFullscreen() == null)
+                    if (EngineGuiLayer.getWindowOnFullscreen() == null)
                         setOnFullscreen(this);
                     else
                         setOnFullscreen(null);
@@ -103,7 +103,7 @@ public abstract class EditorImGuiWindow {
                 this.isHover = true;
                 if (ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
                     this.isClicked = true;
-                    ImGuiLayer.selectWindow(this);
+                    EngineGuiLayer.selectWindow(this);
                 } else
                     this.isClicked = false;
             }
@@ -120,7 +120,7 @@ public abstract class EditorImGuiWindow {
 
     public int getId() { return this.id; }
 
-    public void setOnFullscreen(EditorImGuiWindow window) { ImGuiLayer.setWindowOnFullscreen(window); }
+    public void setOnFullscreen(EditorImGuiWindow window) { EngineGuiLayer.setWindowOnFullscreen(window); }
 
     public void close() { this.isOpen.set(false); }
 

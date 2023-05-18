@@ -3,14 +3,15 @@ package engine.stuff;
 import engine.editor.console.Console;
 import engine.editor.console.ConsoleMessage;
 import engine.editor.console.LogType;
-import engine.editor.gui.EditorThemeSystem;
 import engine.editor.windows.Outliner_Window;
 import engine.entity.GameObject;
 import engine.eventListeners.Input;
 import engine.eventListeners.KeyCode;
 import engine.eventListeners.KeyListener;
 import engine.eventListeners.MouseListener;
-import engine.editor.gui.ImGuiLayer;
+import engine.editor.gui.EngineGuiLayer;
+import engine.layerStack.EngineLayer;
+import engine.layerStack.LayerStack;
 import engine.observers.EventSystem;
 import engine.observers.Observer;
 import engine.observers.events.Event;
@@ -20,15 +21,13 @@ import engine.profiling.Profiler;
 import engine.profiling.SessionReplay;
 import engine.renderer.EntityRenderer;
 import engine.renderer.RenderCommand;
-import engine.renderer.camera.Camera;
-import engine.renderer.debug.DebugDraw;
-import engine.renderer.debug.DebugGrid;
 import engine.renderer.shader.Shader;
 import engine.renderer.stuff.Fbo;
 import engine.scenes.SceneManager;
 import engine.stuff.customVariables.Color;
 import engine.stuff.utils.Time;
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -40,24 +39,29 @@ import org.lwjgl.opengl.GL;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.openal.ALC10.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.GL_MAX_TEXTURE_IMAGE_UNITS;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window implements Observer {
 
-    private static int width, height;
     private static int screen_width, screen_height;
+
+    private static int width, height;
+    private static final Vector2i position = new Vector2i();
     private static final String title = "Tethys";
+    private static final String windowIniFilepath = "window.ini";
+
     private static boolean isMinimized = false;
     private static boolean isClosed = false;
 
@@ -66,21 +70,19 @@ public class Window implements Observer {
     private static long audioContext;
     private static long audioDevice;
 
-    private static ImGuiLayer imguiLayer;
-
     private static boolean runtimePlaying = false;
 
     public static boolean debugMode = false; // TODO DELETE THIS
 
+    private void putLayersInStack() {
+        LayerStack.attachLayer(new EngineGuiLayer());
+        LayerStack.attachLayer(new EngineLayer());
+    }
+
     public void run() {
         EventSystem.addObserver(this);
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        screen_width = (int) screenSize.getWidth();
-        screen_height = (int) screenSize.getHeight();
-
-        width = screen_width;
-        height = screen_height;
+        loadIniFile();
 
         SessionReplay.beginSession("Startup", String.format("%sProfile-Startup.json", Window.getTitle()));
         init();
@@ -93,6 +95,39 @@ public class Window implements Observer {
         SessionReplay.beginSession("Shutdown", String.format("%sProfile-Shutdown.json", Window.getTitle()));
         closeWindow();
         SessionReplay.endSession();
+    }
+
+    private void loadIniFile() {
+        // Set default window parameters
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screen_width = (int) screenSize.getWidth();
+        screen_height = (int) screenSize.getHeight();
+
+        String inFile = "";
+        try {
+            inFile = new String(Files.readAllBytes(Paths.get(windowIniFilepath)));
+        } catch (IOException e) {
+            System.out.printf("%sNo Window ini file.%s\n", ColoredText.RED, ColoredText.RESET);
+        }
+
+        if (!inFile.equals("")) {
+            width = Integer.parseInt(inFile.split("size = ")[1].split(", ")[0]);
+            height = Integer.parseInt(inFile.split("size = ")[1].split(", ")[1].split("\n")[0]);
+
+            position.x = Integer.parseInt(inFile.split("position = ")[1].split(", ")[0].split("\n")[0]);
+            position.y = Integer.parseInt(inFile.split("position = ")[1].split(", ")[1].split("\n")[0]);
+
+            isMinimized = !Boolean.parseBoolean(inFile.split("isMaximized = ")[1]);
+            return;
+        }
+
+        width = screen_width;
+        height = screen_height;
+
+        position.x = 0;
+        position.y = 0;
+
+        isMinimized = false;
     }
 
     private void init() {
@@ -108,12 +143,15 @@ public class Window implements Observer {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // Create window but make it invisible before setting it
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        glfwWindowHint(GLFW_MAXIMIZED, isMinimized ? GLFW_FALSE : GLFW_TRUE);
 
         // Create the window
-        glfwWindow = glfwCreateWindow((int) (width / 1.2f), (int) (height / 1.2f), title, NULL, NULL);
+        glfwWindow = glfwCreateWindow(width, height, title, NULL, NULL);
         if (glfwWindow == NULL)
             throw new IllegalStateException("Failed to create GLFW Window.");
+
+        if (position.x != 0 && position.y != 0)
+            glfwSetWindowPos(glfwWindow, position.x, position.y);
 
         // Setup callbacks
         Input.setInputCallbacks();
@@ -150,10 +188,8 @@ public class Window implements Observer {
 
         EntityRenderer.init();
 
-        imguiLayer = new ImGuiLayer(glfwWindow);
-        imguiLayer.initImGui();
-
-        EditorThemeSystem.setDarkTheme();
+        putLayersInStack();
+        LayerStack.init();
 
         glViewport(0, 0, Window.getScreenWidth(), Window.getScreenHeight());
 
@@ -179,56 +215,12 @@ public class Window implements Observer {
             // Poll events
             glfwPollEvents();
 
-            glfwSetWindowTitle(glfwWindow, title + " FPS: " + (1.0f / Time.deltaTime()));
+            glfwSetWindowTitle(glfwWindow, title + " FPS: " + Time.getFPS());
 
-            if (!isMinimized) { // && (ImGuiLayer.getWindow(SceneView_Window.class).isVisible() || ImGuiLayer.getWindow(GameView_Window.class).isVisible()) // TODO SEPARATE UPDATE AND RENDERING
-                EntityRenderer.resetStats();
+            LayerStack.update();
 
-                DebugDraw.beginFrame();
-
-                SceneManager.getCurrentScene().getEditorCamera().getOutputFob().bind();
-
-                if (Time.deltaTime() >= 0.0f) {
-                    DebugGrid.addGrid(); // TODO FIX GRID DRAWING
-
-                    if (runtimePlaying) {
-                        Profiler.startTimer("Game Update");
-                        SceneManager.getCurrentScene().update();
-                        Profiler.stopTimer("Game Update");
-                    } else {
-                        Profiler.startTimer("Editor Update");
-                        SceneManager.getCurrentScene().editorUpdate();
-                        Profiler.stopTimer("Editor Update");
-                    }
-
-                    Profiler.startTimer("Render Scene");
-                    renderPass(
-                            SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix(),
-                            SceneManager.getCurrentScene().getEditorCamera().getViewMatrix(),
-                            Settings.editorBackgroundColor);
-                    Profiler.stopTimer("Render Scene");
-
-                    DebugDraw.draw();
-                }
-
-                if (Input.buttonDown(KeyCode.Left_Alt) && Input.buttonDown(KeyCode.Left_Shift) && Input.buttonClick(KeyCode.B))
-                    debugMode = !debugMode;
-
-                SceneManager.getCurrentScene().getEditorCamera().getOutputFob().unbind();
-
-                Profiler.startTimer("Render Game Cameras");
-                for (Camera c : SceneManager.getCurrentScene().getAllCameras()) {
-                    c.getOutputFob().bind();
-                    Color backgroundColor = new Color(c.getBackgroundColor());
-                    backgroundColor.a = 255.0f;
-                    renderPass(c.getProjectionMatrix(), c.getViewMatrix(), backgroundColor);
-                    c.getOutputFob().unbind();
-                }
-                Profiler.stopTimer("Render Game Cameras");
-            }
-
-            // Display Editors GUI
-            imguiLayer.update();
+            if (Input.buttonDown(KeyCode.Left_Alt) && Input.buttonDown(KeyCode.Left_Shift) && Input.buttonClick(KeyCode.B)) // TODO DELETE THIS
+                debugMode = !debugMode;
 
             glfwSwapBuffers(glfwWindow);
 
@@ -279,8 +271,10 @@ public class Window implements Observer {
             Files.delete(new File("tmpRuntimeScene.scene").toPath());
         } catch (IOException ignored) { }
 
+        saveWindowIniFile();
+
         // Free the memory
-        imguiLayer.destroyImGui();
+        LayerStack.cleanUp();
         alcDestroyContext(audioContext);
         alcCloseDevice(audioDevice);
 
@@ -301,6 +295,29 @@ public class Window implements Observer {
         System.out.printf((ColoredText.YELLOW + "  Texture Slots count: " + ColoredText.RESET + "%d\n\n"), buffer.get(0));
     }
 
+    private static void saveWindowIniFile() {
+        try {
+            FileOutputStream outputStream = new FileOutputStream(windowIniFilepath);
+
+            int[] tmpPositionX = new int[1];
+            int[] tmpPositionY = new int[1];
+            glfwGetWindowPos(glfwWindow, tmpPositionX, tmpPositionY);
+
+            int[] tmpSizeX = new int[1];
+            int[] tmpSizeY = new int[1];
+            glfwGetWindowSize(glfwWindow, tmpSizeX, tmpSizeY);
+
+            outputStream.write(String.format("position = %d, %d\n", tmpPositionX[0], tmpPositionY[0]).getBytes());
+            outputStream.write(String.format("size = %d, %d\n", tmpSizeX[0], tmpSizeY[0]).getBytes());
+            outputStream.write(String.format("isMaximized = %b", glfwGetWindowAttrib(glfwWindow, GLFW_MAXIMIZED) == 1).getBytes());
+            outputStream.flush();
+
+            outputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static boolean isClose() { return glfwWindowShouldClose(glfwWindow); }
 
     public static long getGlfwWindow() { return glfwWindow; }
@@ -318,6 +335,8 @@ public class Window implements Observer {
     public static int getHeight() { return height; }
 
     public static void setHeight(int height) { Window.height = height; }
+
+    public static boolean isMinimized() { return isMinimized; }
 
     public static void minimize() { } // TODO MINIMIZE WINDOW
 

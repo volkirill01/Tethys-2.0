@@ -1,7 +1,8 @@
 package engine.editor.windows;
 
 import engine.editor.gui.EditorThemeSystem;
-import engine.editor.gui.ImGuiLayer;
+import engine.editor.gui.EngineGuiLayer;
+import engine.editor.gui.ImGuiLayer_old;
 import engine.observers.EventSystem;
 import engine.observers.events.Event;
 import engine.observers.events.EventType;
@@ -131,7 +132,7 @@ public class MainMenuBar {
         }
         if (ImGui.beginMenu("Windows")) {
             if (ImGui.menuItem("Open Profiler"))
-                ImGuiLayer.setWindowOpen(Profiler_Window.class, true);
+                EngineGuiLayer.setWindowOpen(Profiler_Window.class, true);
             ImGui.endMenu();
         }
 

@@ -1,6 +1,7 @@
 package engine.eventListeners;
 
-import engine.editor.gui.ImGuiLayer;
+import engine.editor.gui.EngineGuiLayer;
+import engine.editor.gui.ImGuiLayer_old;
 import engine.editor.windows.SceneView_Window;
 import engine.profiling.Profiler;
 import engine.renderer.camera.ed_EditorCamera;
@@ -12,7 +13,6 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
@@ -64,9 +64,9 @@ public class MouseListener {
     }
 
     protected static void mousePositionCallback(long window, double mouseXPos, double mouseYPos) {
-        if (!ImGuiLayer.getWantCaptureMouse())
+        if (!EngineGuiLayer.getWantCaptureMouse())
             clear();
-        if (!ImGuiLayer.isAnyWindowVisible(SceneView_Window.class))
+        if (!EngineGuiLayer.isAnyWindowVisible(SceneView_Window.class))
             return;
 
         if (pressedButtonsCount > 0)

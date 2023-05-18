@@ -16,6 +16,7 @@ import engine.renderer.camera.Camera;
 import engine.renderer.renderer2D.sprite.Sprite;
 import engine.renderer.renderer2D.sprite.SpriteSheet;
 import engine.renderer.renderer3D.MeshRenderer;
+import engine.stuff.ColoredText;
 import engine.stuff.Settings;
 import engine.stuff.inputActions.ed_KeyboardControls;
 import engine.stuff.inputActions.ed_MouseControls;
@@ -331,8 +332,7 @@ public class Scene {
         try {
             inFile = new String(Files.readAllBytes(Paths.get(filepath)));
         } catch (IOException e) {
-            e.printStackTrace();
-//            throw new RuntimeException("Error in loading Scene - '" + filepath + "'", e);
+            System.out.printf("%sNot found Scene file - '%s'%s\n", ColoredText.RED, filepath, ColoredText.RESET);
         }
 
         if (!inFile.equals("")) {
