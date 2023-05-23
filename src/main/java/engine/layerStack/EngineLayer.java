@@ -30,49 +30,55 @@ public class EngineLayer extends Layer {
             SceneManager.getCurrentScene().getEditorCamera().getOutputFob().bind();
 
             if (Time.deltaTime() >= 0.0f) {
-                DebugGrid.addGrid(); // TODO FIX GRID DRAWING
+                DebugGrid.addGrid();
 
                 if (Window.isRuntimePlaying()) {
-                    Profiler.startTimer("Game Update");
-                    SceneManager.getCurrentScene().update();
-                    Profiler.stopTimer("Game Update");
+                    if (!Window.isRuntimePause() || Window.isNextFrame()) {
+                        Profiler.startTimer("Game Update");
+                        SceneManager.getCurrentScene().update();
+                        Profiler.stopTimer("Game Update");
+                    }
                 } else {
                     Profiler.startTimer("Editor Update");
                     SceneManager.getCurrentScene().editorUpdate();
                     Profiler.stopTimer("Editor Update");
                 }
 
-                Profiler.startTimer("Render Scene");
-                renderPass(
-                        SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix(),
-                        SceneManager.getCurrentScene().getEditorCamera().getViewMatrix(),
-                        Settings.editorBackgroundColor);
-                Profiler.stopTimer("Render Scene");
+                if (!Window.isRuntimePause() || Window.isNextFrame()) {
+                    Profiler.startTimer("Render Scene");
+                    renderPass(
+                            SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix(),
+                            SceneManager.getCurrentScene().getEditorCamera().getViewMatrix(),
+                            Settings.EDITOR_BACKGROUND_COLOR);
+                    Profiler.stopTimer("Render Scene");
 
-                DebugDraw.draw();
+                    DebugDraw.draw();
+                }
             }
 
             SceneManager.getCurrentScene().getEditorCamera().getOutputFob().unbind();
 
-            Profiler.startTimer("Render Game Cameras");
-            for (Camera c : SceneManager.getCurrentScene().getAllCameras()) {
-                c.getOutputFob().bind();
-                Color backgroundColor = new Color(c.getBackgroundColor());
-                backgroundColor.a = 255.0f;
-                renderPass(c.getProjectionMatrix(), c.getViewMatrix(), backgroundColor);
-                c.getOutputFob().unbind();
+            if (!Window.isRuntimePause() || Window.isNextFrame()) {
+                Profiler.startTimer("Render Game Cameras");
+                for (Camera c : SceneManager.getCurrentScene().getAllCameras()) {
+                    c.getOutputFob().bind();
+                    Color backgroundColor = new Color(c.getBackgroundColor());
+                    backgroundColor.a = 255.0f;
+                    renderPass(c.getProjectionMatrix(), c.getViewMatrix(), backgroundColor);
+                    c.getOutputFob().unbind();
+                }
+                Profiler.stopTimer("Render Game Cameras");
             }
-            Profiler.stopTimer("Render Game Cameras");
         }
     }
 
-    private static void renderPass(Matrix4f projectionMatrix, Matrix4f viewMatrix, Color backgroundColor) {
+    private void renderPass(Matrix4f projectionMatrix, Matrix4f viewMatrix, Color backgroundColor) {
         RenderCommand.setClearColor(backgroundColor);
         RenderCommand.clear(RenderCommand.BufferBit.ColorAndDepthBuffer);
         EntityRenderer.render(projectionMatrix, viewMatrix);
     }
 
-    private static void renderPass_SingleShader(Matrix4f projectionMatrix, Matrix4f viewMatrix, Color backgroundColor, Shader shader) {
+    private void renderPass_SingleShader(Matrix4f projectionMatrix, Matrix4f viewMatrix, Color backgroundColor, Shader shader) {
         RenderCommand.setClearColor(backgroundColor);
         RenderCommand.clear(RenderCommand.BufferBit.ColorAndDepthBuffer);
         EntityRenderer.setShader(shader);
@@ -80,7 +86,5 @@ public class EngineLayer extends Layer {
     }
 
     @Override
-    public boolean onEvent(Event event) {
-        return false;
-    }
+    public boolean onEvent(Event event) { return false; }
 }

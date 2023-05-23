@@ -1,6 +1,7 @@
 package engine.physics.physics2D.components.colliders;
 
 import engine.editor.gui.EditorGUI;
+import engine.physics.physics2D.Physics2D;
 import engine.physics.physics2D.components.ed_Collider2D;
 import engine.physics.physics2D.components.RigidBody2D;
 import engine.stuff.Window;
@@ -13,8 +14,8 @@ public class Pillbox2DCollider extends ed_Collider2D {
     private final transient Box2DCollider middleBox = new Box2DCollider();
     private transient boolean resetFixtureNextFrame = false;
 
-    private float width = 0.25f;
-    private float height = 0.5f;
+    private float width = 1.0f;
+    private float height = 2.0f;
     private transient float old_width = 0.0f;
     private transient float old_height = 0.0f;
     private final Vector2f offset = new Vector2f();
@@ -84,7 +85,7 @@ public class Pillbox2DCollider extends ed_Collider2D {
     }
 
     public void resetFixture() {
-        if (Window.getPhysics2D().isLocked()) {
+        if (Physics2D.isLocked()) {
             this.resetFixtureNextFrame = true;
             return;
         }
@@ -92,7 +93,7 @@ public class Pillbox2DCollider extends ed_Collider2D {
 
         if (this.gameObject.hasComponent(RigidBody2D.class)) {
             RigidBody2D rb = this.gameObject.getComponent(RigidBody2D.class);
-            Window.getPhysics2D().resetPillbox2DCollider(rb, this);
+            Physics2D.resetPillbox2DCollider(rb, this);
         }
     }
 

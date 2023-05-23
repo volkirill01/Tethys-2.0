@@ -2,7 +2,6 @@ package engine.editor.windows;
 
 import engine.editor.gui.EditorThemeSystem;
 import engine.editor.gui.EngineGuiLayer;
-import engine.editor.gui.ImGuiLayer_old;
 import engine.observers.EventSystem;
 import engine.observers.events.Event;
 import engine.observers.events.EventType;
@@ -48,43 +47,56 @@ public class MainMenuBar {
         ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 2.0f);
         ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getStyle().getFramePaddingX() + ImGui.getContentRegionMaxX() / 8, ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY());
-        if (ImGui.button(SceneManager.getCurrentScene().getEditorCamera().getCameraType().name())) {
-            if (SceneManager.getCurrentScene().getEditorCamera().getCameraType() == ed_BaseCamera.CameraType.Perspective)
-                SceneManager.getCurrentScene().getEditorCamera().setCameraType(ed_BaseCamera.CameraType.Orthographic);
+        if (ImGui.button(SceneManager.getCurrentScene().getEditorCamera().getProjectionType().name())) {
+            if (SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
+                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Orthographic);
             else
-                SceneManager.getCurrentScene().getEditorCamera().setCameraType(ed_BaseCamera.CameraType.Perspective);
+                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Perspective);
         }
         ImGui.setCursorPosY(ImGui.getCursorStartPosY());
         ImGui.popStyleVar();
         ImGui.popStyleColor();
         //</editor-fold>
 
-        boolean isPlayButtonDisabled = Window.isRuntimePlaying();
-        boolean isStopButtonDisabled = !Window.isRuntimePlaying();
+        boolean isPlayButtonEnabled = !Window.isRuntimePlaying();
+        boolean isPauseButtonEnabled = !Window.isRuntimePause();
+        boolean isNextFrameButtonEnabled = !Window.isRuntimePause();
+
+//        ImGui.getWindowDrawList().addRectFilled(                                          // Debug line in center of menu bar
+//                ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() / 2.0f - 0.5f,
+//                ImGui.getCursorStartPosY(),
+//                ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() / 2.0f + 1.0f,
+//                ImGui.getCursorStartPosY() + 50.0f,
+//                ImGui.getColorU32(1.0f, 0.0f, 0.0f, 1.0f)
+//        );
 
         //<editor-fold desc="Play Button">
-        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + (ImGui.getContentRegionMaxX() / 2) - (ImGui.getFrameHeight() * 2) - ImGui.getStyle().getItemInnerSpacingX());
-        if (isPlayButtonDisabled)
-            ImGui.beginDisabled();
-        ImVec4 playButtonColor = isPlayButtonDisabled ? ImGui.getStyle().getColor(ImGuiCol.Text) : new ImVec4(EditorThemeSystem.activeColor.r / 255.0f, EditorThemeSystem.activeColor.g / 255.0f, EditorThemeSystem.activeColor.b / 255.0f, EditorThemeSystem.activeColor.a / 255.0f);
-        if (drawSquareButton("\uEC74", isPlayButtonDisabled, playButtonColor))
-            EventSystem.notify(null, new Event(EventType.GameEngine_StartPlay));
-        if (isPlayButtonDisabled)
-            ImGui.endDisabled();
+        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + (ImGui.getContentRegionMaxX() / 2) - (ImGui.getFrameHeight() * 3 + ImGui.getStyle().getItemInnerSpacingX() * 2) / 2 + 8.0f); // TODO FIX THIS + 8.0f VALUE
+        ImVec4 playButtonColor = isPlayButtonEnabled ? new ImVec4(EditorThemeSystem.activeColor.r / 255.0f, EditorThemeSystem.activeColor.g / 255.0f, EditorThemeSystem.activeColor.b / 255.0f, EditorThemeSystem.activeColor.a / 255.0f) : new ImVec4(0.889f, 0.191f, 0.062f, 1.0f);
+        if (drawSquareButton(isPlayButtonEnabled ? "\uEC74" : "\uEFFC", true, playButtonColor))
+            EventSystem.notify(new Event(isPlayButtonEnabled ? EventType.Engine_StartPlay : EventType.Engine_StopPlay));
         //</editor-fold>
 
-        //<editor-fold desc="Stop Button">
-        ImGui.setCursorPosX(ImGui.getCursorPosX() - ImGui.getStyle().getItemSpacingX() + ImGui.getStyle().getItemInnerSpacingX() * 2);
-        if (isStopButtonDisabled)
+        //<editor-fold desc="Pause Button">
+        ImGui.setCursorPosX(ImGui.getCursorPosX() - ImGui.getStyle().getItemSpacingX() + ImGui.getStyle().getItemInnerSpacingX());
+        ImVec4 pauseButtonColor = isPauseButtonEnabled ? ImGui.getStyle().getColor(ImGuiCol.Text) : ImGui.getStyle().getColor(ImGuiCol.TextDisabled);
+        if (drawSquareButton("\uEC72", true, pauseButtonColor))
+            EventSystem.notify(new Event(Window.isRuntimePause() ? EventType.Engine_Play : EventType.Engine_Pause));
+        //</editor-fold>
+
+        //<editor-fold desc="NextFrame Button">
+        if (isNextFrameButtonEnabled)
             ImGui.beginDisabled();
-        if (drawSquareButton("\uEFFC", isStopButtonDisabled, isStopButtonDisabled ? ImGui.getStyle().getColor(ImGuiCol.Text) : new ImVec4(0.889f, 0.191f, 0.062f, 1.0f)))
-            EventSystem.notify(null, new Event(EventType.GameEngine_StopPlay));
-        if (isStopButtonDisabled)
+        ImGui.setCursorPosX(ImGui.getCursorPosX() - ImGui.getStyle().getItemSpacingX() + ImGui.getStyle().getItemInnerSpacingX());
+        ImVec4 nextFrameButtonColor = ImGui.getStyle().getColor(ImGuiCol.Text);
+        if (drawSquareButton("\uEC6E", !isNextFrameButtonEnabled, nextFrameButtonColor))
+            EventSystem.notify(new Event(EventType.Engine_NextFrame));
+        if (isNextFrameButtonEnabled)
             ImGui.endDisabled();
         //</editor-fold>
     }
 
-    private static boolean drawSquareButton(String text, boolean isDisabled, ImVec4 textColor) {
+    private static boolean drawSquareButton(String text, boolean isEnabled, ImVec4 textColor) {
         boolean isClick = false;
 
         float buttonSize = ImGui.getFrameHeight() / 1.2f;
@@ -92,7 +104,7 @@ public class MainMenuBar {
         ImGui.setCursorPos(ImGui.getCursorPosX(), ImGui.getCursorPosY() + (ImGui.getFrameHeight() - buttonSize) / 2);
 
         //<editor-fold desc="Button">
-        if (!isDisabled)
+        if (isEnabled)
             if (ImGui.isMouseHoveringRect(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY(), ImGui.getCursorScreenPosX() + buttonSize, ImGui.getCursorScreenPosY() + buttonSize)) {
                 int currentColor = ImGui.getColorU32(ImGuiCol.ButtonHovered);
 
@@ -124,10 +136,14 @@ public class MainMenuBar {
 
     private static void drawWindowMenuBar() {
         if (ImGui.beginMenu("File")) {
-            if (ImGui.menuItem("Save"))
-                EventSystem.notify(null, new Event(EventType.GameEngine_SaveScene));
-            if (ImGui.menuItem("Reload"))
-                EventSystem.notify(null, new Event(EventType.GameEngine_ReloadScene));
+            if (ImGui.menuItem("Save Scene"))
+                EventSystem.notify(new Event(EventType.Engine_SaveScene));
+            if (ImGui.menuItem("Save Scene As"))
+                EventSystem.notify(new Event(EventType.Engine_SaveSceneAs));
+            if (ImGui.menuItem("Open Scene"))
+                EventSystem.notify(new Event(EventType.Engine_OpenScene));
+            if (ImGui.menuItem("Reload Scene"))
+                EventSystem.notify(new Event(EventType.Engine_ReloadScene));
             ImGui.endMenu();
         }
         if (ImGui.beginMenu("Windows")) {

@@ -69,7 +69,7 @@ public class Sound {
         Profiler.stopTimer(String.format("Load Sound - '%s'", filepath));
     }
 
-    public void delete() {
+    public void freeMemory() {
         alDeleteSources(this.sourceID);  // TODO MOVE THIS IN SEPARATE COMPONENT
         alDeleteBuffers(this.bufferID);
     }

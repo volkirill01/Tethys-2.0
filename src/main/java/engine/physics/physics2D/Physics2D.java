@@ -17,21 +17,22 @@ import org.joml.Vector2f;
 
 public class Physics2D {
 
-    private final Vec2 gravity = new Vec2(Settings.gravity2D.x, Settings.gravity2D.y);
-    private final World world = new World(this.gravity);
+    private static final Vec2 gravity = new Vec2(Settings.GRAVITY_2D.x, Settings.GRAVITY_2D.y);
+    private static final World world = new World(gravity);
 
-    private float physicsTime = 0.0f;
-    private static final float physicsTimeStep = 1.0f / 60.0f; // 60 frames per 1 second
+    private static float physicsTime = 0.0f;
     private static final int velocityIterations = 8;
     private static final int positionIterations = 3;
 
-    public Physics2D() { world.setContactListener(new ContactListener2D()); }
+    static {
+        world.setContactListener(new ContactListener2D());
+    }
 
-    public void add(GameObject obj) {
+    public static void add(GameObject obj) {
         if (!obj.hasComponent(RigidBody2D.class) || !obj.hasComponent(ed_Collider2D.class))
             return;
 
-        Profiler.startTimer(String.format("Physics2D Add GameObject - '%s'", obj.name));
+        Profiler.startTimer(String.format("Physics2D Add GameObject - '%s'", obj.getName()));
         RigidBody2D rb = obj.getComponent(RigidBody2D.class);
 
         if (obj.getComponent(RigidBody2D.class).getRawBody() == null) {
@@ -52,7 +53,7 @@ public class Physics2D {
                 case Kinematic -> bodyDef.type = BodyType.KINEMATIC;
             }
 
-            Body body = this.world.createBody(bodyDef);
+            Body body = world.createBody(bodyDef);
             body.m_mass = rb.getMass();
             rb.setRawBody(body);
 
@@ -65,32 +66,32 @@ public class Physics2D {
             if (obj.hasComponent(Pillbox2DCollider.class))
                 addPillbox2DCollider(rb, obj.getComponent(Pillbox2DCollider.class));
         }
-        Profiler.stopTimer(String.format("Physics2D Add GameObject - '%s'", obj.name));
+        Profiler.stopTimer(String.format("Physics2D Add GameObject - '%s'", obj.getName()));
     }
 
-    public void destroyGameObject(GameObject obj) {
-        Profiler.startTimer(String.format("Physics2D Destroy GameObject - '%s'", obj.name));
+    public static void destroyGameObject(GameObject obj) {
+        Profiler.startTimer(String.format("Physics2D Destroy GameObject - '%s'", obj.getName()));
         if (!obj.hasComponent(RigidBody2D.class)) return;
 
         RigidBody2D rb = obj.getComponent(RigidBody2D.class);
         if (rb.getRawBody() != null) {
-            this.world.destroyBody(rb.getRawBody());
+            world.destroyBody(rb.getRawBody());
             rb.setRawBody(null);
         }
-        Profiler.stopTimer(String.format("Physics2D Destroy GameObject - '%s'", obj.name));
+        Profiler.stopTimer(String.format("Physics2D Destroy GameObject - '%s'", obj.getName()));
     }
 
-    public void update() {
+    public static void update() {
         Profiler.startTimer("Physics2D Update");
-        this.physicsTime += Time.deltaTime();
-        if (this.physicsTime >= 0.0f) {
-            this.physicsTime -= physicsTimeStep;
-            this.world.step(physicsTimeStep, velocityIterations, positionIterations);
+        physicsTime += Time.deltaTime();
+        if (physicsTime >= 0.0f) {
+            physicsTime -= Time.deltaTime();
+            world.step(Time.deltaTime(), velocityIterations, positionIterations);
         }
         Profiler.stopTimer("Physics2D Update");
     }
 
-    public void setIsTrigger(RigidBody2D rb, boolean isTrigger) {
+    public static void setIsTrigger(RigidBody2D rb, boolean isTrigger) {
         Body body = rb.getRawBody();
         if (body == null) return; // If object not contain box 2D collider return
 
@@ -101,7 +102,7 @@ public class Physics2D {
         }
     }
 
-    public void resetBox2DCollider(RigidBody2D rb, Box2DCollider collider) {
+    public static void resetBox2DCollider(RigidBody2D rb, Box2DCollider collider) {
         Body body = rb.getRawBody();
         if (body == null) return; // If object not contain box 2D collider return
 
@@ -113,7 +114,7 @@ public class Physics2D {
         body.resetMassData();
     }
 
-    public void resetCircle2DCollider(RigidBody2D rb, Circle2DCollider collider) {
+    public static void resetCircle2DCollider(RigidBody2D rb, Circle2DCollider collider) {
         Body body = rb.getRawBody();
         if (body == null) return; // If object not contain circle 2D collider return
 
@@ -125,7 +126,7 @@ public class Physics2D {
         body.resetMassData();
     }
 
-    public void resetPillbox2DCollider(RigidBody2D rb, Pillbox2DCollider collider) {
+    public static void resetPillbox2DCollider(RigidBody2D rb, Pillbox2DCollider collider) {
         Body body = rb.getRawBody();
         if (body == null) return; // If object not contain box 2D collider return
 
@@ -137,7 +138,7 @@ public class Physics2D {
         body.resetMassData();
     }
 
-    private int fixtureListSize(Body body) {
+    private static int fixtureListSize(Body body) {
         int size = 0;
         Fixture fixture = body.getFixtureList();
         while (fixture != null) {
@@ -147,16 +148,16 @@ public class Physics2D {
         return size;
     }
 
-    public void addBox2DCollider(RigidBody2D rb, Box2DCollider collider) {
-        Profiler.startTimer(String.format("Physics2D Add BoxCollider2D - '%s'", rb.gameObject.name));
+    public static void addBox2DCollider(RigidBody2D rb, Box2DCollider collider) {
+        Profiler.startTimer(String.format("Physics2D Add BoxCollider2D - '%s'", rb.gameObject.getName()));
         Body body = rb.getRawBody();
-        if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.name));
+        if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.getName()));
 
         PolygonShape shape = new PolygonShape();
 
-        Vector2f halfSize = new Vector2f(collider.getSize()).div(2.0f).sub(0.0074f, 0.0074f);
+        Vector2f halfSize = new Vector2f(collider.getSize()).div(2.0f).mul(rb.gameObject.transform.scale.x, rb.gameObject.transform.scale.y);
         Vector2f offset = collider.getOffset();
-        shape.setAsBox(Math.abs(halfSize.x), Math.abs(halfSize.y), new Vec2(offset.x, offset.y), 0.0f);
+        shape.setAsBox(Math.abs(halfSize.x), Math.abs(halfSize.y), new Vec2(offset.x, offset.y), (float) Math.toRadians(rb.gameObject.transform.rotation.z));
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -165,13 +166,13 @@ public class Physics2D {
         fixtureDef.userData = collider.gameObject;
         fixtureDef.isSensor = rb.isTrigger();
         body.createFixture(fixtureDef);
-        Profiler.stopTimer(String.format("Physics2D Add BoxCollider2D - '%s'", rb.gameObject.name));
+        Profiler.stopTimer(String.format("Physics2D Add BoxCollider2D - '%s'", rb.gameObject.getName()));
     }
 
-    public void addCircle2DCollider(RigidBody2D rb, Circle2DCollider collider) {
-        Profiler.startTimer(String.format("Physics2D Add CircleCollider2D - '%s'", rb.gameObject.name));
+    public static void addCircle2DCollider(RigidBody2D rb, Circle2DCollider collider) {
+        Profiler.startTimer(String.format("Physics2D Add CircleCollider2D - '%s'", rb.gameObject.getName()));
         Body body = rb.getRawBody();
-        if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.name));
+        if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.getName()));
 
         CircleShape shape = new CircleShape();
         shape.setRadius(collider.getRadius() / 2.0f);
@@ -185,27 +186,27 @@ public class Physics2D {
         fixtureDef.userData = collider.gameObject;
         fixtureDef.isSensor = rb.isTrigger();
         body.createFixture(fixtureDef);
-        Profiler.stopTimer(String.format("Physics2D Add CircleCollider2D - '%s'", rb.gameObject.name));
+        Profiler.stopTimer(String.format("Physics2D Add CircleCollider2D - '%s'", rb.gameObject.getName()));
     }
 
-    public void addPillbox2DCollider(RigidBody2D rb, Pillbox2DCollider collider) {
-        Profiler.startTimer(String.format("Physics2D Add PillboxCollider2D - '%s'", rb.gameObject.name));
+    public static void addPillbox2DCollider(RigidBody2D rb, Pillbox2DCollider collider) {
+        Profiler.startTimer(String.format("Physics2D Add PillboxCollider2D - '%s'", rb.gameObject.getName()));
         Body body = rb.getRawBody();
-        if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.name));
+        if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.getName()));
 
         addCircle2DCollider(rb, collider.getTopCircle());
         addCircle2DCollider(rb, collider.getBottomCircle());
         addBox2DCollider(rb, collider.getMiddleBox());
-        Profiler.stopTimer(String.format("Physics2D Add PillboxCollider2D - '%s'", rb.gameObject.name));
+        Profiler.stopTimer(String.format("Physics2D Add PillboxCollider2D - '%s'", rb.gameObject.getName()));
     }
 
-    public RayCastInfo rayCast(GameObject requestingObject, Vector2f startPoint, Vector2f endPoint) {
-        Profiler.startTimer(String.format("Physics2D RayCast - RequestingObject: '%s'", requestingObject.name));
+    public static RayCastInfo rayCast(GameObject requestingObject, Vector2f startPoint, Vector2f endPoint) {
+        Profiler.startTimer(String.format("Physics2D RayCast - RequestingObject: '%s'", requestingObject.getName()));
         RayCastInfo callback = new RayCastInfo(requestingObject);
         world.raycast(callback, new Vec2(startPoint.x, startPoint.y), new Vec2(endPoint.x, endPoint.y));
-        Profiler.stopTimer(String.format("Physics2D RayCast - RequestingObject: '%s'", requestingObject.name));
+        Profiler.stopTimer(String.format("Physics2D RayCast - RequestingObject: '%s'", requestingObject.getName()));
         return callback;
     }
 
-    public boolean isLocked() { return world.isLocked(); }
+    public static boolean isLocked() { return world.isLocked(); }
 }

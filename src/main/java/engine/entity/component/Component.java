@@ -54,7 +54,7 @@ public abstract class Component {
                 Class<?> type = field.getType();
                 Object value = field.get(this);
                 String name = field.getName();
-                if (Settings.variableNamesStartsUpperCase)
+                if (Settings.VARIABLE_NAMES_STARTS_UPPER_CASE)
                     name = field.getName().substring(0, 1).toUpperCase() + field.getName().substring(1);
 
                 if (type == int.class)

@@ -1,10 +1,10 @@
 package engine.stuff;
 
+import engine.assets.AssetPool;
 import engine.editor.console.Console;
 import engine.editor.console.ConsoleMessage;
 import engine.editor.console.LogType;
 import engine.editor.windows.Outliner_Window;
-import engine.entity.GameObject;
 import engine.eventListeners.Input;
 import engine.eventListeners.KeyCode;
 import engine.eventListeners.KeyListener;
@@ -16,7 +16,6 @@ import engine.observers.EventSystem;
 import engine.observers.Observer;
 import engine.observers.events.Event;
 import engine.observers.events.EventType;
-import engine.physics.physics2D.Physics2D;
 import engine.profiling.Profiler;
 import engine.profiling.SessionReplay;
 import engine.renderer.EntityRenderer;
@@ -25,6 +24,8 @@ import engine.renderer.shader.Shader;
 import engine.renderer.stuff.Fbo;
 import engine.scenes.SceneManager;
 import engine.stuff.customVariables.Color;
+import engine.stuff.fileDialogs.FileDialogs;
+import engine.stuff.fileDialogs.FileTypeFilter;
 import engine.stuff.utils.Time;
 import org.joml.Matrix4f;
 import org.joml.Vector2i;
@@ -37,6 +38,7 @@ import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,6 +63,7 @@ public class Window implements Observer {
     private static final Vector2i position = new Vector2i();
     private static final String title = "Tethys";
     private static final String windowIniFilepath = "window.ini";
+    private static final String engineConfigFilepath = "engine.conf";
 
     private static boolean isMinimized = false;
     private static boolean isClosed = false;
@@ -71,10 +74,15 @@ public class Window implements Observer {
     private static long audioDevice;
 
     private static boolean runtimePlaying = false;
+    private static boolean runtimePause = false;
+    private static boolean nextFrame = false;
+    private static String lastOpenedScenePath = "";
 
     public static boolean debugMode = false; // TODO DELETE THIS
 
     private void putLayersInStack() {
+        new LayerStack(); // only for initialization of layer stack
+
         LayerStack.attachLayer(new EngineGuiLayer());
         LayerStack.attachLayer(new EngineLayer());
     }
@@ -95,39 +103,6 @@ public class Window implements Observer {
         SessionReplay.beginSession("Shutdown", String.format("%sProfile-Shutdown.json", Window.getTitle()));
         closeWindow();
         SessionReplay.endSession();
-    }
-
-    private void loadIniFile() {
-        // Set default window parameters
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        screen_width = (int) screenSize.getWidth();
-        screen_height = (int) screenSize.getHeight();
-
-        String inFile = "";
-        try {
-            inFile = new String(Files.readAllBytes(Paths.get(windowIniFilepath)));
-        } catch (IOException e) {
-            System.out.printf("%sNo Window ini file.%s\n", ColoredText.RED, ColoredText.RESET);
-        }
-
-        if (!inFile.equals("")) {
-            width = Integer.parseInt(inFile.split("size = ")[1].split(", ")[0]);
-            height = Integer.parseInt(inFile.split("size = ")[1].split(", ")[1].split("\n")[0]);
-
-            position.x = Integer.parseInt(inFile.split("position = ")[1].split(", ")[0].split("\n")[0]);
-            position.y = Integer.parseInt(inFile.split("position = ")[1].split(", ")[1].split("\n")[0]);
-
-            isMinimized = !Boolean.parseBoolean(inFile.split("isMaximized = ")[1]);
-            return;
-        }
-
-        width = screen_width;
-        height = screen_height;
-
-        position.x = 0;
-        position.y = 0;
-
-        isMinimized = false;
     }
 
     private void init() {
@@ -193,7 +168,13 @@ public class Window implements Observer {
 
         glViewport(0, 0, Window.getScreenWidth(), Window.getScreenHeight());
 
-        SceneManager.changeScene("level.scene"); // Load default Scene
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        loadEngineConfigFile();
 
         printMachineInfo();
         Profiler.stopTimer("Window Init");
@@ -215,12 +196,14 @@ public class Window implements Observer {
             // Poll events
             glfwPollEvents();
 
-            glfwSetWindowTitle(glfwWindow, title + " FPS: " + Time.getFPS());
-
-            LayerStack.update();
+            String sceneRelativePath = "Assets" + lastOpenedScenePath.split("Assets")[1];
+            glfwSetWindowTitle(glfwWindow, title + " | Current Scene: " + sceneRelativePath + " | FPS: " + Time.getFPS());
 
             if (Input.buttonDown(KeyCode.Left_Alt) && Input.buttonDown(KeyCode.Left_Shift) && Input.buttonClick(KeyCode.B)) // TODO DELETE THIS
                 debugMode = !debugMode;
+
+            LayerStack.update();
+            nextFrame = false;
 
             glfwSwapBuffers(glfwWindow);
 
@@ -234,7 +217,9 @@ public class Window implements Observer {
             Profiler.stopTimer("Engine Update");
         }
 
-        SceneManager.getCurrentScene().saveAs("level.scene");
+        if (runtimePlaying)
+            EventSystem.notify(new Event(EventType.Engine_StopPlay));
+//        SceneManager.getCurrentScene().save(); // TODO SHOW SAVE DIALOG IF SCENE EDITED BUT NOT SAVED
         Profiler.startTimer("Window Loop");
     }
 
@@ -272,9 +257,11 @@ public class Window implements Observer {
         } catch (IOException ignored) { }
 
         saveWindowIniFile();
+        saveEngineConfigFile();
 
         // Free the memory
-        LayerStack.cleanUp();
+        AssetPool.freeMemory();
+        LayerStack.freeMemory();
         alcDestroyContext(audioContext);
         alcCloseDevice(audioDevice);
 
@@ -295,6 +282,57 @@ public class Window implements Observer {
         System.out.printf((ColoredText.YELLOW + "  Texture Slots count: " + ColoredText.RESET + "%d\n\n"), buffer.get(0));
     }
 
+    private void loadIniFile() {
+        // Set default window parameters
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        screen_width = (int) screenSize.getWidth();
+        screen_height = (int) screenSize.getHeight();
+
+        String inFile = "";
+        try {
+            inFile = new String(Files.readAllBytes(Paths.get(windowIniFilepath)));
+        } catch (IOException e) {
+            System.out.printf("%sNo Window ini file.%s\n", ColoredText.RED, ColoredText.RESET);
+        }
+
+        if (!inFile.equals("")) {
+            width = Integer.parseInt(inFile.split("size = ")[1].split(", ")[0]);
+            height = Integer.parseInt(inFile.split("size = ")[1].split(", ")[1].split("\n")[0]);
+
+            position.x = Integer.parseInt(inFile.split("position = ")[1].split(", ")[0].split("\n")[0]);
+            position.y = Integer.parseInt(inFile.split("position = ")[1].split(", ")[1].split("\n")[0]);
+
+            isMinimized = !Boolean.parseBoolean(inFile.split("isMaximized = ")[1]);
+            return;
+        }
+
+        width = screen_width;
+        height = screen_height;
+
+        position.x = 0;
+        position.y = 0;
+
+        isMinimized = false;
+    }
+
+    private void loadEngineConfigFile() {
+        String inFile = "";
+        try {
+            inFile = new String(Files.readAllBytes(Paths.get(engineConfigFilepath)));
+        } catch (IOException e) {
+            System.out.printf("%sNo Engine config file.%s\n", ColoredText.RED, ColoredText.RESET);
+        }
+
+        if (!inFile.equals("")) {
+            SceneManager.changeScene(inFile.split("currentScene = ")[1]);
+            lastOpenedScenePath = SceneManager.getCurrentScene().getFilepath();
+            return;
+        }
+
+        SceneManager.changeScene("Assets/defaultScene.scene"); // Load default Scene
+        lastOpenedScenePath = SceneManager.getCurrentScene().getFilepath();
+    }
+
     private static void saveWindowIniFile() {
         try {
             FileOutputStream outputStream = new FileOutputStream(windowIniFilepath);
@@ -310,6 +348,19 @@ public class Window implements Observer {
             outputStream.write(String.format("position = %d, %d\n", tmpPositionX[0], tmpPositionY[0]).getBytes());
             outputStream.write(String.format("size = %d, %d\n", tmpSizeX[0], tmpSizeY[0]).getBytes());
             outputStream.write(String.format("isMaximized = %b", glfwGetWindowAttrib(glfwWindow, GLFW_MAXIMIZED) == 1).getBytes());
+            outputStream.flush();
+
+            outputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void saveEngineConfigFile() {
+        try {
+            FileOutputStream outputStream = new FileOutputStream(engineConfigFilepath);
+
+            outputStream.write(String.format("currentScene = %s", SceneManager.getCurrentScene().getFilepath()).getBytes());
             outputStream.flush();
 
             outputStream.close();
@@ -348,34 +399,55 @@ public class Window implements Observer {
 
     public static float getTargetAspectRatio() { return 16.0f / 9.0f; }
 
-    public static boolean isRuntimePlaying() { return Window.runtimePlaying; }
+    public static boolean isRuntimePlaying() { return runtimePlaying; }
 
-    public static void setRuntimePlaying(boolean runtimePlaying) { Window.runtimePlaying = runtimePlaying; }
+    public static boolean isRuntimePause() { return runtimePause; }
 
-    public static Physics2D getPhysics2D() { return SceneManager.getCurrentScene().getPhysics2D(); }
+    public static boolean isNextFrame() { return nextFrame; }
 
     @Override
-    public void onNotify(GameObject object, Event event) {
+    public void onNotify(Event event) {
         if (Console.isStopOnError() && runtimePlaying)
-            if (event.type == EventType.ConsoleSendMessage && ((ConsoleMessage) event.data).type == LogType.Error) {
-                EventSystem.notify(null, new Event(EventType.GameEngine_StopPlay));
+            if (event.type == EventType.Console_SendMessage && ((ConsoleMessage) event.data).type == LogType.Error) {
+                EventSystem.notify(new Event(EventType.Engine_StopPlay));
                 return;
             }
 
         switch (event.type) {
-            case GameEngine_StartPlay -> {
+            case Engine_StartPlay -> {
                 runtimePlaying = true;
+                nextFrame = true;
+                lastOpenedScenePath = SceneManager.getCurrentScene().getFilepath();
                 SceneManager.getCurrentScene().saveAs("tmpRuntimeScene.scene"); // Save to tmp scene file, to provide user not save scene before he starts playing
                 SceneManager.changeScene("tmpRuntimeScene.scene");
                 Outliner_Window.clearSelected();
             }
-            case GameEngine_StopPlay -> {
+            case Engine_StopPlay -> {
                 runtimePlaying = false;
+                nextFrame = true;
                 SceneManager.changeScene("tmpRuntimeScene.scene"); // Load from tmp scene file, to provide user not save scene before he starts playing
+                SceneManager.getCurrentScene().saveAs(lastOpenedScenePath);
+                SceneManager.changeScene(lastOpenedScenePath);
                 Outliner_Window.clearSelected();
             }
-            case GameEngine_SaveScene -> SceneManager.getCurrentScene().saveAs("level.scene");
-            case GameEngine_ReloadScene -> SceneManager.changeScene("level.scene");
+            case Engine_Pause -> runtimePause = true;
+            case Engine_Play -> runtimePause = false;
+            case Engine_NextFrame -> nextFrame = true;
+            case Engine_SaveScene -> SceneManager.getCurrentScene().save();
+            case Engine_SaveSceneAs -> {
+                String scenePath = FileDialogs.saveFile(new File(SceneManager.getCurrentScene().getFilepath()), FileTypeFilter.sceneFilter, SceneManager.getCurrentScene().getFilepath());
+                if (scenePath != null && !scenePath.equals("")) {
+                    SceneManager.getCurrentScene().saveAs(scenePath);
+                    SceneManager.changeScene(scenePath);
+                }
+            }
+            case Engine_OpenScene -> {
+                String scenePath = FileDialogs.openFile(FileTypeFilter.sceneFilter, SceneManager.getCurrentScene().getFilepath());
+                if (scenePath != null && !scenePath.equals(""))
+                    SceneManager.changeScene(scenePath);
+                lastOpenedScenePath = SceneManager.getCurrentScene().getFilepath();
+            }
+            case Engine_ReloadScene -> SceneManager.changeScene(SceneManager.getCurrentScene().getFilepath());
         }
     }
 }

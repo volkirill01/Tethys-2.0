@@ -14,7 +14,7 @@ public class ContactListener2D implements ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
-        Profiler.startTimer(String.format("Begin Contact - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).name, ((GameObject) contact.getFixtureB().getUserData()).name));
+        Profiler.startTimer(String.format("Begin Contact - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).getName(), ((GameObject) contact.getFixtureB().getUserData()).getName()));
         GameObject objA = (GameObject) contact.getFixtureA().getUserData();
         GameObject objB = (GameObject) contact.getFixtureB().getUserData();
         WorldManifold worldManifold = new WorldManifold();
@@ -27,12 +27,12 @@ public class ContactListener2D implements ContactListener {
 
         for (Component c : objB.getAllComponents())
             c.beginCollision(objA, contact, bNormal);
-        Profiler.stopTimer(String.format("Begin Contact - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).name, ((GameObject) contact.getFixtureB().getUserData()).name));
+        Profiler.stopTimer(String.format("Begin Contact - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).getName(), ((GameObject) contact.getFixtureB().getUserData()).getName()));
     }
 
     @Override
     public void endContact(Contact contact) {
-        Profiler.startTimer(String.format("End Contact - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).name, ((GameObject) contact.getFixtureB().getUserData()).name));
+        Profiler.startTimer(String.format("End Contact - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).getName(), ((GameObject) contact.getFixtureB().getUserData()).getName()));
         GameObject objA = (GameObject) contact.getFixtureA().getUserData();
         GameObject objB = (GameObject) contact.getFixtureB().getUserData();
         WorldManifold worldManifold = new WorldManifold();
@@ -45,12 +45,12 @@ public class ContactListener2D implements ContactListener {
 
         for (Component c : objB.getAllComponents())
             c.endCollision(objA, contact, bNormal);
-        Profiler.stopTimer(String.format("End Contact - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).name, ((GameObject) contact.getFixtureB().getUserData()).name));
+        Profiler.stopTimer(String.format("End Contact - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).getName(), ((GameObject) contact.getFixtureB().getUserData()).getName()));
     }
 
     @Override
     public void preSolve(Contact contact, Manifold manifold) {
-        Profiler.startTimer(String.format("Pre Solve - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).name, ((GameObject) contact.getFixtureB().getUserData()).name));
+        Profiler.startTimer(String.format("Pre Solve - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).getName(), ((GameObject) contact.getFixtureB().getUserData()).getName()));
         GameObject objA = (GameObject) contact.getFixtureA().getUserData();
         GameObject objB = (GameObject) contact.getFixtureB().getUserData();
         WorldManifold worldManifold = new WorldManifold();
@@ -63,12 +63,12 @@ public class ContactListener2D implements ContactListener {
 
         for (Component c : objB.getAllComponents())
             c.preSolve(objA, contact, bNormal);
-        Profiler.stopTimer(String.format("Pre Solve - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).name, ((GameObject) contact.getFixtureB().getUserData()).name));
+        Profiler.stopTimer(String.format("Pre Solve - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).getName(), ((GameObject) contact.getFixtureB().getUserData()).getName()));
     }
 
     @Override
     public void postSolve(Contact contact, ContactImpulse contactImpulse) {
-        Profiler.startTimer(String.format("Post Solve - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).name, ((GameObject) contact.getFixtureB().getUserData()).name));
+        Profiler.startTimer(String.format("Post Solve - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).getName(), ((GameObject) contact.getFixtureB().getUserData()).getName()));
         GameObject objA = (GameObject) contact.getFixtureA().getUserData();
         GameObject objB = (GameObject) contact.getFixtureB().getUserData();
         WorldManifold worldManifold = new WorldManifold();
@@ -81,6 +81,6 @@ public class ContactListener2D implements ContactListener {
 
         for (Component c : objB.getAllComponents())
             c.postSolve(objA, contact, bNormal);
-        Profiler.stopTimer(String.format("Post Solve - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).name, ((GameObject) contact.getFixtureB().getUserData()).name));
+        Profiler.stopTimer(String.format("Post Solve - (A: '%s', B: '%s')", ((GameObject) contact.getFixtureA().getUserData()).getName(), ((GameObject) contact.getFixtureB().getUserData()).getName()));
     }
 }

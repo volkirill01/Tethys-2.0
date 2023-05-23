@@ -39,4 +39,6 @@ public class Outliner_Window extends EditorImGuiWindow {
     }
 
     public static void addActiveGameObject(GameObject obj) { activeGameObjects.add(obj); }
+
+    public static void removeActiveGameObject(GameObject obj) { activeGameObjects.remove(obj); }
 }

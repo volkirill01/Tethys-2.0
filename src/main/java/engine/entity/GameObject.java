@@ -7,12 +7,15 @@ import engine.editor.console.Console;
 import engine.editor.console.LogType;
 import engine.editor.gui.EditorGUI;
 import engine.entity.component.Component;
+import engine.entity.component.TagComponent;
 import engine.profiling.Profiler;
 import engine.renderer.renderer2D.SpriteRenderer;
 import engine.entity.component.Transform;
 import engine.stuff.utils.EditorGson;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiTreeNodeFlags;
 
@@ -24,8 +27,8 @@ public class GameObject {
     private static int ID_COUNTER = 1;
     private int uid;
 
-    public String name;
     public transient Transform transform;
+    public TagComponent tagComponent = new TagComponent();
     private final List<Component> components = new ArrayList<>();
     private boolean clickable = true;
 
@@ -33,7 +36,7 @@ public class GameObject {
     private transient boolean isDeath = false;
 
     public GameObject(String name) {
-        this.name = name;
+        this.tagComponent.name = name;
         this.uid = ID_COUNTER++;
     }
 
@@ -56,11 +59,12 @@ public class GameObject {
             Component c = this.components.get(i);
 
             if (componentClass.isAssignableFrom(c.getClass())) {
+                this.components.get(i).destroy();
                 this.components.remove(i);
                 return;
-            } else
-                Console.log(String.format("GameObject (%s) not has component - '%s'", this.name, componentClass.getName()), LogType.Error);
+            }
         }
+        Console.log(String.format("GameObject (%s) not has component - '%s'", getName(), componentClass.getName()), LogType.Error);
     }
 
     public void addComponent(Component c) {
@@ -70,12 +74,12 @@ public class GameObject {
     }
 
     public void imgui() {
-        this.name = EditorGUI.textFieldNoLabel("GameObject_Name_" + this.uid, this.name, "Name", ImGui.getContentRegionAvailX() / 1.5f);
+        setName(EditorGUI.textFieldNoLabel("GameObject_Name_" + this.uid, getName(), "Name", ImGui.getContentRegionAvailX() / 1.5f));
         ImGui.sameLine();
 
         //<editor-fold desc="Add Component Button">
         float width = (ImGui.getContentRegionAvailX() / 2.0f) - (ImGui.calcTextSize("Add component").x / 2.0f);
-        float buttonCenter = ImGui.getCursorScreenPosX() + width + ImGui.getStyle().getFramePaddingX() + TestFieldsWindow.getFloats[0];
+        float buttonCenter = ImGui.getCursorScreenPosX() + width + ImGui.getStyle().getFramePaddingX();
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, width, ImGui.getStyle().getFramePaddingY());
         if (ImGui.button("Add component"))
             ImGui.openPopup("ComponentAdder");
@@ -101,11 +105,80 @@ public class GameObject {
         }
         //</editor-fold>
 
-        for (Component c : this.components)
-            if (EditorGUI.beginCollapsingHeader(c.getClass().getSimpleName(), c.getClass() == Transform.class ? ImGuiTreeNodeFlags.DefaultOpen : ImGuiTreeNodeFlags.None)) {
-                c.imgui();
-                EditorGUI.endCollapsingHeader();
+        ImGui.setCursorPosY(ImGui.getCursorPosY() + ImGui.getStyle().getItemSpacingY());
+
+        for (Component c : this.components) {
+            if (drawComponent(c))
+                return;
+        }
+    }
+
+    private boolean drawComponent(Component c) {
+        ImGui.pushID("ComponentGUI_" + c);
+
+        int treeNodeColor = ImGuiCol.FrameBg;
+        if (ImGui.isMouseHoveringRect(
+                ImGui.getCursorScreenPosX(),
+                ImGui.getCursorScreenPosY(),
+                ImGui.getCursorScreenPosX() + ImGui.getContentRegionAvailX() + TestFieldsWindow.getFloats[0],
+                ImGui.getCursorScreenPosY() + ImGui.getFrameHeight() + TestFieldsWindow.getFloats[1]
+        )) {
+            treeNodeColor = ImGuiCol.FrameBgHovered;
+            if (ImGui.isMouseDown(ImGuiMouseButton.Left))
+                treeNodeColor = ImGuiCol.FrameBgActive;
+        }
+
+        ImGui.getWindowDrawList().addRectFilled(
+                ImGui.getCursorScreenPosX(),
+                ImGui.getCursorScreenPosY(),
+                ImGui.getCursorScreenPosX() + ImGui.getContentRegionAvailX(),
+                ImGui.getCursorScreenPosY() + ImGui.getFrameHeight(),
+                ImGui.getColorU32(treeNodeColor)
+        );
+        // Black line on top of tree node
+        ImGui.getWindowDrawList().addRectFilled(
+                ImGui.getCursorScreenPosX(),
+                ImGui.getCursorScreenPosY(),
+                ImGui.getCursorScreenPosX() + ImGui.getContentRegionAvailX(),
+                ImGui.getCursorScreenPosY() + ImGui.getFrameHeight() / 10,
+                ImGui.getColorU32(ImGui.getStyle().getColor(ImGuiCol.TitleBg).x, ImGui.getStyle().getColor(ImGuiCol.TitleBg).y, ImGui.getStyle().getColor(ImGuiCol.TitleBg).z, ImGui.getStyle().getColor(ImGuiCol.TitleBg).w / 4)
+        );
+
+        ImGui.pushStyleColor(ImGuiCol.Header, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleColor(ImGuiCol.HeaderHovered, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleColor(ImGuiCol.HeaderActive, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
+        boolean treeNodeOpen = EditorGUI.beginCollapsingHeader(c.getClass().getSimpleName(), (c.getClass() == Transform.class ? ImGuiTreeNodeFlags.DefaultOpen : ImGuiTreeNodeFlags.None) | ImGuiTreeNodeFlags.AllowItemOverlap);
+        boolean removeComponent = false;
+        ImGui.popStyleColor(4);
+        if (ImGui.beginPopupContextItem("Component_Context_Popup_" + c)) {
+            if (c.getClass() != Transform.class) {
+                if (ImGui.selectable("Remove"))
+                    removeComponent = true;
             }
+            ImGui.endPopup();
+        }
+
+        ImGui.sameLine();
+        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() - ImGui.getFrameHeight() - ImGui.getStyle().getWindowPaddingX());
+        if (ImGui.invisibleButton("Component_Context_Button_" + c, ImGui.getFrameHeight(), ImGui.getFrameHeight())) {
+            ImGui.openPopup("Component_Context_Popup_" + c);
+        }
+        ImGui.sameLine();
+        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() - ImGui.getFrameHeight() - ImGui.getStyle().getWindowPaddingX() + ImGui.getStyle().getFramePaddingY());
+        ImGui.text("\uEFE1"); // \uEFA2 \uEFE1 \uEFE2
+
+        if (treeNodeOpen) {
+            c.imgui();
+            EditorGUI.endCollapsingHeader();
+        }
+        ImGui.popID();
+
+        if (removeComponent) {
+            removeComponent(c.getClass());
+            return true;
+        }
+        return false;
     }
 
     public void start() {
@@ -124,15 +197,15 @@ public class GameObject {
     }
 
     public void destroy() {
-        Profiler.startTimer(String.format("Destroy GameObject - '%s'", this.name));
+        Profiler.startTimer(String.format("Destroy GameObject - '%s'", getName()));
         this.isDeath = true;
         for (Component component : this.components)
             component.destroy();
-        Profiler.stopTimer(String.format("Destroy GameObject - '%s'", this.name));
+        Profiler.stopTimer(String.format("Destroy GameObject - '%s'", getName()));
     }
 
     public GameObject copy() {
-        Profiler.startTimer(String.format("Copy GameObject - '%s'", this.name));
+        Profiler.startTimer(String.format("Copy GameObject - '%s'", getName()));
         Gson gson = EditorGson.getGsonBuilder();
 
         String objAsGson = gson.toJson(this);
@@ -147,9 +220,13 @@ public class GameObject {
             if (renderer.getSprite().getTexture() != null)
                 renderer.getSprite().setTexture(AssetPool.getTexture(renderer.getSprite().getTexture().getFilepath()));
         }
-        Profiler.stopTimer(String.format("Copy GameObject - '%s'", this.name));
+        Profiler.stopTimer(String.format("Copy GameObject - '%s'", getName()));
         return copy;
     }
+
+    public String getName() { return this.tagComponent.name; }
+
+    public void setName(String name) { this.tagComponent.name = name; }
 
     public void setSerialize(boolean serialize) { this.doSerialization = serialize; }
 

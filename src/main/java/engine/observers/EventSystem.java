@@ -1,6 +1,5 @@
 package engine.observers;
 
-import engine.entity.GameObject;
 import engine.observers.events.Event;
 import engine.profiling.Profiler;
 
@@ -13,10 +12,10 @@ public class EventSystem {
 
     public static void addObserver(Observer observer) { observers.add(observer); }
 
-    public static void notify(GameObject obj, Event event) {
+    public static void notify(Event event) {
         Profiler.startTimer(String.format("EventSystem Notify - '%s', data: '%s'", event.type.name(), event.data));
-        for (Observer observer : observers)
-            observer.onNotify(obj, event);
+        for (int i = 0; i < observers.size(); i++)
+            observers.get(i).onNotify(event);
         Profiler.stopTimer(String.format("EventSystem Notify - '%s', data: '%s'", event.type.name(), event.data));
     }
 }

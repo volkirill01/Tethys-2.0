@@ -11,7 +11,7 @@ import org.joml.Vector3f;
 
 public class ed_BaseCamera extends Component {
 
-    public enum CameraType {
+    public enum ProjectionType {
         Orthographic,
         Perspective
     }
@@ -19,17 +19,20 @@ public class ed_BaseCamera extends Component {
     protected transient Fbo outputFbo;
     protected transient final Matrix4f viewMatrix, projectionMatrix, inverseProjectionMatrix, inverseViewMatrix;
 
-    protected final Vector2f orthographicProjectionSize = new Vector2f(6.0f, 3.37f);
-
     protected transient final Vector3f position = new Vector3f();
     protected transient final Vector3f rotation = new Vector3f();
 
     protected float zoom = 1.0f;
-    protected final float nearPlane = 0.0f;
-    protected final float farPlane = 100.0f;
-    protected final float fov = 45.0f;
 
-    protected CameraType cameraType = CameraType.Orthographic;
+    protected final Vector2f orthographicProjectionSize = new Vector2f(24.0f, 13.48f);
+    protected float orthographicNearPlane = 0.0f;
+    protected float orthographicFarPlane = 100.0f;
+
+    protected float perspectiveFov = 45.0f;
+    protected float perspectiveNearPlane = 0.01f;
+    protected float perspectiveFarPlane = 1_000.0f;
+
+    protected ProjectionType projectionType = ProjectionType.Orthographic;
 
     protected final Color backgroundColor = Color.WHITE.copy();
 
@@ -41,43 +44,48 @@ public class ed_BaseCamera extends Component {
         this.viewMatrix = new Matrix4f();
         this.inverseProjectionMatrix = new Matrix4f();
         this.inverseViewMatrix = new Matrix4f();
-        adjustMatrices();
+        adjustProjectionMatrix();
 
-        outputFbo = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_TEXTURE);
+        this.outputFbo = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_TEXTURE);
     }
 
     @Override
-    public void start() { adjustMatrices(); }
+    public void start() { adjustProjectionMatrix(); }
 
     @Override
-    public void editorUpdate() { this.update(); }
+    public void editorUpdate() { update(); }
 
     @Override
-    public void update() { adjustMatrices(); }
+    public void update() {
+        adjustProjectionMatrix();
+        adjustViewMatrix();
+    }
 
-    public Matrix4f getViewMatrix() { return this.viewMatrix; }
+    @Override
+    public void destroy() { this.outputFbo.freeMemory(); }
 
-    public void adjustMatrices() {
+    public void adjustProjectionMatrix() {
         Profiler.startTimer("BaseCamera AdjustProjection");
-        if (this.cameraType == CameraType.Orthographic) {
+        if (this.projectionType == ProjectionType.Orthographic) {
             this.projectionMatrix.identity();
-            this.projectionMatrix.ortho(-(this.orthographicProjectionSize.x / 2) * this.zoom, this.orthographicProjectionSize.x / 2 * this.zoom, -(this.orthographicProjectionSize.y / 2) * this.zoom, this.orthographicProjectionSize.y / 2 * this.zoom, this.nearPlane, this.farPlane);
+            this.projectionMatrix.ortho(-(this.orthographicProjectionSize.x / 2) * this.zoom, this.orthographicProjectionSize.x / 2 * this.zoom, -(this.orthographicProjectionSize.y / 2) * this.zoom, this.orthographicProjectionSize.y / 2 * this.zoom, this.orthographicNearPlane, this.orthographicFarPlane);
         } else {
             this.projectionMatrix.identity();
-            this.projectionMatrix.perspective((float) Math.toRadians(this.fov), Window.getTargetAspectRatio() + 0.15f, this.nearPlane, this.farPlane); // TODO FIND WHY THIS VALUE(0.15f), ADD THIS VALUE TO ASPECT RATION TO REMOVE STRETCH EFFECT
+            this.projectionMatrix.perspective((float) Math.toRadians(this.perspectiveFov), Window.getTargetAspectRatio() + 0.15f, this.perspectiveNearPlane, this.perspectiveFarPlane); // TODO FIND WHY THIS VALUE(0.15f), ADD THIS VALUE TO ASPECT RATION TO REMOVE STRETCH EFFECT
         }
         this.projectionMatrix.invert(this.inverseProjectionMatrix);
         Profiler.stopTimer("BaseCamera AdjustProjection");
-
+    }
+    public void adjustViewMatrix() {
         Profiler.startTimer("BaseCamera AdjustView");
         Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
         Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
         this.viewMatrix.identity();
         this.viewMatrix.set(this.viewMatrix.lookAt(new Vector3f(this.position.x, this.position.y, 20.0f), cameraFront.add(this.position.x, this.position.y, 0.0f), cameraUp));
-        if (this.cameraType == CameraType.Perspective) {
+        if (this.projectionType == ProjectionType.Perspective) {
             this.viewMatrix.rotate((float) Math.toRadians(this.rotation.x), 1, 0, 0);
             this.viewMatrix.rotate((float) Math.toRadians(this.rotation.y), 0, 1, 0);
-            this.viewMatrix.scale(5.0f / this.zoom); // Perspective camera zoom scaled by 5 to match the zoom of orthographic camera
+            this.viewMatrix.scale(1.0f / this.zoom); // Perspective camera zoom inverted to match the zoom of orthographic camera
         }
 
         this.viewMatrix.invert(this.inverseViewMatrix);
@@ -87,6 +95,8 @@ public class ed_BaseCamera extends Component {
     public Matrix4f getProjectionMatrix() { return this.projectionMatrix; }
 
     public Matrix4f getInverseProjectionMatrix() { return this.inverseProjectionMatrix; }
+
+    public Matrix4f getViewMatrix() { return this.viewMatrix; }
 
     public Matrix4f getInverseViewMatrix() { return this.inverseViewMatrix; }
 
@@ -98,9 +108,9 @@ public class ed_BaseCamera extends Component {
 
     public float getZoom() { return this.zoom; }
 
-    public CameraType getCameraType() { return this.cameraType; }
+    public ProjectionType getProjectionType() { return this.projectionType; }
 
-    public void setCameraType(CameraType type) { this.cameraType = type; }
+    public void setProjectionType(ProjectionType type) { this.projectionType = type; }
 
     public Color getBackgroundColor() { return this.backgroundColor; }
 

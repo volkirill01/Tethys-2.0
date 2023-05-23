@@ -10,5 +10,5 @@ public abstract class Layer {
 
     public abstract boolean onEvent(Event event);
 
-    public void cleanUp() { }
+    public void freeMemory() { }
 }

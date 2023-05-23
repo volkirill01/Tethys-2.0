@@ -8,7 +8,7 @@ import org.joml.Vector3f;
 
 public class Circle2DCollider extends ed_Collider2D {
 
-    private float radius = 0.25f;
+    private float radius = 1.0f;
     private final Vector2f offset = new Vector2f(0.0f);
 
     @Override

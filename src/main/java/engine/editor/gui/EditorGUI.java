@@ -151,7 +151,9 @@ public class EditorGUI {
         ImGui.setCursorPos(startCursorPos.x, startCursorPos.y);
         ImGui.alignTextToFramePadding();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getFramePaddingY() * 1.1f + 4.0f);
+        GuiFont.bindFont(GuiFont.getSemiBoldFont());
         ImGui.text(label);
+        GuiFont.unbindFont();
         ImGui.setCursorPos(endCursorPos.x, endCursorPos.y);
 
         int currentFrameColor = ImGui.getColorU32(ImGuiCol.FrameBg);
@@ -198,14 +200,14 @@ public class EditorGUI {
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
         ImGui.pushItemWidth(widthEach);
 
-        int xButtonColorU32 = ImGui.getColorU32(Settings.xAxisColor.r / 255.0f, Settings.xAxisColor.g / 255.0f, Settings.xAxisColor.b / 255.0f, Settings.xAxisColor.a / 255.0f);
-        int xButtonHoverColorU32 = ImGui.getColorU32(Settings.xAxisColor_Hover.r / 255.0f, Settings.xAxisColor_Hover.g / 255.0f, Settings.xAxisColor_Hover.b / 255.0f, Settings.xAxisColor_Hover.a / 255.0f);
+        int xButtonColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR.r / 255.0f, Settings.X_AXIS_COLOR.g / 255.0f, Settings.X_AXIS_COLOR.b / 255.0f, Settings.X_AXIS_COLOR.a / 255.0f);
+        int xButtonHoverColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR_HOVER.r / 255.0f, Settings.X_AXIS_COLOR_HOVER.g / 255.0f, Settings.X_AXIS_COLOR_HOVER.b / 255.0f, Settings.X_AXIS_COLOR_HOVER.a / 255.0f);
         field.x = drawVectorField(field.x, resetValue.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
-        int yButtonColorU32 = ImGui.getColorU32(Settings.yAxisColor.r / 255.0f, Settings.yAxisColor.g / 255.0f, Settings.yAxisColor.b / 255.0f, Settings.yAxisColor.a / 255.0f);
-        int yButtonHoverColorU32 = ImGui.getColorU32(Settings.yAxisColor_Hover.r / 255.0f, Settings.yAxisColor_Hover.g / 255.0f, Settings.yAxisColor_Hover.b / 255.0f, Settings.yAxisColor_Hover.a / 255.0f);
+        int yButtonColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR.r / 255.0f, Settings.Y_AXIS_COLOR.g / 255.0f, Settings.Y_AXIS_COLOR.b / 255.0f, Settings.Y_AXIS_COLOR.a / 255.0f);
+        int yButtonHoverColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR_HOVER.r / 255.0f, Settings.Y_AXIS_COLOR_HOVER.g / 255.0f, Settings.Y_AXIS_COLOR_HOVER.b / 255.0f, Settings.Y_AXIS_COLOR_HOVER.a / 255.0f);
         field.y = drawVectorField(field.y, resetValue.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach, format);
 
         ImGui.popItemWidth();
@@ -230,20 +232,20 @@ public class EditorGUI {
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
         ImGui.pushItemWidth(widthEach);
 
-        int xButtonColorU32 = ImGui.getColorU32(Settings.xAxisColor.r / 255.0f, Settings.xAxisColor.g / 255.0f, Settings.xAxisColor.b / 255.0f, Settings.xAxisColor.a / 255.0f);
-        int xButtonHoverColorU32 = ImGui.getColorU32(Settings.xAxisColor_Hover.r / 255.0f, Settings.xAxisColor_Hover.g / 255.0f, Settings.xAxisColor_Hover.b / 255.0f, Settings.xAxisColor_Hover.a / 255.0f);
+        int xButtonColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR.r / 255.0f, Settings.X_AXIS_COLOR.g / 255.0f, Settings.X_AXIS_COLOR.b / 255.0f, Settings.X_AXIS_COLOR.a / 255.0f);
+        int xButtonHoverColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR_HOVER.r / 255.0f, Settings.X_AXIS_COLOR_HOVER.g / 255.0f, Settings.X_AXIS_COLOR_HOVER.b / 255.0f, Settings.X_AXIS_COLOR_HOVER.a / 255.0f);
         field.x = drawVectorField(field.x, resetValue.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
-        int yButtonColorU32 = ImGui.getColorU32(Settings.yAxisColor.r / 255.0f, Settings.yAxisColor.g / 255.0f, Settings.yAxisColor.b / 255.0f, Settings.yAxisColor.a / 255.0f);
-        int yButtonHoverColorU32 = ImGui.getColorU32(Settings.yAxisColor_Hover.r / 255.0f, Settings.yAxisColor_Hover.g / 255.0f, Settings.yAxisColor_Hover.b / 255.0f, Settings.yAxisColor_Hover.a / 255.0f);
+        int yButtonColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR.r / 255.0f, Settings.Y_AXIS_COLOR.g / 255.0f, Settings.Y_AXIS_COLOR.b / 255.0f, Settings.Y_AXIS_COLOR.a / 255.0f);
+        int yButtonHoverColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR_HOVER.r / 255.0f, Settings.Y_AXIS_COLOR_HOVER.g / 255.0f, Settings.Y_AXIS_COLOR_HOVER.b / 255.0f, Settings.Y_AXIS_COLOR_HOVER.a / 255.0f);
         field.y = drawVectorField(field.y, resetValue.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
-        int zButtonColorU32 = ImGui.getColorU32(Settings.zAxisColor.r / 255.0f, Settings.zAxisColor.g / 255.0f, Settings.zAxisColor.b / 255.0f, Settings.zAxisColor.a / 255.0f);
-        int zButtonHoverColorU32 = ImGui.getColorU32(Settings.zAxisColor_Hover.r / 255.0f, Settings.zAxisColor_Hover.g / 255.0f, Settings.zAxisColor_Hover.b / 255.0f, Settings.zAxisColor_Hover.a / 255.0f);
+        int zButtonColorU32 = ImGui.getColorU32(Settings.Z_AXIS_COLOR.r / 255.0f, Settings.Z_AXIS_COLOR.g / 255.0f, Settings.Z_AXIS_COLOR.b / 255.0f, Settings.Z_AXIS_COLOR.a / 255.0f);
+        int zButtonHoverColorU32 = ImGui.getColorU32(Settings.Z_AXIS_COLOR_HOVER.r / 255.0f, Settings.Z_AXIS_COLOR_HOVER.g / 255.0f, Settings.Z_AXIS_COLOR_HOVER.b / 255.0f, Settings.Z_AXIS_COLOR_HOVER.a / 255.0f);
         field.z = drawVectorField(field.z, resetValue.z, isValueChanged, "Z", zButtonColorU32, zButtonHoverColorU32, widthEach, format);
 
         ImGui.popItemWidth();
@@ -268,26 +270,26 @@ public class EditorGUI {
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
         ImGui.pushItemWidth(widthEach);
 
-        int xButtonColorU32 = ImGui.getColorU32(Settings.xAxisColor.r / 255.0f, Settings.xAxisColor.g / 255.0f, Settings.xAxisColor.b / 255.0f, Settings.xAxisColor.a / 255.0f);
-        int xButtonHoverColorU32 = ImGui.getColorU32(Settings.xAxisColor_Hover.r / 255.0f, Settings.xAxisColor_Hover.g / 255.0f, Settings.xAxisColor_Hover.b / 255.0f, Settings.xAxisColor_Hover.a / 255.0f);
+        int xButtonColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR.r / 255.0f, Settings.X_AXIS_COLOR.g / 255.0f, Settings.X_AXIS_COLOR.b / 255.0f, Settings.X_AXIS_COLOR.a / 255.0f);
+        int xButtonHoverColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR_HOVER.r / 255.0f, Settings.X_AXIS_COLOR_HOVER.g / 255.0f, Settings.X_AXIS_COLOR_HOVER.b / 255.0f, Settings.X_AXIS_COLOR_HOVER.a / 255.0f);
         field.x = drawVectorField(field.x, resetValue.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
-        int yButtonColorU32 = ImGui.getColorU32(Settings.yAxisColor.r / 255.0f, Settings.yAxisColor.g / 255.0f, Settings.yAxisColor.b / 255.0f, Settings.yAxisColor.a / 255.0f);
-        int yButtonHoverColorU32 = ImGui.getColorU32(Settings.yAxisColor_Hover.r / 255.0f, Settings.yAxisColor_Hover.g / 255.0f, Settings.yAxisColor_Hover.b / 255.0f, Settings.yAxisColor_Hover.a / 255.0f);
+        int yButtonColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR.r / 255.0f, Settings.Y_AXIS_COLOR.g / 255.0f, Settings.Y_AXIS_COLOR.b / 255.0f, Settings.Y_AXIS_COLOR.a / 255.0f);
+        int yButtonHoverColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR_HOVER.r / 255.0f, Settings.Y_AXIS_COLOR_HOVER.g / 255.0f, Settings.Y_AXIS_COLOR_HOVER.b / 255.0f, Settings.Y_AXIS_COLOR_HOVER.a / 255.0f);
         field.y = drawVectorField(field.y, resetValue.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
-        int zButtonColorU32 = ImGui.getColorU32(Settings.zAxisColor.r / 255.0f, Settings.zAxisColor.g / 255.0f, Settings.zAxisColor.b / 255.0f, Settings.zAxisColor.a / 255.0f);
-        int zButtonHoverColorU32 = ImGui.getColorU32(Settings.zAxisColor_Hover.r / 255.0f, Settings.zAxisColor_Hover.g / 255.0f, Settings.zAxisColor_Hover.b / 255.0f, Settings.zAxisColor_Hover.a / 255.0f);
+        int zButtonColorU32 = ImGui.getColorU32(Settings.Z_AXIS_COLOR.r / 255.0f, Settings.Z_AXIS_COLOR.g / 255.0f, Settings.Z_AXIS_COLOR.b / 255.0f, Settings.Z_AXIS_COLOR.a / 255.0f);
+        int zButtonHoverColorU32 = ImGui.getColorU32(Settings.Z_AXIS_COLOR_HOVER.r / 255.0f, Settings.Z_AXIS_COLOR_HOVER.g / 255.0f, Settings.Z_AXIS_COLOR_HOVER.b / 255.0f, Settings.Z_AXIS_COLOR_HOVER.a / 255.0f);
         field.z = drawVectorField(field.z, resetValue.z, isValueChanged, "Z", zButtonColorU32, zButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
-        int wButtonColorU32 = ImGui.getColorU32(Settings.wAxisColor.r / 255.0f, Settings.wAxisColor.g / 255.0f, Settings.wAxisColor.b / 255.0f, Settings.wAxisColor.a / 255.0f);
-        int wButtonHoverColorU32 = ImGui.getColorU32(Settings.wAxisColor_Hover.r / 255.0f, Settings.wAxisColor_Hover.g / 255.0f, Settings.wAxisColor_Hover.b / 255.0f, Settings.wAxisColor_Hover.a / 255.0f);
+        int wButtonColorU32 = ImGui.getColorU32(Settings.W_AXIS_COLOR.r / 255.0f, Settings.W_AXIS_COLOR.g / 255.0f, Settings.W_AXIS_COLOR.b / 255.0f, Settings.W_AXIS_COLOR.a / 255.0f);
+        int wButtonHoverColorU32 = ImGui.getColorU32(Settings.W_AXIS_COLOR_HOVER.r / 255.0f, Settings.W_AXIS_COLOR_HOVER.g / 255.0f, Settings.W_AXIS_COLOR_HOVER.b / 255.0f, Settings.W_AXIS_COLOR_HOVER.a / 255.0f);
         field.w = drawVectorField(field.w, resetValue.w, isValueChanged, "W", wButtonColorU32, wButtonHoverColorU32, widthEach, format);
 
         ImGui.popItemWidth();

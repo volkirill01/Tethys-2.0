@@ -17,6 +17,7 @@ import static org.lwjgl.opengl.GL20.*;
 public class Shader {
 
     private int shaderProgramID;
+    private int vertexShaderID, fragmentShaderID;
     private boolean beingUsed = false;
 
     private String vertexSource;
@@ -41,16 +42,16 @@ public class Shader {
             String secondPattern = source.substring(index, endOfLine).trim();
 
             if (firstPattern.equals("vertex"))
-                this.vertexSource = "#version " + Settings.shaderVersion + "\n" + splitString[1];
+                this.vertexSource = "#version " + Settings.SHADER_VERSION + "\n" + splitString[1];
             else if (firstPattern.equals("fragment"))
-                this.fragmentSource = "#version " + Settings.shaderVersion + "\n" + splitString[1];
+                this.fragmentSource = "#version " + Settings.SHADER_VERSION + "\n" + splitString[1];
             else
                 throw new IOException(String.format("Unexpected token '%s'", firstPattern));
 
             if (secondPattern.equals("vertex"))
-                this.vertexSource = "#version " + Settings.shaderVersion + "\n" + splitString[2];
+                this.vertexSource = "#version " + Settings.SHADER_VERSION + "\n" + splitString[2];
             else if (secondPattern.equals("fragment"))
-                this.fragmentSource = "#version " + Settings.shaderVersion + "\n" + splitString[2];
+                this.fragmentSource = "#version " + Settings.SHADER_VERSION + "\n" + splitString[2];
             else
                 throw new IOException(String.format("Unexpected token '%s'", secondPattern));
 
@@ -95,38 +96,36 @@ public class Shader {
         // ============================================================
         // Compile and link Shaders
         // ============================================================
-        int vertexID, fragmentID;
-
         // First compile the Vertex Shader
-        vertexID = glCreateShader(GL_VERTEX_SHADER);
+        this.vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
         // Pass the shader source code to the GPU
-        glShaderSource(vertexID, this.vertexSource);
-        glCompileShader(vertexID);
+        glShaderSource(this.vertexShaderID, this.vertexSource);
+        glCompileShader(this.vertexShaderID);
 
         // Check for errors in compilation
-        int success = glGetShaderi(vertexID, GL_COMPILE_STATUS);
+        int success = glGetShaderi(this.vertexShaderID, GL_COMPILE_STATUS);
         if (success == GL_FALSE) {
-            int len = glGetShaderi(vertexID, GL_INFO_LOG_LENGTH);
-            throw new RuntimeException(String.format("'%s'\n\tVertex shader compilation failed.\n%s", this.filepath, glGetShaderInfoLog(vertexID, len)));
+            int len = glGetShaderi(this.vertexShaderID, GL_INFO_LOG_LENGTH);
+            throw new RuntimeException(String.format("'%s'\n\tVertex shader compilation failed.\n%s", this.filepath, glGetShaderInfoLog(this.vertexShaderID, len)));
         }
 
         // First compile the Vertex Shader
-        fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
+        this.fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
         // Pass the shader source code to the GPU
-        glShaderSource(fragmentID, this.fragmentSource);
-        glCompileShader(fragmentID);
+        glShaderSource(this.fragmentShaderID, this.fragmentSource);
+        glCompileShader(this.fragmentShaderID);
 
         // Check for errors in compilation
-        success = glGetShaderi(fragmentID, GL_COMPILE_STATUS);
+        success = glGetShaderi(this.fragmentShaderID, GL_COMPILE_STATUS);
         if (success == GL_FALSE) {
-            int len = glGetShaderi(fragmentID, GL_INFO_LOG_LENGTH);
-            throw new RuntimeException(String.format("'%s'\n\tFragment shader compilation failed.\n%s", this.filepath, glGetShaderInfoLog(fragmentID, len)));
+            int len = glGetShaderi(this.fragmentShaderID, GL_INFO_LOG_LENGTH);
+            throw new RuntimeException(String.format("'%s'\n\tFragment shader compilation failed.\n%s", this.filepath, glGetShaderInfoLog(this.fragmentShaderID, len)));
         }
 
         // Link shaders and check for errors
         this.shaderProgramID = glCreateProgram();
-        glAttachShader(this.shaderProgramID, vertexID);
-        glAttachShader(this.shaderProgramID, fragmentID);
+        glAttachShader(this.shaderProgramID, this.vertexShaderID);
+        glAttachShader(this.shaderProgramID, this.fragmentShaderID);
         glLinkProgram(this.shaderProgramID);
 
         // Check for linking errors
@@ -150,6 +149,12 @@ public class Shader {
         // Bind nothing
         glUseProgram(0);
         this.beingUsed = false;
+    }
+
+    public void freeMemory() {
+        glDeleteProgram(this.shaderProgramID);
+        glDeleteShader(this.vertexShaderID);
+        glDeleteShader(this.fragmentShaderID);
     }
 
     public String getFilepath() { return this.filepath; }

@@ -9,6 +9,7 @@ import engine.eventListeners.KeyListener;
 import engine.eventListeners.MouseListener;
 import engine.layerStack.Layer;
 import engine.observers.events.Event;
+import engine.observers.events.EventType;
 import engine.profiling.Profiler;
 import engine.profiling.Profiler_Window;
 import engine.scenes.SceneManager;
@@ -20,6 +21,7 @@ import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.callback.ImStrConsumer;
 import imgui.callback.ImStrSupplier;
+import imgui.extension.imguizmo.ImGuizmo;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
@@ -110,7 +112,7 @@ public class EngineGuiLayer extends Layer {
 
         // ------------------------------------------------------------
         // GLFW callbacks to handle user input
-        org.lwjgl.glfw.GLFW.glfwSetKeyCallback(Window.getGlfwWindow(), (w, key, scancode, action, mods) -> {
+        glfwSetKeyCallback(Window.getGlfwWindow(), (w, key, scancode, action, mods) -> {
             if (action == GLFW_PRESS)
                 io.setKeysDown(key, true);
             else if (action == GLFW_RELEASE)
@@ -121,8 +123,8 @@ public class EngineGuiLayer extends Layer {
             io.setKeyAlt(io.getKeysDown(GLFW_KEY_LEFT_ALT) || io.getKeysDown(GLFW_KEY_RIGHT_ALT));
             io.setKeySuper(io.getKeysDown(GLFW_KEY_LEFT_SUPER) || io.getKeysDown(GLFW_KEY_RIGHT_SUPER));
 
-            if (!io.getWantCaptureKeyboard())
-                KeyListener.keyCallback(w, key, scancode, action, mods);
+//            if (!io.getWantCaptureKeyboard())
+            KeyListener.keyCallback(w, key, scancode, action, mods);
         });
 
         glfwSetCharCallback(Window.getGlfwWindow(), (w, c) -> {
@@ -144,16 +146,16 @@ public class EngineGuiLayer extends Layer {
             if (!io.getWantCaptureMouse() && mouseDown[1])
                 ImGui.setWindowFocus(null);
 
-            if (!io.getWantCaptureMouse() || getWantCaptureMouse())
-                MouseListener.mouseButtonCallback(w, button, action, mods);
+//            if (!io.getWantCaptureMouse() || getWantCaptureMouse())
+            MouseListener.mouseButtonCallback(w, button, action, mods);
         });
 
         glfwSetScrollCallback(Window.getGlfwWindow(), (w, xOffset, yOffset) -> {
             io.setMouseWheelH(io.getMouseWheelH() + (float) xOffset);
             io.setMouseWheel(io.getMouseWheel() + (float) yOffset);
 
-            if ((!io.getWantCaptureMouse() || getWantCaptureMouse()))
-                MouseListener.mouseScrollCallback(w, xOffset, yOffset);
+//            if ((!io.getWantCaptureMouse() || getWantCaptureMouse()))
+            MouseListener.mouseScrollCallback(w, xOffset, yOffset);
         });
 
         io.setSetClipboardTextFn(new ImStrConsumer() {
@@ -177,7 +179,7 @@ public class EngineGuiLayer extends Layer {
         // This method SHOULD be called after you've initialized your ImGui configuration (fonts and so on).
         // ImGui context should be created as well.
         imGuiGlfw.init(Window.getGlfwWindow(), false);
-        imGuiGl3.init("#version " + Settings.shaderVersion);
+        imGuiGl3.init("#version " + Settings.SHADER_VERSION);
 
         EditorThemeSystem.setDarkTheme();
 
@@ -274,6 +276,7 @@ public class EngineGuiLayer extends Layer {
         glfwSetCursor(Window.getGlfwWindow(), mouseCursors[imguiCursor]);
         glfwSetInputMode(Window.getGlfwWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         ImGui.newFrame();
+        ImGuizmo.beginFrame();
 
         Profiler.stopTimer("ImGui StartFrame");
     }
@@ -289,6 +292,7 @@ public class EngineGuiLayer extends Layer {
         // After Dear ImGui prepared a draw data, we use it in the LWJGL3 renderer.
         // At that moment ImGui will be rendered to the current OpenGL context.
         ImGui.render();
+
         imGuiGl3.renderDrawData(ImGui.getDrawData());
 
         // TODO FIX IMGUI VIEWPORTS
@@ -343,7 +347,9 @@ public class EngineGuiLayer extends Layer {
 
     public static EditorImGuiWindow getWindowOnFullscreen() { return windowOnFullscreen; }
 
-    public static  <T extends EditorImGuiWindow> List<EditorImGuiWindow> getWindowsByType(Class<T> windowType, boolean includeNonVisible) {
+    public static EditorImGuiWindow getWindow(int windowId) { return windows.get(windowId).getValue(); }
+
+    public static  <T extends EditorImGuiWindow> List<EditorImGuiWindow> getWindows_ByType(Class<T> windowType, boolean includeNonVisible) {
         List<EditorImGuiWindow> result = new ArrayList<>();
 
         for (int windowId : windows.keySet())
@@ -357,12 +363,18 @@ public class EngineGuiLayer extends Layer {
         return result;
     }
 
-    public static EditorImGuiWindow getWindow(int windowId) { return windows.get(windowId).getValue(); }
-
-    public static <T extends EditorImGuiWindow> boolean isAnyWindowVisible(Class<T> windowType) {
+    public static <T extends EditorImGuiWindow> boolean isAnyWindowVisible_ByType(Class<T> windowType) {
         for (int windowId : windows.keySet())
             if (windows.get(windowId).getKey().get() && windows.get(windowId).getValue().getClass() == windowType)
                 if (windows.get(windowId).getValue().isVisible())
+                    return true;
+        return false;
+    }
+
+    public static <T extends EditorImGuiWindow> boolean isAnyWindowSelected_ByType(Class<T> windowType) {
+        for (int windowId : windows.keySet())
+            if (windows.get(windowId).getKey().get() && windows.get(windowId).getValue().getClass() == windowType)
+                if (windows.get(windowId).getValue().isSelected())
                     return true;
         return false;
     }
@@ -379,20 +391,39 @@ public class EngineGuiLayer extends Layer {
 
     public static int getNextWindowId() { return windowId++; }
 
+    public static boolean isSceneWindowSelected() { return isAnyWindowVisible_ByType(SceneView_Window.class) && isAnyWindowSelected_ByType(SceneView_Window.class); }
     public static boolean getWantCaptureMouse() {
-        for (EditorImGuiWindow window : getWindowsByType(SceneView_Window.class, false))
+        for (EditorImGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
             if (((SceneView_Window) window).getWantCaptureMouse())
+                return true;
+
+        return false;
+    }
+    public static boolean isSceneWindowHovered() {
+        for (EditorImGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
+            if (window.isHover())
                 return true;
         return false;
     }
 
     @Override
     public boolean onEvent(Event event) {
-        return false;
+        if (!isAnyWindowVisible_ByType(SceneView_Window.class) || !isAnyWindowSelected_ByType(SceneView_Window.class))
+            return true;
+
+        if (event.type == EventType.Engine_MouseButtonCallback || event.type == EventType.Engine_MousePositionCallback || event.type == EventType.Engine_MouseScrollCallback) //  || event.type == EventType.Engine_KeyboardButtonCallback
+            for (EditorImGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
+                if (((SceneView_Window) window).getWantCaptureMouse())
+                    return false; // Pass through event to next layer
+
+        if (event.type == EventType.Engine_KeyboardButtonCallback)
+            return false;
+
+        return true; // Block event. (It's not go to the next layer)
     }
 
     @Override
-    public void cleanUp() {
+    public void freeMemory() {
         imGuiGl3.dispose();
         ImGui.destroyContext();
     }

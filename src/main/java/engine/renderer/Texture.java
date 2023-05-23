@@ -35,4 +35,6 @@ public abstract class Texture {
     public abstract void bind(int textureSlot);
 
     public abstract void unbind();
+
+    public abstract void freeMemory();
 }

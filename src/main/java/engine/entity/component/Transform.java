@@ -33,7 +33,7 @@ public class Transform extends Component { // TODO ADD TRANSFORM CONSTRAINS(LIMI
     public void imgui() { // Overriding function for custom formatting and reset value of scale vector
         EditorGUI.field_Vector3f("Position", this.position, EditorGUI.DEFAULT_FLOAT_FORMAT + "m");
         EditorGUI.field_Vector3f("Rotation", this.rotation, EditorGUI.DEFAULT_FLOAT_FORMAT + "deg"); // TODO REPLACE 'deg' WITH DEGREES SIGN '°' AND FIX DRAWING OF IT
-        EditorGUI.field_Vector3f("Scale", this.scale, new Vector3f(0.25f), EditorGUI.DEFAULT_FLOAT_FORMAT + "m");
+        EditorGUI.field_Vector3f("Scale", this.scale, new Vector3f(1.0f), EditorGUI.DEFAULT_FLOAT_FORMAT + "m");
         this.zIndex = EditorGUI.field_Int("ZIndex", this.zIndex);
     }
 

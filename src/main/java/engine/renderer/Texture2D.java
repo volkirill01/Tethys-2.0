@@ -76,4 +76,7 @@ public class Texture2D extends Texture {
 
     @Override
     public void unbind() { glBindTexture(GL_TEXTURE_2D, 0); } // Bind nothing
+
+    @Override
+    public void freeMemory() { glDeleteTextures(this.textureID); }
 }

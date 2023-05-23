@@ -11,6 +11,7 @@ import engine.renderer.buffers.bufferLayout.ShaderDataType;
 import engine.renderer.shader.Shader;
 import engine.renderer.buffers.IndexBuffer;
 import engine.renderer.buffers.VertexBuffer;
+import engine.stuff.Maths;
 import engine.stuff.customVariables.Color;
 import org.joml.*;
 import org.joml.Math;
@@ -78,7 +79,7 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
     }
 
     public void addSprite(SpriteRenderer renderer) {
-        Profiler.startTimer(String.format("Add Sprite to RenderBatch2D. Obj Name - '%s'", renderer.gameObject.name));
+        Profiler.startTimer(String.format("Add Sprite to RenderBatch2D. Obj Name - '%s'", renderer.gameObject.getName()));
         // Get index and add render object
         int index = this.numberOfSprites;
         this.sprites[index] = renderer;
@@ -93,7 +94,7 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
 
         if (this.numberOfSprites >= this.maxBathSize)
             this.hasRoom = false;
-        Profiler.stopTimer(String.format("Add Sprite to RenderBatch2D. Obj Name - '%s'", renderer.gameObject.name));
+        Profiler.stopTimer(String.format("Add Sprite to RenderBatch2D. Obj Name - '%s'", renderer.gameObject.getName()));
     }
 
     public void render() {
@@ -179,14 +180,17 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
                 }
 
         boolean isRotated = sprite.gameObject.transform.rotation.x != 0.0f || sprite.gameObject.transform.rotation.y != 0.0f || sprite.gameObject.transform.rotation.z != 0.0f;
-        Matrix4f transformationMatrix = new Matrix4f().identity();
-        if (isRotated) {
-            transformationMatrix.translate(sprite.gameObject.transform.position);
-            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.x), 1.0f, 0.0f, 0.0f);
-            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.y), 0.0f, 1.0f, 0.0f);
-            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.z), 0.0f, 0.0f, 1.0f);
-            transformationMatrix.scale(sprite.gameObject.transform.scale);
-        }
+        Matrix4f transformationMatrix = null;
+        if (isRotated)
+            transformationMatrix = Maths.createTransformationMatrix(sprite.gameObject.transform.position, sprite.gameObject.transform.rotation, sprite.gameObject.transform.scale);
+//        Matrix4f transformationMatrix = new Matrix4f().identity();
+//        if (isRotated) {
+//            transformationMatrix.translate(sprite.gameObject.transform.position);
+//            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.x), 1.0f, 0.0f, 0.0f);
+//            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.y), 0.0f, 1.0f, 0.0f);
+//            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.z), 0.0f, 0.0f, 1.0f);
+//            transformationMatrix.scale(sprite.gameObject.transform.scale);
+//        }
 
         // Add vertices with the appropriate properties
         float xAdd = 0.5f;

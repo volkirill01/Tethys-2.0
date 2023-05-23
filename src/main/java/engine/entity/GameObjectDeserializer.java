@@ -12,7 +12,8 @@ public class GameObjectDeserializer implements JsonDeserializer<GameObject> {
     @Override
     public GameObject deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
-        String name = jsonObject.get("name").getAsString();
+        JsonObject tagComponent = jsonObject.getAsJsonObject("tagComponent");
+        String name = tagComponent.get("name").getAsString();
         JsonArray components = jsonObject.getAsJsonArray("components");
 
         Profiler.startTimer(String.format("Deserialize GameObject - '%s'", name));

@@ -3,8 +3,6 @@ package engine.editor.windows;
 import engine.assets.AssetPool;
 import engine.editor.gui.EditorImGuiWindow;
 import engine.editor.gui.EngineGuiLayer;
-import engine.editor.gui.ImGuiLayer_old;
-import engine.entity.GameObject;
 import engine.eventListeners.MouseListener;
 import engine.observers.EventSystem;
 import engine.observers.Observer;
@@ -67,8 +65,8 @@ public class GameView_Window extends EditorImGuiWindow implements Observer {
     }
 
     @Override
-    public void onNotify(GameObject object, Event event) {
-        if (event.type == EventType.GameEngine_StartPlay)
+    public void onNotify(Event event) {
+        if (event.type == EventType.Engine_StartPlay)
             EngineGuiLayer.selectWindow(this);
     }
 }

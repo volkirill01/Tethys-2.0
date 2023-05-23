@@ -17,13 +17,13 @@ public class Console {
 
     public static void log(String message, Color customColor) {
         ConsoleMessage newMessage = new ConsoleMessage(message, LogType.Custom, customColor);
-        EventSystem.notify(null, new Event(EventType.ConsoleSendMessage, newMessage));
+        EventSystem.notify(new Event(EventType.Console_SendMessage, newMessage));
         messages.add(newMessage);
     }
 
     public static void log(String message, LogType type) {
         ConsoleMessage newMessage = new ConsoleMessage(message, type);
-        EventSystem.notify(null, new Event(EventType.ConsoleSendMessage, newMessage));
+        EventSystem.notify(new Event(EventType.Console_SendMessage, newMessage));
         messages.add(newMessage);
     }
 

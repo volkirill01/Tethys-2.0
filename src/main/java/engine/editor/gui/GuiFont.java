@@ -6,6 +6,8 @@ import imgui.*;
 public class GuiFont {
 
     private static ImFont defaultFont;
+    private static ImFont boldFont;
+    private static ImFont semiBoldFont;
     private static final float fontSize = 0.9f;
 
     public static void init(ImGuiIO io) {
@@ -27,10 +29,11 @@ public class GuiFont {
         fontConfig.setGlyphMinAdvanceX(13.0f); // Use if you want to make the icon monospaced
         short[] icons_ranges = { (short) 0xE97A, (short) 0xF02C, 0 }; // Min(0xE97A), Max(0xF02C) icons range // TODO -+-+- Change min and max
         fontAtlas.addFontFromFileTTF("editorFiles/fonts/icofont_all.ttf", 15.5f * fontSize, fontConfig, icons_ranges);
+        boldFont = fontAtlas.addFontFromFileTTF("editorFiles/fonts/openSans/OpenSans-Bold.ttf", 20.0f * fontSize, defaultFontConfig);
+        semiBoldFont = fontAtlas.addFontFromFileTTF("editorFiles/fonts/openSans/OpenSans-SemiBold.ttf", 20.0f * fontSize, defaultFontConfig);
 
 //        defaultSmallText = fontAtlas.addFontFromFileTTF("engineFiles/fonts/openSans/OpenSans-Regular.ttf", 15.0f * fontSize, defaultFontConfig);
 //        semiBoldText = fontAtlas.addFontFromFileTTF("engineFiles/fonts/openSans/OpenSans-SemiBold.ttf", 20.0f * fontSize, defaultFontConfig);
-//        boldText = fontAtlas.addFontFromFileTTF("engineFiles/fonts/openSans/OpenSans-Bold.ttf", 20.0f * fontSize, defaultFontConfig);
 //        italicText = fontAtlas.addFontFromFileTTF("engineFiles/fonts/openSans/OpenSans-Italic.ttf", 20.0f * fontSize, defaultFontConfig);
 //
 //        notificationFont = fontAtlas.addFontFromFileTTF("engineFiles/fonts/openSans/OpenSans-Regular.ttf", 20.0f * notificationFontSize * fontSize, defaultFontConfig);
@@ -44,6 +47,10 @@ public class GuiFont {
     }
 
     public static ImFont getDefaultFont() { return defaultFont; }
+
+    public static ImFont getBoldFont() { return boldFont; }
+
+    public static ImFont getSemiBoldFont() { return semiBoldFont; }
 
     public static void bindFont(ImFont font) { ImGui.pushFont(font); }
 

@@ -2,6 +2,7 @@ package engine.physics.physics2D.components;
 
 import engine.editor.gui.EditorGUI;
 import engine.entity.component.Component;
+import engine.physics.physics2D.Physics2D;
 import engine.physics.physics2D.enums.BodyType;
 import engine.stuff.Window;
 import imgui.ImGui;
@@ -33,7 +34,7 @@ public class RigidBody2D extends Component {
             return;
 
         switch (this.bodyType) {
-            case Static -> this.rawBody.setTransform(new Vec2(this.gameObject.transform.position.x, this.gameObject.transform.position.y), this.gameObject.transform.rotation.z);
+            case Static -> this.rawBody.setTransform(new Vec2(this.gameObject.transform.position.x, this.gameObject.transform.position.y), Math.toRadians(this.gameObject.transform.rotation.z));
             case Dynamic, Kinematic -> {
                 this.gameObject.transform.position.set(this.rawBody.getPosition().x, this.rawBody.getPosition().y, this.gameObject.transform.position.z);
                 this.gameObject.transform.rotation.z = (float) Math.toDegrees(this.rawBody.getAngle());
@@ -42,6 +43,9 @@ public class RigidBody2D extends Component {
             }
         }
     }
+
+    @Override
+    public void destroy() { Physics2D.destroyGameObject(this.gameObject); }
 
     @Override
     public void imgui() {
@@ -92,9 +96,8 @@ public class RigidBody2D extends Component {
 
     public void setIsTrigger(boolean isTrigger) {
         this.isTrigger = isTrigger;
-        if (this.rawBody != null) {
-            Window.getPhysics2D().setIsTrigger(this, isTrigger);
-        }
+        if (this.rawBody != null)
+            Physics2D.setIsTrigger(this, isTrigger);
     }
 
     public boolean isTrigger() { return this.isTrigger; }

@@ -2,13 +2,11 @@ package engine.editor.windows;
 
 import engine.editor.gui.EditorImGuiWindow;
 import engine.entity.GameObject;
+import engine.entity.GameObject_Manager;
 import engine.scenes.SceneManager;
 import imgui.ImGui;
 import imgui.ImVec4;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiStyleVar;
-import imgui.flag.ImGuiTreeNodeFlags;
-import imgui.type.ImString;
+import imgui.flag.*;
 
 import java.util.List;
 
@@ -18,6 +16,9 @@ public class SceneHierarchy_Window extends EditorImGuiWindow {
 
     @Override
     public void drawWindow() {
+        if (ImGui.isMouseClicked(ImGuiMouseButton.Left) && ImGui.isWindowHovered())
+            Outliner_Window.clearSelected();
+
         List<GameObject> gameObjects = SceneManager.getCurrentScene().getAllGameObjects();
         int index = 0;
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
@@ -37,6 +38,12 @@ public class SceneHierarchy_Window extends EditorImGuiWindow {
             index++;
         }
         ImGui.popStyleVar();
+
+        // Right-click on blank space(Window)
+        if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.NoOpenOverItems | ImGuiPopupFlags.MouseButtonDefault)) {
+            drawWindowContextPopup();
+            ImGui.endPopup();
+        }
     }
 
     private boolean drawTreeNode(GameObject obj, int index) {
@@ -57,34 +64,33 @@ public class SceneHierarchy_Window extends EditorImGuiWindow {
             ImGui.pushStyleColor(ImGuiCol.HeaderHovered, selectedObjectColor.x, selectedObjectColor.y, selectedObjectColor.z, alphaHovered);
             ImGui.pushStyleColor(ImGuiCol.HeaderActive, selectedObjectColor.x, selectedObjectColor.y, selectedObjectColor.z, alphaHovered);
         }
-        boolean treeNodeOpen = ImGui.treeNodeEx(ImGui.getDragDropPayload() == null ? "##" + obj.name : obj.name, ImGuiTreeNodeFlags.FramePadding | ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.SpanAvailWidth | ImGuiTreeNodeFlags.Selected);
+        boolean treeNodeOpen = ImGui.treeNodeEx("" + obj, ImGuiTreeNodeFlags.Selected | ImGuiTreeNodeFlags.FramePadding  | ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.SpanAvailWidth, obj.getName());
         if (ImGui.isItemClicked())
             Outliner_Window.setActiveGameObject(obj);
-        ImGui.setItemAllowOverlap();
         ImGui.popStyleColor(3);
         //</editor-fold>
 
         //<editor-fold desc="Drag-Drop Stuff">
-        if (ImGui.getDragDropPayload() == null) {
-            ImGui.sameLine();
-            ImString ImString = new ImString(obj.name, 256);
-            ImGui.pushStyleColor(ImGuiCol.FrameBg, 0.0f, 0.0f, 0.0f, 0.0f);
-            ImGui.pushStyleColor(ImGuiCol.FrameBgHovered, 0.0f, 0.0f, 0.0f, 0.0f);
-            ImGui.pushStyleColor(ImGuiCol.FrameBgActive, 0.0f, 0.0f, 0.0f, 0.0f);
-            ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
-            ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() * 2, ImGui.getStyle().getFramePaddingY());
-            ImGui.setNextItemWidth(ImGui.getContentRegionAvailX());
-            if (ImGui.getDragDropPayload() == null)
-                if (ImGui.inputText("##SceneHierarchy_GameObject_" + index, ImString))
-                    obj.name = ImString.get();
-            ImGui.popStyleVar();
-            ImGui.popStyleColor(4);
-        }
+//        if (ImGui.getDragDropPayload() == null) {
+//            ImGui.sameLine();
+//            ImString ImString = new ImString(obj.getName(), 256);
+//            ImGui.pushStyleColor(ImGuiCol.FrameBg, 0.0f, 0.0f, 0.0f, 0.0f);
+//            ImGui.pushStyleColor(ImGuiCol.FrameBgHovered, 0.0f, 0.0f, 0.0f, 0.0f);
+//            ImGui.pushStyleColor(ImGuiCol.FrameBgActive, 0.0f, 0.0f, 0.0f, 0.0f);
+//            ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
+//            ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() * 2, ImGui.getStyle().getFramePaddingY());
+//            ImGui.setNextItemWidth(ImGui.getContentRegionAvailX());
+//            if (ImGui.getDragDropPayload() == null)
+//                if (ImGui.inputText("##SceneHierarchy_GameObject_" + index, ImString))
+//                    obj.setName(ImString.get());
+//            ImGui.popStyleVar();
+//            ImGui.popStyleColor(4);
+//        }
 
         if (ImGui.beginDragDropSource()) {
-            System.out.println("Begin DragDrop");
+            System.out.println("On DragDrop");
             ImGui.setDragDropPayload("GameObject", obj);
-            ImGui.text(obj.name); // Preview of DragDrop
+            ImGui.text(obj.getName()); // Preview of DragDrop
             ImGui.endDragDropSource();
         }
 
@@ -94,13 +100,29 @@ public class SceneHierarchy_Window extends EditorImGuiWindow {
             if (payloadObject != null) {
                 if (payloadObject.getClass().isAssignableFrom(GameObject.class)) {
                     GameObject gameObject = (GameObject) payloadObject;
-                    System.out.println("Payload Accepted Drop '" + gameObject.name + "' to '" + obj.name + "'");
+                    System.out.println("Payload Accepted Drop '" + gameObject.getName() + "' to '" + obj.getName() + "'");
                 }
             }
             ImGui.endDragDropTarget();
         }
         //</editor-fold>
 
+        // Right-click on GameObject(ImGui Item)
+        if (ImGui.beginPopupContextItem("GameObject_Context_Popup_" + obj)) {
+            drawObjectContextPopup(obj);
+            ImGui.endPopup();
+        }
+
         return treeNodeOpen;
+    }
+
+    private void drawWindowContextPopup() {
+        if (ImGui.selectable("Create Empty"))
+            GameObject_Manager.createEmpty("Empty", true);
+    }
+
+    private void drawObjectContextPopup(GameObject obj) {
+        if (ImGui.selectable("Delete"))
+            obj.destroy();
     }
 }

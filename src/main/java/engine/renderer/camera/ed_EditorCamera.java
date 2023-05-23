@@ -1,8 +1,6 @@
 package engine.renderer.camera;
 
 import engine.editor.gui.EngineGuiLayer;
-import engine.editor.gui.ImGuiLayer_old;
-import engine.editor.windows.SceneView_Window;
 import engine.eventListeners.Input;
 import engine.eventListeners.KeyCode;
 import engine.renderer.stuff.Fbo;
@@ -33,74 +31,82 @@ public class ed_EditorCamera extends ed_BaseCamera {
 
     public ed_EditorCamera(Vector3f position, Vector3f rotation) {
         super(position, rotation);
-        outputFbo = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_RENDER_BUFFER, false, true);
+        this.outputFbo = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_RENDER_BUFFER, false, true);
     }
 
     @Override
     public void update() {
-        if (!EngineGuiLayer.isAnyWindowVisible(SceneView_Window.class))
-            return;
-
         if (Input.anyButtonDown() && !Input.buttonDown(KeyCode.F) || Input.getMouseScrollX() != 0.0f || Input.getMouseScrollY() != 0.0f) {
             this.reset = false;
             this.lerpTime = 0.0f;
         }
 
         // TODO REPLACE STATIC KEY, WITH KEY FROM USER SETTINGS
-        if (this.cameraType == CameraType.Orthographic) {
-            if (!Input.buttonDown(KeyCode.Left_Control)) {
-                if (Input.buttonDown(KeyCode.W))
-                    this.position.y += moveSpeed / 2.0f * this.zoom * Time.deltaTime();
-                else if (Input.buttonDown(KeyCode.S))
-                    this.position.y -= moveSpeed / 2.0f * this.zoom * Time.deltaTime();
+        if (this.projectionType == ProjectionType.Orthographic) {
+            if (EngineGuiLayer.isSceneWindowSelected()) {
+                if (!Input.buttonDown(KeyCode.Left_Control)) {
+                    if (Input.buttonDown(KeyCode.W))
+                        this.position.y += moveSpeed / 2.0f * this.zoom * Time.deltaTime();
+                    else if (Input.buttonDown(KeyCode.S))
+                        this.position.y -= moveSpeed / 2.0f * this.zoom * Time.deltaTime();
 
-                if (Input.buttonDown(KeyCode.A))
-                    this.position.x -= moveSpeed / 2.0f * this.zoom * Time.deltaTime();
-                else if (Input.buttonDown(KeyCode.D))
-                    this.position.x += moveSpeed / 2.0f * this.zoom * Time.deltaTime();
+                    if (Input.buttonDown(KeyCode.A))
+                        this.position.x -= moveSpeed / 2.0f * this.zoom * Time.deltaTime();
+                    else if (Input.buttonDown(KeyCode.D))
+                        this.position.x += moveSpeed / 2.0f * this.zoom * Time.deltaTime();
+                }
             }
 
-            if (Input.buttonDown(KeyCode.Mouse_Button_Right) && this.dragDebounce > 0) {
-                this.clickOrigin = Input.getMouseWorldPosition();
-                this.dragDebounce -= Time.deltaTime();
-                return;
-            } else if (Input.buttonDown(KeyCode.Mouse_Button_Right)) {
-                Vector2f mousePos = Input.getMouseWorldPosition();
-                Vector2f delta = new Vector2f(mousePos).sub(this.clickOrigin);
-                delta.mul(Time.deltaTime() * dragSensitivity);
-                this.position.sub(delta.x, delta.y, 0.0f);
-                this.clickOrigin.lerp(mousePos, Time.deltaTime());
+            if (EngineGuiLayer.isSceneWindowSelected() && EngineGuiLayer.getWantCaptureMouse()) {
+                if (Input.buttonDown(KeyCode.Mouse_Button_Right) && this.dragDebounce > 0) {
+                    this.clickOrigin = Input.getMouseWorldPosition();
+                    this.dragDebounce -= Time.deltaTime();
+                    return;
+                } else if (Input.buttonDown(KeyCode.Mouse_Button_Right)) {
+                    Vector2f mousePos = Input.getMouseWorldPosition();
+                    Vector2f delta = new Vector2f(mousePos).sub(this.clickOrigin);
+                    delta.mul(Time.deltaTime() * dragSensitivity);
+                    this.position.sub(delta.x, delta.y, 0.0f);
+                    this.clickOrigin.lerp(mousePos, Time.deltaTime());
+                }
             }
 
             if (this.dragDebounce <= 0.0f && !Input.buttonDown(KeyCode.Mouse_Button_Right))
                 this.dragDebounce = this.startDragDebounce;
         } else {
-            if (Input.buttonDown(KeyCode.Mouse_Button_Right)) {
-                float angleChange = Input.getMouseDeltaPositionX() * rotateSensitivity;
-                this.rotation.y -= angleChange;
-                if (this.rotation.y > 180.0f)
-                    this.rotation.y -= 180.0f;
-                float pitchChange = Input.getMouseDeltaPositionY() * rotateSensitivity;
-                this.rotation.x -= pitchChange;
-                if (this.rotation.x > 180.0f)
-                    this.rotation.x -= 180.0f;
+            if (EngineGuiLayer.isSceneWindowSelected() && EngineGuiLayer.getWantCaptureMouse()) {
+                if (Input.buttonDown(KeyCode.Mouse_Button_Right)) {
+                    float angleChange = Input.getMouseDeltaPositionX() * rotateSensitivity;
+                    this.rotation.y -= angleChange;
+                    if (this.rotation.y > 360.0f)
+                        this.rotation.y -= 360.0f;
+                    if (this.rotation.y < 0.0f)
+                        this.rotation.y += 360.0f;
+                    float pitchChange = Input.getMouseDeltaPositionY() * rotateSensitivity;
+                    this.rotation.x -= pitchChange;
+                    if (this.rotation.x > 360.0f)
+                        this.rotation.x -= 360.0f;
+                    if (this.rotation.x < 0.0f)
+                        this.rotation.x += 360.0f;
+                }
             }
 
             this.direction.set(0.0f);
-            if (Input.buttonDown(KeyCode.W))
-                this.direction.z += moveSpeed * Time.deltaTime();
-            else if (Input.buttonDown(KeyCode.S))
-                this.direction.z -= moveSpeed * Time.deltaTime();
+            if (EngineGuiLayer.isSceneWindowSelected()) {
+                if (Input.buttonDown(KeyCode.W))
+                    this.direction.z += moveSpeed * Time.deltaTime();
+                else if (Input.buttonDown(KeyCode.S))
+                    this.direction.z -= moveSpeed * Time.deltaTime();
 
-            if (Input.buttonDown(KeyCode.A))
-                this.direction.x -= moveSpeed * Time.deltaTime();
-            else if (Input.buttonDown(KeyCode.D))
-                this.direction.x += moveSpeed * Time.deltaTime();
+                if (Input.buttonDown(KeyCode.A))
+                    this.direction.x -= moveSpeed * Time.deltaTime();
+                else if (Input.buttonDown(KeyCode.D))
+                    this.direction.x += moveSpeed * Time.deltaTime();
 
-            if (Input.buttonDown(KeyCode.Space))
-                this.direction.y += moveSpeed * Time.deltaTime();
-            else if (Input.buttonDown(KeyCode.Left_Shift) || Input.buttonDown(KeyCode.Right_Shift))
-                this.direction.y -= moveSpeed * Time.deltaTime();
+                if (Input.buttonDown(KeyCode.Space))
+                    this.direction.y += moveSpeed * Time.deltaTime();
+                else if (Input.buttonDown(KeyCode.Left_Shift) || Input.buttonDown(KeyCode.Right_Shift))
+                    this.direction.y -= moveSpeed * Time.deltaTime();
 
 //            if (this.direction.z != 0.0f) { // TODO FIX CAMERA MOVEMENT
 //                this.position.z += (float) Math.cos(Math.toRadians(this.rotation.y)) * -1.0f * this.direction.z;
@@ -111,17 +117,20 @@ public class ed_EditorCamera extends ed_BaseCamera {
 //                this.position.z -= (float) Math.cos(Math.toRadians(this.rotation.y - 90.0f)) * this.direction.x;
 //            }
 
-            this.position.y += this.direction.y;
+                this.position.y += this.direction.y;
+            }
         }
 
-        if (Input.getMouseScrollY() != 0.0f) {
-            float addValue = (float) Math.pow(Math.abs(Input.getMouseScrollY()), 0.5f / this.zoom);
-            this.zoom = Maths.lerp(this.zoom, addValue * -scrollSensitivity, (Time.deltaTime() * Math.signum(Input.getMouseScrollY()))); // Smooth zoom
-            this.zoom = Math.max(this.zoom, 0.1f);
-        }
+        if (EngineGuiLayer.getWantCaptureMouse()) {
+            if (Input.getMouseScrollY() != 0.0f) {
+                float addValue = (float) Math.pow(Math.abs(Input.getMouseScrollY()), 0.5f / this.zoom);
+                this.zoom = Maths.lerp(this.zoom, addValue * -scrollSensitivity, (Time.deltaTime() * Math.signum(Input.getMouseScrollY()))); // Smooth zoom
+                this.zoom = Math.max(this.zoom, 0.1f);
+            }
 
-        if (Input.buttonDown(KeyCode.F))
-            this.reset = true;
+            if (Input.buttonDown(KeyCode.F))
+                this.reset = true;
+        }
 
         if (this.reset) {
             getPosition().lerp(new Vector3f(0.0f), this.lerpTime);

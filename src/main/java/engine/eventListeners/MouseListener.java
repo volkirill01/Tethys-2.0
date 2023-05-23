@@ -1,8 +1,8 @@
 package engine.eventListeners;
 
-import engine.editor.gui.EngineGuiLayer;
-import engine.editor.gui.ImGuiLayer_old;
-import engine.editor.windows.SceneView_Window;
+import engine.observers.EventSystem;
+import engine.observers.events.Event;
+import engine.observers.events.EventType;
 import engine.profiling.Profiler;
 import engine.renderer.camera.ed_EditorCamera;
 import engine.scenes.SceneManager;
@@ -12,6 +12,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+import java.util.AbstractMap;
 import java.util.Arrays;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
@@ -57,6 +58,10 @@ public class MouseListener {
         mousePosY = 0.0f;
         lastMousePosX = 0.0f;
         lastMousePosY = 0.0f;
+        mouse2DWorldPosX = 0.0f;
+        mouse2DWorldPosY = 0.0f;
+        lastMouse2DWorldPosX = 0.0f;
+        lastMouse2DWorldPosY = 0.0f;
         pressedButtonsCount = 0;
         isDragging = false;
         Arrays.fill(buttonsDown, false);
@@ -64,10 +69,10 @@ public class MouseListener {
     }
 
     protected static void mousePositionCallback(long window, double mouseXPos, double mouseYPos) {
-        if (!EngineGuiLayer.getWantCaptureMouse())
-            clear();
-        if (!EngineGuiLayer.isAnyWindowVisible(SceneView_Window.class))
-            return;
+//        if (!EngineGuiLayer.getWantCaptureMouse())
+//            clear();
+//        if (!EngineGuiLayer.isAnyWindowVisible(SceneView_Window.class))
+//            return;
 
         if (pressedButtonsCount > 0)
             isDragging = true;
@@ -82,6 +87,8 @@ public class MouseListener {
         MouseListener.mousePosY = mouseYPos;
 
         MouseListener.calculateOrthographicPos();
+
+        EventSystem.notify(new Event(EventType.Engine_MousePositionCallback, new AbstractMap.SimpleEntry<>(mouseXPos, mouseYPos)));
     }
 
     public static void mouseButtonCallback(long window, int button, int action, int mods) {
@@ -102,11 +109,15 @@ public class MouseListener {
             isDragging = pressedButtonsCount != 0 && isDragging;
         }
         Profiler.stopTimer(profileLog);
+
+        EventSystem.notify(new Event(EventType.Engine_MouseButtonCallback, new AbstractMap.SimpleEntry<>(button, action == GLFW_PRESS)));
     }
 
     public static void mouseScrollCallback(long window, double xOffset, double yOffset) {
         MouseListener.scrollX = xOffset;
         MouseListener.scrollY = yOffset;
+
+        EventSystem.notify(new Event(EventType.Engine_MouseScrollCallback, new AbstractMap.SimpleEntry<>(xOffset, yOffset)));
     }
 
     protected static Vector2f screenToWorld(Vector2f screenCoordinates) {
@@ -191,14 +202,12 @@ public class MouseListener {
     protected static boolean isButtonDown(int button) {
         if (button > MOUSE_BUTTONS_COUNT)
             throw new IndexOutOfBoundsException(String.format("'%d' - button out of range.", button));
-
         return buttonsDown[button];
     }
 
     protected static boolean isButtonClick(int button) {
         if (button > MOUSE_BUTTONS_COUNT)
             throw new IndexOutOfBoundsException(String.format("'%d' - button out of range.", button));
-
         return buttonsClick[button];
     }
 

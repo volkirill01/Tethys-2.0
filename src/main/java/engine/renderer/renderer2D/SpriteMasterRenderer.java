@@ -25,7 +25,7 @@ public class SpriteMasterRenderer {
     public static void add(GameObject go) { add(go.getComponent(SpriteRenderer.class)); }
 
     private static void add(SpriteRenderer renderer) {
-        Profiler.startTimer(String.format("Add in SpriteMasterRenderer. Obj Name - '%s'", renderer.gameObject.name));
+        Profiler.startTimer(String.format("Add in SpriteMasterRenderer. Obj Name - '%s'", renderer.gameObject.getName()));
         boolean added = false;
         for (RenderBatch2D batch : batches) {
             if (batch.hasRoom() && batch.getZIndex() == renderer.gameObject.transform.getZIndex()) {
@@ -45,18 +45,18 @@ public class SpriteMasterRenderer {
             newBatch.addSprite(renderer);
             Collections.sort(batches);
         }
-        Profiler.stopTimer(String.format("Add in SpriteMasterRenderer. Obj Name - '%s'", renderer.gameObject.name));
+        Profiler.stopTimer(String.format("Add in SpriteMasterRenderer. Obj Name - '%s'", renderer.gameObject.getName()));
 
         quadsCount++;
     }
 
     public static void destroyGameObject(GameObject obj) {
-        Profiler.startTimer(String.format("Destroy GameObject in SpriteMasterRenderer - '%s'", obj.name));
+        Profiler.startTimer(String.format("Destroy GameObject in SpriteMasterRenderer - '%s'", obj.getName()));
         for (RenderBatch2D batch : batches)
             if (batch.destroyIfExists(obj))
                 break;
         quadsCount--;
-        Profiler.stopTimer(String.format("Destroy GameObject in SpriteMasterRenderer - '%s'", obj.name));
+        Profiler.stopTimer(String.format("Destroy GameObject in SpriteMasterRenderer - '%s'", obj.getName()));
     }
 
     public static void render(Matrix4f projectionMatrix, Matrix4f viewMatrix) {

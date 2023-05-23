@@ -1,10 +1,12 @@
 package engine.stuff.inputActions;
 
+import engine.editor.gui.EngineGuiLayer;
 import engine.editor.windows.Outliner_Window;
 import engine.entity.GameObject;
 import engine.entity.component.Component;
 import engine.eventListeners.Input;
 import engine.eventListeners.KeyCode;
+import engine.gizmo.ed_GizmoSystem;
 import engine.renderer.debug.DebugDraw;
 import engine.scenes.SceneManager;
 import engine.stuff.Settings;
@@ -14,7 +16,6 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,6 +59,19 @@ public class ed_MouseControls extends Component {
             }
         }
 
+        if (!EngineGuiLayer.isSceneWindowHovered() && !EngineGuiLayer.getWantCaptureMouse()) {
+            this.boxSelectStart.set(new Vector2f());
+            this.boxSelectEnd.set(new Vector2f());
+            if (this.holdingObject != null) {
+                this.holdingObject.transform.position.x = (int) Math.floor((Input.getMouseWorldPositionX() + Settings.GRID_WIDTH / 2.0f) / Settings.GRID_WIDTH) * Settings.GRID_WIDTH;
+                this.holdingObject.transform.position.y = (int) Math.floor((Input.getMouseWorldPositionY() + Settings.GRID_HEIGHT / 2.0f) / Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT;
+            }
+            return;
+        }
+
+        if (ed_GizmoSystem.isGizmoActive())
+            return;
+
         if (this.holdingObject != null) {
             this.holdingObject.transform.position.x = (int) Math.floor((Input.getMouseWorldPositionX() + Settings.GRID_WIDTH / 2.0f) / Settings.GRID_WIDTH) * Settings.GRID_WIDTH;
             this.holdingObject.transform.position.y = (int) Math.floor((Input.getMouseWorldPositionY() + Settings.GRID_HEIGHT / 2.0f) / Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT;
@@ -93,8 +107,8 @@ public class ed_MouseControls extends Component {
             Vector2f boxSelectStartWorld = Input.screenToWorld(this.boxSelectStart);
             Vector2f boxSelectEndWorld = Input.screenToWorld(this.boxSelectEnd);
             Vector2f halfSize = new Vector2f(boxSelectEndWorld).sub(boxSelectStartWorld).div(2.0f);
-            DebugDraw.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.boxSelectionColor);
-            DebugDraw.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.boxSelectionColor);
+            DebugDraw.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.BOX_SELECTION_COLOR);
+            DebugDraw.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.BOX_SELECTION_COLOR);
         } else if (this.boxSelectSet) {
             this.boxSelectSet = false;
             int screenStartX = (int) this.boxSelectStart.x;

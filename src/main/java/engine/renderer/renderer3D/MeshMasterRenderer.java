@@ -4,17 +4,13 @@ import engine.assets.AssetPool;
 import engine.entity.GameObject;
 import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
-import engine.renderer.Texture;
 import engine.renderer.renderer3D.mesh.RawModel;
 import engine.renderer.shader.Shader;
-import engine.scenes.SceneManager;
 import engine.stuff.Maths;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.lwjgl.opengl.GL30.*;
 
 public class MeshMasterRenderer {
 
@@ -25,9 +21,9 @@ public class MeshMasterRenderer {
     private static void add(MeshRenderer renderer) { meshes.add(renderer); }
 
     public static void destroyGameObject(GameObject obj) {
-        Profiler.startTimer(String.format("Destroy GameObject in MeshMasterRenderer - '%s'", obj.name));
+        Profiler.startTimer(String.format("Destroy GameObject in MeshMasterRenderer - '%s'", obj.getName()));
         meshes.removeIf(renderer -> renderer == obj.getComponent(MeshRenderer.class));
-        Profiler.stopTimer(String.format("Destroy GameObject in MeshMasterRenderer - '%s'", obj.name));
+        Profiler.stopTimer(String.format("Destroy GameObject in MeshMasterRenderer - '%s'", obj.getName()));
     }
 
     public static void render(Matrix4f projectionMatrix, Matrix4f viewMatrix) {

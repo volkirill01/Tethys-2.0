@@ -16,7 +16,7 @@ public class DebugGrid {
     public static void addGrid() {
         Profiler.startTimer("Debug AddGrid");
         ed_EditorCamera camera = SceneManager.getCurrentScene().getEditorCamera();
-        if (camera.getZoom() > 5.0f || camera.getCameraType() == ed_BaseCamera.CameraType.Perspective)
+        if (camera.getZoom() > 5.0f || camera.getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
             return;
 
         Vector3f cameraPosition = camera.getPosition();

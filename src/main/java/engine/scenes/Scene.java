@@ -4,8 +4,10 @@ import TMP_MARIO_STUFF.Prefabs;
 import com.google.gson.Gson;
 import engine.assets.AssetPool;
 import engine.audio.Sound;
+import engine.editor.windows.Outliner_Window;
 import engine.entity.GameObject;
 import engine.entity.component.Component;
+import engine.gizmo.ed_GizmoSystem;
 import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
 import engine.renderer.renderer2D.SpriteRenderer;
@@ -40,8 +42,6 @@ public class Scene {
     private final String filepath;
     private boolean isRunning = false;
 
-    private final Physics2D physics2D = new Physics2D();
-
     private final List<GameObject> gameObjects = new ArrayList<>();
     private final List<GameObject> pendingGameObjects = new ArrayList<>(); // Object we want to add to scene, but not in middle of the frame(Decrease chance for bugs)
 
@@ -57,7 +57,7 @@ public class Scene {
         this.editorStuff.addComponent(new ed_KeyboardControls());
         this.editorStuff.addComponent(new ed_MouseControls());
         this.editorStuff.addComponent(new ed_EditorCamera(new Vector3f(0.0f), new Vector3f(0.0f)));
-//        this.editorStuff.addComponent(new ed_GizmoSystem()); // TODO FIX THIS(Gizmos drawn it to picking buffer)
+        this.editorStuff.addComponent(new ed_GizmoSystem());
 
         this.editorStuff.start();
 
@@ -109,16 +109,18 @@ public class Scene {
     public void editorUpdate() {
         Profiler.startTimer(String.format("Scene EditorUpdate - '%s'", this.filepath));
         this.editorStuff.update();
-        SceneManager.getCurrentScene().getEditorCamera().adjustMatrices();
+        SceneManager.getCurrentScene().getEditorCamera().adjustProjectionMatrix();
 
         for (int i = 0; i < this.gameObjects.size(); i++) {
             GameObject obj = this.gameObjects.get(i);
             obj.editorUpdate();
 
             if (obj.isDeath()) {
+                if (Outliner_Window.getActiveGameObjects().contains(this.gameObjects.get(i)))
+                    Outliner_Window.removeActiveGameObject(this.gameObjects.get(i));
                 this.gameObjects.remove(i);
                 EntityRenderer.destroyGameObject(obj);
-                this.physics2D.destroyGameObject(obj);
+                Physics2D.destroyGameObject(obj);
                 i--;
             }
         }
@@ -127,7 +129,7 @@ public class Scene {
             this.gameObjects.add(obj);
             obj.start();
             EntityRenderer.add(obj);
-            this.physics2D.add(obj);
+            Physics2D.add(obj);
         }
         this.pendingGameObjects.clear();
         Profiler.stopTimer(String.format("Scene EditorUpdate - '%s'", this.filepath));
@@ -138,16 +140,18 @@ public class Scene {
         this.editorStuff.update();
 
         // Update physics only in runtime
-        this.physics2D.update();
+        Physics2D.update();
 
         for (int i = 0; i < this.gameObjects.size(); i++) {
             GameObject obj = this.gameObjects.get(i);
             obj.update();
 
             if (obj.isDeath()) {
+                if (Outliner_Window.getActiveGameObjects().contains(this.gameObjects.get(i)))
+                    Outliner_Window.removeActiveGameObject(this.gameObjects.get(i));
                 this.gameObjects.remove(i);
                 EntityRenderer.destroyGameObject(obj);
-                this.physics2D.destroyGameObject(obj);
+                Physics2D.destroyGameObject(obj);
                 i--;
             }
         }
@@ -156,7 +160,7 @@ public class Scene {
             this.gameObjects.add(obj);
             obj.start();
             EntityRenderer.add(obj);
-            this.physics2D.add(obj);
+            Physics2D.add(obj);
         }
         this.pendingGameObjects.clear();
         Profiler.stopTimer(String.format("Scene RuntimeUpdate - '%s'", this.filepath));
@@ -167,7 +171,7 @@ public class Scene {
         for (GameObject obj : this.gameObjects) {
             obj.start();
             EntityRenderer.add(obj);
-            this.physics2D.add(obj);
+            Physics2D.add(obj);
         }
         this.isRunning = true;
         Profiler.stopTimer(String.format("Scene Start - '%s'", this.filepath));
@@ -193,7 +197,7 @@ public class Scene {
     }
 
     public GameObject getGameObject(String name) {
-        Optional<GameObject> result = this.gameObjects.stream().filter(gameObject -> gameObject.name.equals(name)).findFirst();
+        Optional<GameObject> result = this.gameObjects.stream().filter(gameObject -> gameObject.getName().equals(name)).findFirst();
         return result.orElse(null);
     }
 
@@ -308,6 +312,8 @@ public class Scene {
         ImGui.end();
     }
 
+    public void save() { saveAs(this.filepath); }
+
     public void saveAs(String filepath) {
         Gson gson = EditorGson.getGsonBuilder();
 
@@ -363,6 +369,4 @@ public class Scene {
 //            throw new NullPointerException("Scene is Empty - '" + "level.txt" + "'");
 //        }
     }
-
-    public Physics2D getPhysics2D() { return this.physics2D; }
 }

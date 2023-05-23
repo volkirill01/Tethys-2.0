@@ -40,6 +40,9 @@ public class SpriteRenderer extends Component {
     }
 
     @Override
+    public void destroy() { SpriteMasterRenderer.destroyGameObject(this.gameObject); }
+
+    @Override
     public void imgui() {
         if (EditorGUI.field_Color("Color", this.color))
             this.isDirty = true;

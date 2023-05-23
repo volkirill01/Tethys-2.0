@@ -225,9 +225,9 @@ public class EditorThemeSystem {
         borderColor.set(255.0f, 255.0f, 255.0f, 22.0f);
         borderShadowColor.set(0.0f, 0.0f, 0.0f, 0.0f);
 
-        frameBgColor.set(37.0f, 37.0f, 38.0f, 255.0f);
-        frameBgHoveredColor.set(41.0f, 41.0f, 43.0f, 255.0f);
-        frameBgActiveColor.set(44.0f, 44.0f, 46.0f, 255.0f);
+        frameBgColor.set(34.0f, 34.0f, 35.0f, 255.0f);
+        frameBgHoveredColor.set(36.0f, 36.0f, 37.0f, 255.0f);
+        frameBgActiveColor.set(38.0f, 38.0f, 39.0f, 255.0f);
 
         titleBgColor.set(0.0f, 0.0f, 0.0f, 255.0f);
         titleBgActiveColor.set(0.0f, 0.0f, 0.0f, 255.0f);

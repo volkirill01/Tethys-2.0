@@ -88,4 +88,13 @@ public class AssetPool {
     public static Mesh getMesh(String filepath) { return ModelParser.loadFromFile(filepath); }
 
     public static Sprite getDefaultSprite() { return defaultSprite; }
+
+    public static void freeMemory() {
+        for (Texture2D texture : textures2D.values())
+            texture.freeMemory();
+        for (Shader shader : shaders.values())
+            shader.freeMemory();
+        for (Sound sound : sounds.values())
+            sound.freeMemory();
+    }
 }

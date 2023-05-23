@@ -7,7 +7,6 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL30.*;
 
@@ -69,7 +68,7 @@ public class Fbo {
 	/**
 	 * Deletes the frame buffer and its attachments when the game closes.
 	 */
-	public void cleanUp() {
+	public void freeMemory() {
 		glDeleteFramebuffers(this.frameBuffer);
 		glDeleteTextures(this.depthTexture);
 		glDeleteRenderbuffers(this.depthBuffer);
