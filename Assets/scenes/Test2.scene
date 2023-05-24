@@ -57,64 +57,64 @@
   {
     "uid": 12,
     "tagComponent": {
-      "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png"
+      "name": "Empty"
     },
     "components": [
       {
         "type": "engine.entity.component.Transform",
         "properties": {
           "position": {
-            "x": 0.34863716,
+            "x": 0.0,
             "y": 0.0,
-            "z": -0.9981216
+            "z": 0.0
           },
           "scale": {
-            "x": 0.9999982,
+            "x": 1.0,
             "y": 1.0,
             "z": 1.0
           },
           "rotation": {
-            "x": 139.58504,
-            "y": 10.0926895,
-            "z": -72.99513
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
           },
           "zIndex": 0,
-          "uid": 7
+          "uid": 35
         }
       },
       {
         "type": "engine.renderer.renderer2D.SpriteRenderer",
         "properties": {
           "color": {
-            "r": 255.0,
-            "g": 255.0,
+            "r": 250.29518,
+            "g": 0.0,
             "b": 255.0,
             "a": 255.0
           },
           "sprite": {
-            "width": 16.0,
-            "height": 16.0,
+            "width": 1.0,
+            "height": 1.0,
             "texture": {
-              "filepath": "Assets/decorationsAndBlocks.png",
-              "width": 112,
-              "height": 192
+              "filepath": "tmp.png",
+              "width": 1,
+              "height": 1
             },
             "textureCoordinates": [
               {
-                "x": 0.2857143,
-                "y": 0.9166667
+                "x": 1.0,
+                "y": 1.0
               },
               {
-                "x": 0.2857143,
-                "y": 0.8333333
+                "x": 1.0,
+                "y": 0.0
               },
               {
-                "x": 0.14285715,
-                "y": 0.8333333
+                "x": 0.0,
+                "y": 0.0
               },
               {
-                "x": 0.14285715,
-                "y": 0.9166667
+                "x": 0.0,
+                "y": 1.0
               }
             ]
           },
@@ -122,41 +122,7 @@
             "x": 1.0,
             "y": 1.0
           },
-          "uid": 8
-        }
-      },
-      {
-        "type": "engine.physics.physics2D.components.RigidBody2D",
-        "properties": {
-          "velocity": {
-            "x": 0.0,
-            "y": 0.0
-          },
-          "angularDamping": 0.8,
-          "linearDamping": 0.9,
-          "mass": 1.0,
-          "bodyType": "Static",
-          "friction": 0.1,
-          "angularVelocity": 0.0,
-          "gravityScale": 1.0,
-          "isTrigger": false,
-          "fixedRotation": false,
-          "continuesCollision": false,
-          "uid": 9
-        }
-      },
-      {
-        "type": "engine.physics.physics2D.components.colliders.Box2DCollider",
-        "properties": {
-          "size": {
-            "x": 1.0,
-            "y": 1.0
-          },
-          "offset": {
-            "x": 0.0,
-            "y": 0.0
-          },
-          "uid": 10
+          "uid": 36
         }
       }
     ],

@@ -147,6 +147,8 @@ public class MouseListener {
         return windowSpace;
     }
 
+    protected static Vector2f getMousePos() { return new Vector2f((float) mousePosX, (float) mousePosY); }
+
     protected static float getMouseX() { return (float) mousePosX; }
 
     protected static float getMouseY() { return (float) mousePosY; }

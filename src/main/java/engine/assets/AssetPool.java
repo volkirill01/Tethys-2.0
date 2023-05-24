@@ -29,7 +29,7 @@ public class AssetPool {
         whiteTexture = new Texture2D(1, 1, new int[]{ 0xFFFFFFFF }, false);
 
         defaultSprite = new Sprite();
-        defaultSprite.setTexture(whiteTexture);
+        defaultSprite.setTexture(getTexture("tmp.png"));
         defaultSprite.setWidth(1);
         defaultSprite.setHeight(1);
     }

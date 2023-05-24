@@ -113,7 +113,7 @@ public class ed_KeyboardControls extends Component implements Observer {
                     }
             }
             case KeyCode.Arrow_Up -> {
-                if (!control && !shift)
+                if (!control)
                     if (this.debounce < 0.0f) {
                         this.debounce = startDebounce;
 
@@ -122,7 +122,7 @@ public class ed_KeyboardControls extends Component implements Observer {
                     }
             }
             case KeyCode.Arrow_Down -> {
-                if (!control && !shift)
+                if (!control)
                     if (this.debounce < 0.0f) {
                         this.debounce = startDebounce;
 
@@ -131,7 +131,7 @@ public class ed_KeyboardControls extends Component implements Observer {
                     }
             }
             case KeyCode.Arrow_Left -> {
-                if (!control && !shift)
+                if (!control)
                     if (this.debounce < 0.0f) {
                         this.debounce = startDebounce;
 
@@ -140,7 +140,7 @@ public class ed_KeyboardControls extends Component implements Observer {
                     }
             }
             case KeyCode.Arrow_Right -> {
-                if (!control && !shift)
+                if (!control)
                     if (this.debounce < 0.0f) {
                         this.debounce = startDebounce;
 

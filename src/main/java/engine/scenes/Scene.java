@@ -93,9 +93,11 @@ public class Scene {
         for (GameObject go : this.gameObjects) {
             if (go.hasComponent(SpriteRenderer.class)) {
                 SpriteRenderer renderer = go.getComponent(SpriteRenderer.class);
-                if (renderer.getSprite().getTexture() != null)
-                    // Load Textures from AssetPool and replacing saved textures because Gson loads Textures and creates separate Object, with broken data
-                    renderer.getSprite().setTexture(AssetPool.getTexture(renderer.getSprite().getTexture().getFilepath()));
+                if (renderer.getSprite() != AssetPool.getDefaultSprite() && !renderer.getSprite().getTexture().getFilepath().equals("_GENERATED_"))
+                    if (renderer.getSprite().getTexture() != null) {
+                        // Load Textures from AssetPool and replacing saved textures because Gson loads Textures and creates separate Object, with broken data
+                        renderer.getSprite().setTexture(AssetPool.getTexture(renderer.getSprite().getTexture().getFilepath()));
+                    }
             }
             if (go.hasComponent(MeshRenderer.class)) {
                 MeshRenderer renderer = go.getComponent(MeshRenderer.class);

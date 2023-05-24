@@ -40,6 +40,8 @@ public class Input {
         return false;
     }
 
+    public static Vector2f getMousePosition() { return MouseListener.getMousePos(); }
+
     public static float getMousePositionX() { return MouseListener.getMouseX(); }
 
     public static float getMousePositionY() { return MouseListener.getMouseY(); }

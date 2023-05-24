@@ -134,7 +134,7 @@ public class ed_MouseControls extends Component {
             for (float objID : gameObjectsIDs)
                 uniqueGameObjectsIDs.add((int) objID - 1);
 
-            System.out.println(uniqueGameObjectsIDs);
+//            System.out.println(uniqueGameObjectsIDs); // TODO FIX BOX SELECTION
             for (Integer objID : uniqueGameObjectsIDs) {
                 GameObject pickedObject = SceneManager.getCurrentScene().getGameObject(objID);
                 if (pickedObject != null && pickedObject.isClickable())

@@ -76,6 +76,7 @@ public class ed_BaseCamera extends Component {
         this.projectionMatrix.invert(this.inverseProjectionMatrix);
         Profiler.stopTimer("BaseCamera AdjustProjection");
     }
+
     public void adjustViewMatrix() {
         Profiler.startTimer("BaseCamera AdjustView");
         Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
