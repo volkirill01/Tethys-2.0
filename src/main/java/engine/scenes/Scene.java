@@ -8,6 +8,7 @@ import engine.editor.windows.Outliner_Window;
 import engine.entity.GameObject;
 import engine.entity.component.Component;
 import engine.gizmo.ed_GizmoSystem;
+import engine.logging.DebugLog;
 import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
 import engine.renderer.renderer2D.SpriteRenderer;
@@ -52,6 +53,8 @@ public class Scene {
     public Scene(String filepath) { this.filepath = filepath; }
 
     public void init() {
+        DebugLog.logInfo("Scene:Init: ", this.filepath);
+
         Profiler.startTimer(String.format("Init Scene - '%s'", this.filepath));
         loadResources();
         this.editorStuff.addComponent(new ed_KeyboardControls());
@@ -66,6 +69,7 @@ public class Scene {
     }
 
     private void loadResources() {
+        Profiler.startTimer(String.format("Scene LoadResources - '%s'", this.filepath));
         AssetPool.addSpriteSheet("Assets/decorationsAndBlocks.png",
                 new SpriteSheet(AssetPool.getTexture("Assets/decorationsAndBlocks.png"),
                         16, 16, 81, 0, 0, 0, 0));
@@ -106,6 +110,7 @@ public class Scene {
                     renderer.setMesh(AssetPool.getMesh(renderer.getMesh().getFilepath()));
             }
         }
+        Profiler.stopTimer(String.format("Scene LoadResources - '%s'", this.filepath));
     }
 
     public void editorUpdate() {
@@ -169,6 +174,8 @@ public class Scene {
     }
 
     public void start() {
+        DebugLog.log("Scene:Start: ", this.filepath);
+
         Profiler.startTimer(String.format("Scene Start - '%s'", this.filepath));
         for (GameObject obj : this.gameObjects) {
             obj.start();
@@ -180,6 +187,8 @@ public class Scene {
     }
 
     public GameObject createGameObject(String name) {
+        DebugLog.logInfo("Scene:CreateGameObject: ", this.filepath, ", object name: ", name);
+
         GameObject obj = new GameObject(name);
         obj.addComponent(new Transform());
         obj.transform = obj.getComponent(Transform.class);
@@ -228,8 +237,12 @@ public class Scene {
     }
 
     public void destroy() {
+        DebugLog.logInfo("Scene:Destroy: ", this.filepath);
+
+        Profiler.startTimer(String.format("Destroy Scene - '%s'", this.filepath));
         for (GameObject obj : this.gameObjects)
             obj.destroy();
+        Profiler.stopTimer(String.format("Destroy Scene - '%s'", this.filepath));
     }
 
     public String getFilepath() { return this.filepath; }
@@ -317,6 +330,9 @@ public class Scene {
     public void save() { saveAs(this.filepath); }
 
     public void saveAs(String filepath) {
+        DebugLog.logInfo("Scene:SaveAs: ", this.filepath, ", save path: ", filepath);
+
+        Profiler.startTimer(String.format("SaveAs Scene - '%s'", this.filepath));
         Gson gson = EditorGson.getGsonBuilder();
 
         try {
@@ -331,16 +347,20 @@ public class Scene {
         } catch (IOException e) {
             throw new RuntimeException(String.format("Error in saving Scene - '%s'", filepath), e);
         }
+        Profiler.stopTimer(String.format("SaveAs Scene - '%s'", this.filepath));
     }
 
     public void load(String filepath) {
+        DebugLog.logInfo("Scene:Load: ", this.filepath, ", load path: ", filepath);
+
+        Profiler.startTimer(String.format("Load Scene - '%s'", this.filepath));
         Gson gson = EditorGson.getGsonBuilder();
 
         String inFile = "";
         try {
             inFile = new String(Files.readAllBytes(Paths.get(filepath)));
         } catch (IOException e) {
-            System.out.printf("%sNot found Scene file - '%s'%s\n", ColoredText.RED, filepath, ColoredText.RESET);
+            DebugLog.logError("Not found Scene file - ", filepath);
         }
 
         if (!inFile.equals("")) {
@@ -370,5 +390,6 @@ public class Scene {
 //            // TODO LOAD DEFAULT EMPTY SCENE
 //            throw new NullPointerException("Scene is Empty - '" + "level.txt" + "'");
 //        }
+        Profiler.stopTimer(String.format("Load Scene - '%s'", this.filepath));
     }
 }

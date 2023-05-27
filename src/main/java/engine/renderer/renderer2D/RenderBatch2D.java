@@ -5,16 +5,15 @@ import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
 import engine.renderer.Texture2D;
 import engine.renderer.buffers.VertexArray;
-import engine.renderer.buffers.bufferLayout.BufferElement;
+import engine.renderer.buffers.bufferLayout.VertexBufferElement;
 import engine.renderer.buffers.bufferLayout.BufferLayout;
-import engine.renderer.buffers.bufferLayout.ShaderDataType;
+import engine.stuff.openGL.ShaderDataType;
 import engine.renderer.shader.Shader;
 import engine.renderer.buffers.IndexBuffer;
 import engine.renderer.buffers.VertexBuffer;
 import engine.stuff.Maths;
 import engine.stuff.customVariables.Color;
 import org.joml.*;
-import org.joml.Math;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,23 +47,23 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
         this.hasRoom = true;
     }
 
-    public void start() {
-        Profiler.startTimer("Start Of RenderBatch2D");
+    public void init() {
+        Profiler.startTimer("RenderBatch2D Init");
         // Generate and bind a Vertex Array Object (VAO)
         this.vao = new VertexArray();
 
         // Create and upload vertices buffer (VBO)
         BufferLayout layout = new BufferLayout(Arrays.asList(
-                new BufferElement(ShaderDataType.Float3, "a_Position"),
-                new BufferElement(ShaderDataType.Float4, "a_Color"),
-                new BufferElement(ShaderDataType.Float2, "a_TextureCoordinates"),
-                new BufferElement(ShaderDataType.Float, "a_TextureID"),
-                new BufferElement(ShaderDataType.Float, "a_EntityID"),
-                new BufferElement(ShaderDataType.Float2, "a_Tiling")
+                new VertexBufferElement(ShaderDataType.Float3, "a_Position"),
+                new VertexBufferElement(ShaderDataType.Float4, "a_Color"),
+                new VertexBufferElement(ShaderDataType.Float2, "a_TextureCoordinates"),
+                new VertexBufferElement(ShaderDataType.Float, "a_TextureID"),
+                new VertexBufferElement(ShaderDataType.Int, "a_EntityID"),
+                new VertexBufferElement(ShaderDataType.Float2, "a_Tiling")
         ));
-        vertexSize = layout.getStride() / Float.BYTES;
+        this.vertexSize = layout.getStride() / Float.BYTES;
         // 4 vertices per quad
-        this.vertices = new float[this.maxBathSize * 4 * vertexSize];
+        this.vertices = new float[this.maxBathSize * 4 * this.vertexSize];
         VertexBuffer vbo = new VertexBuffer(this.vertices);
         vbo.setLayout(layout);
         this.vao.setVertexBuffer(vbo);
@@ -75,7 +74,7 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
         this.vao.setIndexBuffer(ebo);
 
         this.vao.unbind();
-        Profiler.stopTimer("Start Of RenderBatch2D");
+        Profiler.stopTimer("RenderBatch2D Init");
     }
 
     public void addSprite(SpriteRenderer renderer) {
@@ -86,8 +85,8 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
         this.numberOfSprites++;
 
         if (renderer.getSprite().getTexture() != null)
-            if (!textures.contains(renderer.getSprite().getTexture()))
-                textures.add(renderer.getSprite().getTexture());
+            if (!this.textures.contains(renderer.getSprite().getTexture()))
+                this.textures.add(renderer.getSprite().getTexture());
 
         // Add properties to local vertices array
         loadVertexProperties(index);
@@ -183,14 +182,6 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
         Matrix4f transformationMatrix = null;
         if (isRotated)
             transformationMatrix = Maths.createTransformationMatrix(sprite.gameObject.transform.position, sprite.gameObject.transform.rotation, sprite.gameObject.transform.scale);
-//        Matrix4f transformationMatrix = new Matrix4f().identity();
-//        if (isRotated) {
-//            transformationMatrix.translate(sprite.gameObject.transform.position);
-//            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.x), 1.0f, 0.0f, 0.0f);
-//            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.y), 0.0f, 1.0f, 0.0f);
-//            transformationMatrix.rotate(Math.toRadians(sprite.gameObject.transform.rotation.z), 0.0f, 0.0f, 1.0f);
-//            transformationMatrix.scale(sprite.gameObject.transform.scale);
-//        }
 
         // Add vertices with the appropriate properties
         float xAdd = 0.5f;
@@ -215,7 +206,7 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
                 currentPos = new Vector4f(xAdd, yAdd, zAdd, 1.0f).mul(transformationMatrix);
 
             // Load position
-            vertices[offset]        = currentPos.x;
+            vertices[offset + 0]        = currentPos.x;
             vertices[offset + 1]    = currentPos.y;
             vertices[offset + 2]    = currentPos.z;
 
@@ -258,12 +249,12 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
         int offset = 4 * index;
 
         // Triangle 1
-        elements[offsetArrayIndex]      = offset + 3;
+        elements[offsetArrayIndex + 0]  = offset + 3;
         elements[offsetArrayIndex + 1]  = offset + 2;
-        elements[offsetArrayIndex + 2]  = offset;
+        elements[offsetArrayIndex + 2]  = offset + 0;
 
         // Triangle 2
-        elements[offsetArrayIndex + 3]  = offset;
+        elements[offsetArrayIndex + 3]  = offset + 0;
         elements[offsetArrayIndex + 4]  = offset + 2;
         elements[offsetArrayIndex + 5]  = offset + 1;
     }

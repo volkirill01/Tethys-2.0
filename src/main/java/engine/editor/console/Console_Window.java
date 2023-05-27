@@ -1,6 +1,6 @@
 package engine.editor.console;
 
-import engine.editor.gui.EditorImGuiWindow;
+import engine.editor.gui.EditorGuiWindow;
 import engine.editor.gui.EngineGuiLayer;
 import engine.observers.EventSystem;
 import engine.observers.Observer;
@@ -13,7 +13,7 @@ import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 
-public class Console_Window extends EditorImGuiWindow implements Observer {
+public class Console_Window extends EditorGuiWindow implements Observer {
 
     public Console_Window() {
         super("\uEDE6 Console", ImGuiWindowFlags.MenuBar);

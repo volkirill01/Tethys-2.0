@@ -52,7 +52,7 @@ public class Camera extends ed_BaseCamera {
         EditorGUI.separator();
         this.zoom = EditorGUI.field_Float("Zoom", this.zoom);
 
-        ImGui.image(this.outputFbo.getColorTexture(), ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailX() / Window.getTargetAspectRatio(), 0, 1, 1, 0);
+        ImGui.image(this.outputFbo.getColorAttachmentID(), ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailX() / Window.getTargetAspectRatio(), 0, 1, 1, 0);
     }
 
     public boolean isMain() { return this.isMain; }

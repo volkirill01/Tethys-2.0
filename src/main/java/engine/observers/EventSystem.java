@@ -1,6 +1,8 @@
 package engine.observers;
 
+import engine.logging.DebugLog;
 import engine.observers.events.Event;
+import engine.observers.events.EventType;
 import engine.profiling.Profiler;
 
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ public class EventSystem {
 
     public static void notify(Event event) {
         Profiler.startTimer(String.format("EventSystem Notify - '%s', data: '%s'", event.type.name(), event.data));
+        if (event.type != EventType.Engine_MousePositionCallback)
+            DebugLog.log("EventSystem Notify(type: ", event.type, ", data: ", event.data, ").");
         for (int i = 0; i < observers.size(); i++)
             observers.get(i).onNotify(event);
         Profiler.stopTimer(String.format("EventSystem Notify - '%s', data: '%s'", event.type.name(), event.data));

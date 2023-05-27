@@ -3,6 +3,7 @@ package engine.renderer.debug;
 import engine.assets.AssetPool;
 import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
+import engine.renderer.camera.ed_BaseCamera;
 import engine.renderer.camera.ed_EditorCamera;
 import engine.renderer.shader.Shader;
 import engine.scenes.SceneManager;
@@ -17,21 +18,22 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL30.*;
 
-public class DebugDraw {
+public class DebugRenderer {
 
-    private static final int MAX_LINES = 5000;
+    private static final int MAX_LINES = 5_000;
 
     private static final List<DebugLine> lines = new ArrayList<>();
     // 6 floats per vertex, 2 vertices per line
     private static final float[] vertexArray =  new float[MAX_LINES * 6 * 2];
-    private static final Shader shader = AssetPool.getShader("editorFiles/shaders/debug/debugLineShader.glsl");
+    private static final Shader shader = AssetPool.getShader("editorFiles/shaders/debug/debugLineShader.glsl", true);
 
     private static int vaoID;
     private static int vboID;
 
     private static boolean started = false;
 
-    public static void start() {
+    public static void init() {
+        Profiler.startTimer("DebugRenderer Init");
         // Generate the vao
         vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
@@ -49,11 +51,12 @@ public class DebugDraw {
         glEnableVertexAttribArray(1);
 
         glLineWidth(3.0f);
+        Profiler.stopTimer("DebugRenderer Init");
     }
 
     public static void beginFrame() {
         if (!started) {
-            start();
+            init();
             started = true;
         }
 
@@ -66,7 +69,7 @@ public class DebugDraw {
         }
     }
 
-    public static void draw() {
+    public static void render(ed_BaseCamera camera) {
         if (lines.size() == 0)
             return;
 
@@ -94,7 +97,6 @@ public class DebugDraw {
 
         glBindBuffer(GL_ARRAY_BUFFER, vboID);
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertexArray);
-//        glBufferSubData(GL_ARRAY_BUFFER, 0, Arrays.copyOfRange(vertexArray, 0, lines.size() * 6 * 2));
 
         // =============================================================================================================
         // Rendering
@@ -103,21 +105,16 @@ public class DebugDraw {
         // Bind shader
         EntityRenderer.setShader(shader);
         shader.bind();
+        EntityRenderer.uploadSceneData(camera);
         shader.uploadInt("u_EntityID", -99);
-        shader.uploadMat4f("u_ProjectionMatrix", SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix());
-        shader.uploadMat4f("u_ViewMatrix", SceneManager.getCurrentScene().getEditorCamera().getViewMatrix());
 
         // Bind the vao
         glBindVertexArray(vaoID);
-//        glEnableVertexAttribArray(0);
-//        glEnableVertexAttribArray(1);
 
         // Draw the batch
         glDrawArrays(GL_LINES, 0, lines.size());
 
-        // Disable location
-//        glDisableVertexAttribArray(0);
-//        glDisableVertexAttribArray(1);
+        // Unbind the vao
         glBindVertexArray(0);
 
         // Unbind shader
@@ -144,7 +141,7 @@ public class DebugDraw {
         if (lines.size() >= MAX_LINES || !lineInView)
             return;
 
-        DebugDraw.lines.add(new DebugLine(from, to, color, lifetime));
+        lines.add(new DebugLine(from, to, color, lifetime));
     }
 
     // =================================================================================================================

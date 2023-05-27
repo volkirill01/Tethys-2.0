@@ -1,6 +1,7 @@
 package engine.physics.physics2D;
 
 import engine.entity.GameObject;
+import engine.logging.DebugLog;
 import engine.physics.physics2D.components.ed_Collider2D;
 import engine.physics.physics2D.components.RigidBody2D;
 import engine.physics.physics2D.components.colliders.Box2DCollider;
@@ -31,6 +32,8 @@ public class Physics2D {
     public static void add(GameObject obj) {
         if (!obj.hasComponent(RigidBody2D.class) || !obj.hasComponent(ed_Collider2D.class))
             return;
+
+        DebugLog.log("Physics2D:Add: ", obj.getName());
 
         Profiler.startTimer(String.format("Physics2D Add GameObject - '%s'", obj.getName()));
         RigidBody2D rb = obj.getComponent(RigidBody2D.class);
@@ -70,6 +73,8 @@ public class Physics2D {
     }
 
     public static void destroyGameObject(GameObject obj) {
+        DebugLog.log("Physics2D:Destroy: ", obj.getName());
+
         Profiler.startTimer(String.format("Physics2D Destroy GameObject - '%s'", obj.getName()));
         if (!obj.hasComponent(RigidBody2D.class)) return;
 
@@ -92,6 +97,8 @@ public class Physics2D {
     }
 
     public static void setIsTrigger(RigidBody2D rb, boolean isTrigger) {
+        DebugLog.log("Physics2D:SetIsTrigger: ", rb.gameObject.getName(), ", isTrigger: ", isTrigger);
+
         Body body = rb.getRawBody();
         if (body == null) return; // If object not contain box 2D collider return
 

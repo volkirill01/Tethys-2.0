@@ -1,13 +1,13 @@
 package engine.profiling;
 
 import engine.editor.gui.EditorGUI;
-import engine.editor.gui.EditorImGuiWindow;
+import engine.editor.gui.EditorGuiWindow;
 import engine.renderer.EntityRenderer;
 import engine.renderer.renderer2D.SpriteMasterRenderer;
 import engine.stuff.utils.Time;
 import imgui.ImGui;
 
-public class Profiler_Window extends EditorImGuiWindow {
+public class Profiler_Window extends EditorGuiWindow {
 
     public Profiler_Window() { super("\uEFF3 Profiler"); }
 

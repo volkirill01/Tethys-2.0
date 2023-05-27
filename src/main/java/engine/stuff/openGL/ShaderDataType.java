@@ -1,4 +1,4 @@
-package engine.renderer.buffers.bufferLayout;
+package engine.stuff.openGL;
 
 public enum ShaderDataType {
     None,

@@ -7,7 +7,7 @@ import engine.entity.component.Component;
 import engine.eventListeners.Input;
 import engine.eventListeners.KeyCode;
 import engine.gizmo.ed_GizmoSystem;
-import engine.renderer.debug.DebugDraw;
+import engine.renderer.debug.DebugRenderer;
 import engine.scenes.SceneManager;
 import engine.stuff.Settings;
 import engine.stuff.Window;
@@ -18,8 +18,6 @@ import org.joml.Vector3f;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.lwjgl.opengl.GL30.GL_COLOR_ATTACHMENT1;
 
 public class ed_MouseControls extends Component {
 
@@ -89,7 +87,7 @@ public class ed_MouseControls extends Component {
         } else if (!Input.isMouseDragging() && Input.buttonClick(KeyCode.Mouse_Button_Left) && this.debounceTime < 0.0f) {
             int x = (int) Input.getMouseScreenPositionX();
             int y = (int) Input.getMouseScreenPositionY();
-            int gameObjectID = (int) Window.getScreenFramebuffer().readPixel(x, y, GL_COLOR_ATTACHMENT1) - 1;
+            int gameObjectID = (int) Window.getScreenFramebuffer().readPixel(1, x, y) - 1;
             GameObject pickedObject = SceneManager.getCurrentScene().getGameObject(gameObjectID);
             if (pickedObject != null && pickedObject.isClickable())
                 Outliner_Window.setActiveGameObject(pickedObject);
@@ -107,8 +105,8 @@ public class ed_MouseControls extends Component {
             Vector2f boxSelectStartWorld = Input.screenToWorld(this.boxSelectStart);
             Vector2f boxSelectEndWorld = Input.screenToWorld(this.boxSelectEnd);
             Vector2f halfSize = new Vector2f(boxSelectEndWorld).sub(boxSelectStartWorld).div(2.0f);
-            DebugDraw.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.BOX_SELECTION_COLOR);
-            DebugDraw.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.BOX_SELECTION_COLOR);
+            DebugRenderer.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.BOX_SELECTION_COLOR);
+            DebugRenderer.addBox2D(new Vector3f(boxSelectStartWorld.x, boxSelectStartWorld.y, 0.0f).add(halfSize.x, halfSize.y, 0.0f), new Vector2f(halfSize).mul(2.0f), Settings.BOX_SELECTION_COLOR);
         } else if (this.boxSelectSet) {
             this.boxSelectSet = false;
             int screenStartX = (int) this.boxSelectStart.x;
@@ -129,10 +127,10 @@ public class ed_MouseControls extends Component {
                 screenEndY = tmp;
             }
 
-            float[] gameObjectsIDs = Window.getScreenFramebuffer().readPixels(new Vector2i(screenStartX, screenStartY), new Vector2i(screenEndX, screenEndY), GL_COLOR_ATTACHMENT1);
+            int[] gameObjectsIDs = Window.getScreenFramebuffer().readPixels(1, new Vector2i(screenStartX, screenStartY), new Vector2i(screenEndX, screenEndY));
             Set<Integer> uniqueGameObjectsIDs = new HashSet<>();
-            for (float objID : gameObjectsIDs)
-                uniqueGameObjectsIDs.add((int) objID - 1);
+            for (int objID : gameObjectsIDs)
+                uniqueGameObjectsIDs.add(objID - 1);
 
 //            System.out.println(uniqueGameObjectsIDs); // TODO FIX BOX SELECTION
             for (Integer objID : uniqueGameObjectsIDs) {
@@ -150,11 +148,11 @@ public class ed_MouseControls extends Component {
         Vector2f endScreenF = Input.worldToScreen(end);
         Vector2i startScreen = new Vector2i((int) startScreenF.x + 2, (int) startScreenF.y + 2); // Adding 2 pixels to go inside square and not check surrounding squares
         Vector2i endScreen = new Vector2i((int) endScreenF.x - 2, (int) endScreenF.y - 2); // Subtracting 2 pixels to go inside square and not check surrounding squares
-        float[] gameObjectsIDs = Window.getScreenFramebuffer().readPixels(startScreen, endScreen, GL_COLOR_ATTACHMENT1);
+        int[] gameObjectsIDs = Window.getScreenFramebuffer().readPixels(1, startScreen, endScreen);
 
-        for (float objID : gameObjectsIDs) {
+        for (int objID : gameObjectsIDs) {
             if (objID >= 0) { // Check if ID of gameObject is valid( >= 0 )
-                GameObject pickedObj = SceneManager.getCurrentScene().getGameObject((int) objID - 1);
+                GameObject pickedObj = SceneManager.getCurrentScene().getGameObject(objID - 1);
                 if (pickedObj != null && pickedObj.isClickable())
                     return true;
             }

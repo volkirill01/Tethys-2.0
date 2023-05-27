@@ -1,17 +1,20 @@
 package engine.renderer.camera;
 
-import engine.TestFieldsWindow;
 import engine.editor.gui.EngineGuiLayer;
 import engine.editor.windows.Outliner_Window;
 import engine.eventListeners.Input;
 import engine.eventListeners.KeyCode;
-import engine.renderer.stuff.Fbo;
+import engine.renderer.frameBuffer.FrameBufferAttachmentSpecification;
+import engine.renderer.frameBuffer.Framebuffer;
+import engine.renderer.frameBuffer.FrameBufferTextureFormat;
+import engine.renderer.frameBuffer.FrameBufferTextureSpecification;
 import engine.stuff.Maths;
 import engine.stuff.Window;
 import engine.stuff.utils.Time;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Arrays;
 
 public class ed_EditorCamera extends ed_BaseCamera {
 
@@ -36,7 +39,11 @@ public class ed_EditorCamera extends ed_BaseCamera {
 
     public ed_EditorCamera(Vector3f position, Vector3f rotation) {
         super(position, rotation);
-        this.outputFbo = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_RENDER_BUFFER, false, true);
+        this.outputFbo = new Framebuffer(Window.getScreenWidth(), Window.getScreenHeight(), new FrameBufferAttachmentSpecification(Arrays.asList(
+                new FrameBufferTextureSpecification(FrameBufferTextureFormat.RGBA8), // Scene render pass
+                new FrameBufferTextureSpecification(FrameBufferTextureFormat.RED_INTEGER), // Picking texture render pass(ID pass)
+                new FrameBufferTextureSpecification(FrameBufferTextureFormat.DEPTH24STENCIL8)
+        )));
     }
 
     @Override

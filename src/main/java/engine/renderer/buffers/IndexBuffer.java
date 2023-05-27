@@ -18,7 +18,7 @@ public class IndexBuffer {
 
     public void unbind() { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); } // Bind nothing
 
-    public void delete() { glDeleteBuffers(this.ID); }
+    public void freeMemory() { glDeleteBuffers(this.ID); }
 
     public int getID() { return this.ID; }
 

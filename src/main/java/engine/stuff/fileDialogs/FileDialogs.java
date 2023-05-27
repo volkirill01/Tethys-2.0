@@ -1,5 +1,7 @@
 package engine.stuff.fileDialogs;
 
+import engine.logging.DebugLog;
+
 import javax.swing.*;
 import java.io.File;
 
@@ -9,6 +11,8 @@ public class FileDialogs {
     private static JFileChooser chooser;
 
     public static String openFile(FileTypeFilter filter, String currentDirectory) {
+        DebugLog.log("FileDialogs:OpenFile: filter: ", filter, ", current directory: ", currentDirectory);
+
         chooser = new JFileChooser();
         chooser.setDialogTitle("Specify a file to open");
         chooser.setFileFilter(filter);
@@ -27,6 +31,8 @@ public class FileDialogs {
     }
 
     public static String saveFile(File file, FileTypeFilter filter, String currentDirectory) {
+        DebugLog.log("FileDialogs:SaveFile: file: ", file.getAbsoluteFile(), ", filter: ", filter, ", current directory: ", currentDirectory);
+
         chooser = new JFileChooser();
         chooser.setDialogTitle("Specify a file to save");
 

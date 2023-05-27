@@ -1,5 +1,7 @@
 package engine.profiling;
 
+import engine.logging.DebugLog;
+
 import java.io.*;
 
 public class SessionReplay {
@@ -11,7 +13,9 @@ public class SessionReplay {
 
     public static void beginSession(String name) { beginSession(name, "profileResults.json"); }
     public static void beginSession(String name, String filepath) {
-//        currentSession = GetTime(); // TODO GET TIME FROM SYSTEM CLOCK
+        DebugLog.log("SessionReplay:BeginSession: ", name, ", path: ", filepath);
+
+        currentSession = name; // TODO GET TIME FROM SYSTEM CLOCK
 
         if (outputStream != null)
             throw new IllegalStateException(String.format("New session(%s, %s) not begin. Session already begin.", name, filepath));
@@ -26,6 +30,7 @@ public class SessionReplay {
     }
 
     public static void endSession() {
+        DebugLog.log("SessionReplay:EndSession: ", currentSession);
         try {
             writeFooter();
             outputStream.close();

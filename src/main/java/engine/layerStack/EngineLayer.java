@@ -5,15 +5,14 @@ import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
 import engine.renderer.RenderCommand;
 import engine.renderer.camera.Camera;
-import engine.renderer.debug.DebugDraw;
+import engine.renderer.camera.ed_BaseCamera;
+import engine.renderer.debug.DebugRenderer;
 import engine.renderer.debug.DebugGrid;
-import engine.renderer.shader.Shader;
 import engine.scenes.SceneManager;
 import engine.stuff.Settings;
 import engine.stuff.Window;
 import engine.stuff.customVariables.Color;
 import engine.stuff.utils.Time;
-import org.joml.Matrix4f;
 
 public class EngineLayer extends Layer {
 
@@ -25,9 +24,9 @@ public class EngineLayer extends Layer {
         if (!Window.isMinimized()) { // && (ImGuiLayer.getWindow(SceneView_Window.class).isVisible() || ImGuiLayer.getWindow(GameView_Window.class).isVisible()) // TODO SEPARATE UPDATE AND RENDERING
             EntityRenderer.resetStats();
 
-            DebugDraw.beginFrame();
+            DebugRenderer.beginFrame();
 
-            SceneManager.getCurrentScene().getEditorCamera().getOutputFob().bind();
+            SceneManager.getCurrentScene().getEditorCamera().getOutputFob().bindToWrite();
 
             if (Time.deltaTime() >= 0.0f) {
                 DebugGrid.addGrid();
@@ -46,13 +45,10 @@ public class EngineLayer extends Layer {
 
                 if (!Window.isRuntimePause() || Window.isNextFrame()) {
                     Profiler.startTimer("Render Scene");
-                    renderPass(
-                            SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix(),
-                            SceneManager.getCurrentScene().getEditorCamera().getViewMatrix(),
-                            Settings.EDITOR_BACKGROUND_COLOR);
+                    renderPass(SceneManager.getCurrentScene().getEditorCamera(), Settings.EDITOR_BACKGROUND_COLOR);
                     Profiler.stopTimer("Render Scene");
 
-                    DebugDraw.draw();
+                    DebugRenderer.render(SceneManager.getCurrentScene().getEditorCamera());
                 }
             }
 
@@ -61,10 +57,10 @@ public class EngineLayer extends Layer {
             if (!Window.isRuntimePause() || Window.isNextFrame()) {
                 Profiler.startTimer("Render Game Cameras");
                 for (Camera c : SceneManager.getCurrentScene().getAllCameras()) {
-                    c.getOutputFob().bind();
+                    c.getOutputFob().bindToWrite();
                     Color backgroundColor = new Color(c.getBackgroundColor());
                     backgroundColor.a = 255.0f;
-                    renderPass(c.getProjectionMatrix(), c.getViewMatrix(), backgroundColor);
+                    renderPass(c, backgroundColor);
                     c.getOutputFob().unbind();
                 }
                 Profiler.stopTimer("Render Game Cameras");
@@ -72,17 +68,14 @@ public class EngineLayer extends Layer {
         }
     }
 
-    private void renderPass(Matrix4f projectionMatrix, Matrix4f viewMatrix, Color backgroundColor) {
+    private void renderPass(ed_BaseCamera camera, Color backgroundColor) {
         RenderCommand.setClearColor(backgroundColor);
-        RenderCommand.clear(RenderCommand.BufferBit.ColorAndDepthBuffer);
-        EntityRenderer.render(projectionMatrix, viewMatrix);
-    }
-
-    private void renderPass_SingleShader(Matrix4f projectionMatrix, Matrix4f viewMatrix, Color backgroundColor, Shader shader) {
-        RenderCommand.setClearColor(backgroundColor);
-        RenderCommand.clear(RenderCommand.BufferBit.ColorAndDepthBuffer);
-        EntityRenderer.setShader(shader);
-        EntityRenderer.render_SingleShader(projectionMatrix, viewMatrix, shader);
+        RenderCommand.clear(RenderCommand.BufferBit.COLOR_AND_DEPTH_BUFFER);
+        // Clear entity ID attachment to -1
+//        SceneManager.getCurrentScene().getEditorCamera().getOutputFob().clearColorAttachment(1, -1); // TODO FIX CLEARING THE COLOR BUFFER
+//        EntityRenderer.beginScene();
+        EntityRenderer.render(camera);
+//        EntityRenderer.endScene();
     }
 
     @Override

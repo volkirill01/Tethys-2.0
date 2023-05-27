@@ -2,7 +2,7 @@ package engine.physics.physics2D.components.colliders;
 
 import engine.editor.gui.EditorGUI;
 import engine.physics.physics2D.components.ed_Collider2D;
-import engine.renderer.debug.DebugDraw;
+import engine.renderer.debug.DebugRenderer;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -14,13 +14,13 @@ public class Box2DCollider extends ed_Collider2D {
     @Override
     public void editorUpdate() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugDraw.addBox2D(center, new Vector2f(this.size).mul(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
+        DebugRenderer.addBox2D(center, new Vector2f(this.size).mul(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
     }
 
     @Override
     public void update() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugDraw.addBox2D(center, new Vector2f(this.size).mul(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
+        DebugRenderer.addBox2D(center, new Vector2f(this.size).mul(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
     }
 
     @Override

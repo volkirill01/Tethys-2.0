@@ -59,8 +59,8 @@ public class MainMenuBar {
         //</editor-fold>
 
         boolean isPlayButtonEnabled = !Window.isRuntimePlaying();
-        boolean isPauseButtonEnabled = !Window.isRuntimePause();
-        boolean isNextFrameButtonEnabled = !Window.isRuntimePause();
+        boolean isPauseButtonEnabled = !Window.isRuntimePause() && Window.isRuntimePlaying();
+        boolean isNextFrameButtonEnabled = Window.isRuntimePause() && Window.isRuntimePlaying();
 
 //        ImGui.getWindowDrawList().addRectFilled(                                          // Debug line in center of menu bar
 //                ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() / 2.0f - 0.5f,
@@ -80,18 +80,18 @@ public class MainMenuBar {
         //<editor-fold desc="Pause Button">
         ImGui.setCursorPosX(ImGui.getCursorPosX() - ImGui.getStyle().getItemSpacingX() + ImGui.getStyle().getItemInnerSpacingX());
         ImVec4 pauseButtonColor = isPauseButtonEnabled ? ImGui.getStyle().getColor(ImGuiCol.Text) : ImGui.getStyle().getColor(ImGuiCol.TextDisabled);
-        if (drawSquareButton("\uEC72", true, pauseButtonColor))
+        if (drawSquareButton("\uEC72", Window.isRuntimePlaying(), pauseButtonColor))
             EventSystem.notify(new Event(Window.isRuntimePause() ? EventType.Engine_Play : EventType.Engine_Pause));
         //</editor-fold>
 
         //<editor-fold desc="NextFrame Button">
-        if (isNextFrameButtonEnabled)
+        if (!isNextFrameButtonEnabled)
             ImGui.beginDisabled();
         ImGui.setCursorPosX(ImGui.getCursorPosX() - ImGui.getStyle().getItemSpacingX() + ImGui.getStyle().getItemInnerSpacingX());
         ImVec4 nextFrameButtonColor = ImGui.getStyle().getColor(ImGuiCol.Text);
-        if (drawSquareButton("\uEC6E", !isNextFrameButtonEnabled, nextFrameButtonColor))
+        if (drawSquareButton("\uEC6E", isNextFrameButtonEnabled, nextFrameButtonColor))
             EventSystem.notify(new Event(EventType.Engine_NextFrame));
-        if (isNextFrameButtonEnabled)
+        if (!isNextFrameButtonEnabled)
             ImGui.endDisabled();
         //</editor-fold>
     }

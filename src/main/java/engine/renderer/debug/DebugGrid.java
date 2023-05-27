@@ -37,9 +37,9 @@ public class DebugGrid {
             float y = firstY + (Settings.GRID_HEIGHT * i);
 
             if (i < numberVerticalLines)
-                DebugDraw.addLine(new Vector3f(x, firstY - Settings.GRID_HEIGHT, 0.0f), new Vector3f(x, firstY + height, 0.0f), gridColor);
+                DebugRenderer.addLine(new Vector3f(x, firstY - Settings.GRID_HEIGHT, 0.0f), new Vector3f(x, firstY + height, 0.0f), gridColor);
             if (i < numberHorizontalLines)
-                DebugDraw.addLine(new Vector3f(firstX - Settings.GRID_WIDTH, y, 0.0f), new Vector3f(firstX + width, y, 0.0f), gridColor);
+                DebugRenderer.addLine(new Vector3f(firstX - Settings.GRID_WIDTH, y, 0.0f), new Vector3f(firstX + width, y, 0.0f), gridColor);
         }
         Profiler.stopTimer("Debug AddGrid");
     }

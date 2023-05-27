@@ -1,28 +1,21 @@
-package engine.renderer.buffers.bufferLayout;
+package engine.stuff.openGL;
 
-public class BufferElement {
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL20.GL_BOOL;
 
-    private final String name;
-    private final ShaderDataType type;
-    private int offset = 0;
-    private final int size;
-    private final boolean isNormalized;
+public class OpenGLConversions {
 
-    public BufferElement(ShaderDataType type, String name) {
-        this.name = name;
-        this.type = type;
-        this.size = shaderDataTypeSize(this.type);
-        this.isNormalized = false;
+    public static int shaderDataTypeToOpenGLBaseType(ShaderDataType type) {
+        return switch (type) {
+            case None                                       -> GL_NONE;
+            case Float, Float2, Float3, Float4, Mat3, Mat4  -> GL_FLOAT;
+            case Int, Int2, Int3, Int4                      -> GL_INT;
+            case Bool                                       -> GL_BOOL;
+            default -> throw new IllegalStateException(String.format("Unknown ShaderData type - '%s'", type.name()));
+        };
     }
 
-    public BufferElement(ShaderDataType type, String name, boolean isNormalized) {
-        this.name = name;
-        this.type = type;
-        this.size = shaderDataTypeSize(this.type);
-        this.isNormalized = isNormalized;
-    }
-
-    private int shaderDataTypeSize(ShaderDataType type) {
+    public static int shaderDataTypeSize(ShaderDataType type) {
         return switch (type) {
             case None       -> 0;
             case Float      -> Float.BYTES;
@@ -40,20 +33,8 @@ public class BufferElement {
         };
     }
 
-    public String getName() { return this.name; }
-
-    public ShaderDataType getType() { return this.type; }
-
-    public int getOffset() { return this.offset; }
-
-    public void setOffset(int offset) { this.offset = offset; }
-
-    public int getSize() { return this.size; }
-
-    public boolean isNormalized() { return this.isNormalized; }
-
-    public int getComponentCount() {
-        return switch (this.type) {
+    public static int getComponentCount(ShaderDataType type) {
+        return switch (type) {
             case None               -> 0;
             case Float, Int, Bool   -> 1;
             case Float2, Int2       -> 2;

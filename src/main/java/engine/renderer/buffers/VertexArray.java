@@ -1,7 +1,7 @@
 package engine.renderer.buffers;
 
-import engine.renderer.buffers.bufferLayout.BufferElement;
-import engine.renderer.buffers.bufferLayout.ShaderDataType;
+import engine.renderer.buffers.bufferLayout.VertexBufferElement;
+import engine.stuff.openGL.OpenGLConversions;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class VertexArray {
 
     public void unbind() { glBindVertexArray(0); } // Bind nothing
 
-    public void delete() { glDeleteVertexArrays(this.ID); }
+    public void freeMemory() { glDeleteVertexArrays(this.ID); }
 
     public int getID() { return this.ID; }
 
@@ -31,12 +31,23 @@ public class VertexArray {
         vertexBuffer.bind();
 
         // Enable the buffer attributes pointers
-        List<BufferElement> elements = vertexBuffer.getLayout().getElements();
+        List<VertexBufferElement> elements = vertexBuffer.getLayout().getElements();
         for (int i = 0; i < elements.size(); i++) {
-            glVertexAttribPointer(i, elements.get(i).getComponentCount(),
-                    shaderDataTypeToOpenGLBaseType(elements.get(i).getType()), elements.get(i).isNormalized(),
-                    vertexBuffer.getLayout().getStride(), elements.get(i).getOffset());
-            glEnableVertexAttribArray(i);
+            switch (elements.get(i).getType()) {
+                case Float, Float2, Float3, Float4, Mat3, Mat4 -> {
+                    glEnableVertexAttribArray(i);
+                    glVertexAttribPointer(i, OpenGLConversions.getComponentCount(elements.get(i).getType()),
+                            OpenGLConversions.shaderDataTypeToOpenGLBaseType(elements.get(i).getType()), elements.get(i).isNormalized(),
+                            vertexBuffer.getLayout().getStride(), elements.get(i).getOffset());
+                }
+                case Int, Int2, Int3, Int4, Bool -> {
+                    glEnableVertexAttribArray(i);
+                    glVertexAttribIPointer(i, OpenGLConversions.getComponentCount(elements.get(i).getType()),
+                            OpenGLConversions.shaderDataTypeToOpenGLBaseType(elements.get(i).getType()),
+                            vertexBuffer.getLayout().getStride(), elements.get(i).getOffset());
+                }
+                default -> throw new IllegalStateException(String.format("Unknown ShaderData type - '%s'", elements.get(i).getType().name()));
+            }
         }
         this.vertexBuffer = vertexBuffer;
     }
@@ -46,16 +57,6 @@ public class VertexArray {
         indexBuffer.bind();
 
         this.indexBuffer = indexBuffer;
-    }
-
-    private int shaderDataTypeToOpenGLBaseType(ShaderDataType type) {
-        return switch (type) {
-            case None                                       -> GL_NONE;
-            case Float, Float2, Float3, Float4, Mat3, Mat4  -> GL_FLOAT;
-            case Int, Int2, Int3, Int4                      -> GL_INT;
-            case Bool                                       -> GL_BOOL;
-            default -> throw new IllegalStateException(String.format("Unknown ShaderData type - '%s'", type.name()));
-        };
     }
 
     public VertexBuffer getVertexBuffer() { return this.vertexBuffer; }

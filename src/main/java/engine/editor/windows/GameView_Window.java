@@ -1,7 +1,7 @@
 package engine.editor.windows;
 
 import engine.assets.AssetPool;
-import engine.editor.gui.EditorImGuiWindow;
+import engine.editor.gui.EditorGuiWindow;
 import engine.editor.gui.EngineGuiLayer;
 import engine.eventListeners.MouseListener;
 import engine.observers.EventSystem;
@@ -14,7 +14,7 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiWindowFlags;
 
-public class GameView_Window extends EditorImGuiWindow implements Observer {
+public class GameView_Window extends EditorGuiWindow implements Observer {
 
     public GameView_Window() {
         super("\uEA32 Game", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
@@ -31,7 +31,7 @@ public class GameView_Window extends EditorImGuiWindow implements Observer {
         ImVec2 topLeft = new ImVec2();
         ImGui.getCursorScreenPos(topLeft);
 
-        int textureID = SceneManager.getCurrentScene().getMainCamera() != null ? SceneManager.getCurrentScene().getMainCamera().getOutputFob().getColorTexture() : AssetPool.getTexture("editorFiles/images/noMainCameraInScene.png").getTextureID();
+        int textureID = SceneManager.getCurrentScene().getMainCamera() != null ? SceneManager.getCurrentScene().getMainCamera().getOutputFob().getColorAttachmentID() : AssetPool.getTexture("editorFiles/images/noMainCameraInScene.png").getTextureID();
         ImVec2 start = new ImVec2();
         ImGui.getCursorPos(start);
         ImGui.image(textureID, viewportSize.x, viewportSize.y, 0, 1, 1, 0);

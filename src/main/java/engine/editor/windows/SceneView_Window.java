@@ -1,6 +1,7 @@
 package engine.editor.windows;
 
-import engine.editor.gui.EditorImGuiWindow;
+import engine.assets.Asset;
+import engine.editor.gui.EditorGuiWindow;
 import engine.editor.gui.EngineGuiLayer;
 import engine.entity.GameObject;
 import engine.eventListeners.Input;
@@ -23,9 +24,10 @@ import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
-public class SceneView_Window extends EditorImGuiWindow implements Observer {
+import java.util.AbstractMap;
+
+public class SceneView_Window extends EditorGuiWindow implements Observer {
 
     private static float leftX, rightX, topY, bottomY;
     private static final float[] transformArray = new float[4 * 4];
@@ -48,10 +50,21 @@ public class SceneView_Window extends EditorImGuiWindow implements Observer {
         rightX = topLeft.x + viewportSize.x;
         topY = topLeft.y + viewportSize.y;
 
-        int textureID = Window.getScreenFramebuffer().getColorTexture();
+        int textureID = Window.getScreenFramebuffer().getColorAttachmentID();
         ImVec2 start = new ImVec2();
         ImGui.getCursorPos(start);
         ImGui.image(textureID, viewportSize.x, viewportSize.y, 0, 1, 1, 0);
+        if (ImGui.beginDragDropTarget()) {
+            AbstractMap.SimpleEntry<Asset.AssetType, String> payload = ImGui.getDragDropPayload("Asset");
+            if (payload != null)
+                if (payload.getKey().equals(Asset.AssetType.Scene)) {
+                    AbstractMap.SimpleEntry<Asset.AssetType, String> asset = ImGui.acceptDragDropPayload("Asset");
+                    if (asset != null)
+                        SceneManager.changeScene(asset.getValue());
+//                        System.out.println("Load Scene " + asset.getValue());
+                }
+            ImGui.endDragDropTarget();
+        }
 
         // Gizmos
         GameObject activeObject = Outliner_Window.getActiveGameObject();
@@ -83,7 +96,7 @@ public class SceneView_Window extends EditorImGuiWindow implements Observer {
 
             // Snapping
             boolean snapping = Input.buttonDown(KeyCode.Left_Control) || Input.buttonDown(KeyCode.Right_Control);
-            float snapValue = 0.0f;
+            float snapValue;
             float[] snapValuesArray;
 
             switch (ed_GizmoSystem.getActiveTool()) {
@@ -115,10 +128,13 @@ public class SceneView_Window extends EditorImGuiWindow implements Observer {
                 float[] tmpScale = new float[3];
                 ImGuizmo.decomposeMatrixToComponents(transformArray, tmpTranslation, tmpRotation, tmpScale);
 
-                activeObject.transform.position.set(tmpTranslation);
-                Vector3f deltaRotation = new Vector3f(tmpRotation[0], tmpRotation[1], tmpRotation[2]).sub(activeObject.transform.rotation);
-                activeObject.transform.rotation.add(deltaRotation);
-                activeObject.transform.scale.set(tmpScale);
+                switch (ed_GizmoSystem.getActiveTool()) {
+                    case Translate -> activeObject.transform.position.set(tmpTranslation);
+                    case Rotate -> activeObject.transform.rotation.set(tmpRotation);
+//                Vector3f deltaRotation = new Vector3f(tmpRotation[0], tmpRotation[1], tmpRotation[2]).sub(activeObject.transform.rotation); // TODO FIX ROTATION
+//                activeObject.transform.rotation.add(deltaRotation);
+                    case Scale -> activeObject.transform.scale.set(tmpScale);
+                }
             }
         }
 

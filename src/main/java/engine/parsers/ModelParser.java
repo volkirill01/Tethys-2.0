@@ -3,13 +3,14 @@ package engine.parsers;
 import de.javagl.obj.*;
 import engine.editor.console.Console;
 import engine.editor.console.LogType;
+import engine.logging.DebugLog;
 import engine.profiling.Profiler;
 import engine.renderer.buffers.IndexBuffer;
 import engine.renderer.buffers.VertexArray;
 import engine.renderer.buffers.VertexBuffer;
-import engine.renderer.buffers.bufferLayout.BufferElement;
+import engine.renderer.buffers.bufferLayout.VertexBufferElement;
 import engine.renderer.buffers.bufferLayout.BufferLayout;
-import engine.renderer.buffers.bufferLayout.ShaderDataType;
+import engine.stuff.openGL.ShaderDataType;
 import engine.renderer.renderer3D.mesh.Mesh;
 import engine.renderer.renderer3D.mesh.RawModel;
 
@@ -25,6 +26,8 @@ import java.util.Map;
 public class ModelParser {
 
     public static Mesh loadFromFile(String filepath) {
+        DebugLog.logInfo("ModelParser:LoadFromFile: ", filepath);
+
         if (filepath.endsWith(".obj"))
             return loadOBJ(filepath);
         Console.log(String.format("Unknown model extension - '%s'", filepath), LogType.Error);
@@ -78,9 +81,9 @@ public class ModelParser {
         VertexArray vao = new VertexArray();
 
         BufferLayout layout = new BufferLayout(Arrays.asList(
-                new BufferElement(ShaderDataType.Float3, "a_Position"),
-                new BufferElement(ShaderDataType.Float2, "a_TextureCoordinates"),
-                new BufferElement(ShaderDataType.Float3, "a_Normals")
+                new VertexBufferElement(ShaderDataType.Float3, "a_Position"),
+                new VertexBufferElement(ShaderDataType.Float2, "a_TextureCoordinates"),
+                new VertexBufferElement(ShaderDataType.Float3, "a_Normals")
         ));
 
         float[] vertices = new float[8 * (positions.length / 3)];

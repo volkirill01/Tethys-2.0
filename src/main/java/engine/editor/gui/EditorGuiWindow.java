@@ -8,7 +8,7 @@ import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 
-public abstract class EditorImGuiWindow {
+public abstract class EditorGuiWindow {
 
     protected int id;
     protected final String windowTitle;
@@ -21,7 +21,7 @@ public abstract class EditorImGuiWindow {
     private boolean isHover = false;
     private boolean isClicked = false;
 
-    public EditorImGuiWindow(String windowTitle) {
+    public EditorGuiWindow(String windowTitle) {
         this.id = EngineGuiLayer.getNextWindowId() - 1;
         this.windowTitle = windowTitle;
         this.windowFlags = ImGuiWindowFlags.None;
@@ -29,7 +29,7 @@ public abstract class EditorImGuiWindow {
         this.actualWindowTitle = " " + this.windowTitle + " ##" + this.id;
     }
 
-    public EditorImGuiWindow(String windowTitle, int windowFlags) {
+    public EditorGuiWindow(String windowTitle, int windowFlags) {
         this.id = EngineGuiLayer.getNextWindowId() - 1;
         this.windowTitle = windowTitle;
         this.windowFlags = windowFlags;
@@ -120,7 +120,7 @@ public abstract class EditorImGuiWindow {
 
     public int getId() { return this.id; }
 
-    public void setOnFullscreen(EditorImGuiWindow window) { EngineGuiLayer.setWindowOnFullscreen(window); }
+    public void setOnFullscreen(EditorGuiWindow window) { EngineGuiLayer.setWindowOnFullscreen(window); }
 
     public void close() { this.isOpen.set(false); }
 

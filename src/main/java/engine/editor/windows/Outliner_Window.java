@@ -1,13 +1,13 @@
 package engine.editor.windows;
 
-import engine.editor.gui.EditorImGuiWindow;
+import engine.editor.gui.EditorGuiWindow;
 import engine.entity.GameObject;
 import imgui.ImGui;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Outliner_Window extends EditorImGuiWindow {
+public class Outliner_Window extends EditorGuiWindow {
 
     protected static final List<GameObject> activeGameObjects = new ArrayList<>();
     protected static GameObject activeGameObject = null;

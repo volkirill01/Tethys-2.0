@@ -1,5 +1,6 @@
 package engine.audio;
 
+import engine.logging.DebugLog;
 import engine.profiling.Profiler;
 
 import java.nio.IntBuffer;
@@ -27,6 +28,8 @@ public class Sound {
         IntBuffer channelsBuffer = stackMallocInt(1);
         stackPush();
         IntBuffer sampleRateBuffer = stackMallocInt(1);
+
+        DebugLog.log("Sound:LoadFromFile: ", filepath);
 
         Profiler.startTimer("Load Sound From File");
         ShortBuffer rawAudioBuffer = stb_vorbis_decode_filename(filepath, channelsBuffer, sampleRateBuffer);
@@ -75,6 +78,7 @@ public class Sound {
     }
 
     public void play() {
+        DebugLog.log("Sound:Play: ", this.filepath);
         int state = alGetSourcei(this.sourceID, AL_SOURCE_STATE); // TODO MAKE IT CHANGEABLE FROM COMPONENT
         if (state == AL_STOPPED) {
             this.isPlaying = false;
@@ -88,6 +92,7 @@ public class Sound {
     }
 
     public void stop() {
+        DebugLog.log("Sound:Stop: ", this.filepath);
         if (this.isPlaying) {
             alSourceStop(this.sourceID);
             this.isPlaying = false;

@@ -2,12 +2,17 @@ package engine.renderer.camera;
 
 import engine.entity.component.Component;
 import engine.profiling.Profiler;
-import engine.renderer.stuff.Fbo;
+import engine.renderer.frameBuffer.FrameBufferAttachmentSpecification;
+import engine.renderer.frameBuffer.Framebuffer;
+import engine.renderer.frameBuffer.FrameBufferTextureFormat;
+import engine.renderer.frameBuffer.FrameBufferTextureSpecification;
 import engine.stuff.Window;
 import engine.stuff.customVariables.Color;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import java.util.Arrays;
 
 public class ed_BaseCamera extends Component {
 
@@ -16,7 +21,7 @@ public class ed_BaseCamera extends Component {
         Perspective
     }
 
-    protected transient Fbo outputFbo;
+    protected transient Framebuffer outputFbo;
     protected transient final Matrix4f viewMatrix, projectionMatrix, inverseProjectionMatrix, inverseViewMatrix;
 
     protected transient final Vector3f position = new Vector3f();
@@ -25,7 +30,7 @@ public class ed_BaseCamera extends Component {
     protected float zoom = 1.0f;
 
     protected final Vector2f orthographicProjectionSize = new Vector2f(24.0f, 13.48f);
-    protected float orthographicNearPlane = 0.0f;
+    protected float orthographicNearPlane = -1.0f;
     protected float orthographicFarPlane = 100.0f;
 
     protected float perspectiveFov = 45.0f;
@@ -46,7 +51,10 @@ public class ed_BaseCamera extends Component {
         this.inverseViewMatrix = new Matrix4f();
         adjustProjectionMatrix();
 
-        this.outputFbo = new Fbo(Window.getScreenWidth(), Window.getScreenHeight(), Fbo.DEPTH_TEXTURE);
+        this.outputFbo = new Framebuffer(Window.getScreenWidth(), Window.getScreenHeight(), new FrameBufferAttachmentSpecification(Arrays.asList(
+                new FrameBufferTextureSpecification(FrameBufferTextureFormat.RGBA8),
+                new FrameBufferTextureSpecification(FrameBufferTextureFormat.DEPTH24STENCIL8)
+        )));
     }
 
     @Override
@@ -115,5 +123,5 @@ public class ed_BaseCamera extends Component {
 
     public Color getBackgroundColor() { return this.backgroundColor; }
 
-    public Fbo getOutputFob() { return this.outputFbo; }
+    public Framebuffer getOutputFob() { return this.outputFbo; }
 }

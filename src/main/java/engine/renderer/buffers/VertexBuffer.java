@@ -30,7 +30,7 @@ public class VertexBuffer {
 
     public void unbind() { glBindBuffer(GL_ARRAY_BUFFER, 0); } // Bind nothing
 
-    public void delete() { glDeleteBuffers(this.ID); }
+    public void freeMemory() { glDeleteBuffers(this.ID); }
 
     public int getID() { return this.ID; }
 

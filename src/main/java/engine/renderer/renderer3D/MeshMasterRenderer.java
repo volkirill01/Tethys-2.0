@@ -4,6 +4,7 @@ import engine.assets.AssetPool;
 import engine.entity.GameObject;
 import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
+import engine.renderer.camera.ed_BaseCamera;
 import engine.renderer.renderer3D.mesh.RawModel;
 import engine.renderer.shader.Shader;
 import engine.stuff.Maths;
@@ -15,6 +16,7 @@ import java.util.List;
 public class MeshMasterRenderer {
 
     private static final List<MeshRenderer> meshes = new ArrayList<>();
+    private static final Shader shader = AssetPool.getShader("editorFiles/shaders/3D/pbrTest.glsl", true);
 
     public static void add(GameObject go) { add(go.getComponent(MeshRenderer.class)); }
 
@@ -26,22 +28,16 @@ public class MeshMasterRenderer {
         Profiler.stopTimer(String.format("Destroy GameObject in MeshMasterRenderer - '%s'", obj.getName()));
     }
 
-    public static void render(Matrix4f projectionMatrix, Matrix4f viewMatrix) {
-        Shader shader = AssetPool.getShader("editorFiles/shaders/3D/pbrTest.glsl");
-        render_SingleShader(projectionMatrix, viewMatrix, shader);
-    }
-
-    public static void render_SingleShader(Matrix4f projectionMatrix, Matrix4f viewMatrix, Shader shader) {
+    public static void render(ed_BaseCamera camera) {
         Profiler.startTimer("Render in MeshMasterRenderer");
         EntityRenderer.setShader(shader);
         shader.bind();
+        EntityRenderer.uploadSceneData(camera);
 //        glClear(GL_DEPTH_BUFFER_BIT);
 //        glEnable(GL_DEPTH_TEST | GL_CULL_FACE);
 //        glCullFace(GL_BACK);
 
 //                shader.uploadTexture("u_Albedo", 0);
-        shader.uploadMat4f("u_ProjectionMatrix", projectionMatrix);
-        shader.uploadMat4f("u_ViewMatrix", viewMatrix);
 
         // Send data tu GPU only if data is changed
         for (MeshRenderer render : meshes) {

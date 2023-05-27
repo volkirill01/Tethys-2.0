@@ -8,6 +8,7 @@ import engine.editor.console.LogType;
 import engine.editor.gui.EditorGUI;
 import engine.entity.component.Component;
 import engine.entity.component.TagComponent;
+import engine.logging.DebugLog;
 import engine.profiling.Profiler;
 import engine.renderer.renderer2D.SpriteRenderer;
 import engine.entity.component.Transform;
@@ -55,6 +56,7 @@ public class GameObject {
     }
 
     public <T extends Component> void removeComponent(Class<T> componentClass) {
+        DebugLog.log("GameObject:RemoveComponent: ", getName(), ", component: ", componentClass.getName());
         for (int i = 0; i < this.components.size(); i++) {
             Component c = this.components.get(i);
 
@@ -64,10 +66,13 @@ public class GameObject {
                 return;
             }
         }
+        DebugLog.logError("GameObject:RemoveComponent: ", getName(), ", not has Component: ", componentClass.getName());
         Console.log(String.format("GameObject (%s) not has component - '%s'", getName(), componentClass.getName()), LogType.Error);
     }
 
     public void addComponent(Component c) {
+        DebugLog.log("GameObject:AddComponent: ", getName(), ", component: ", c.getClass().getName());
+
         c.generateID();
         this.components.add(c);
         c.gameObject = this;
@@ -197,6 +202,8 @@ public class GameObject {
     }
 
     public void destroy() {
+        DebugLog.log("GameObject:Destroy: ", getName());
+
         Profiler.startTimer(String.format("Destroy GameObject - '%s'", getName()));
         this.isDeath = true;
         for (Component component : this.components)
@@ -205,6 +212,8 @@ public class GameObject {
     }
 
     public GameObject copy() {
+        DebugLog.log("GameObject:Copy: ", getName());
+
         Profiler.startTimer(String.format("Copy GameObject - '%s'", getName()));
         Gson gson = EditorGson.getGsonBuilder();
 

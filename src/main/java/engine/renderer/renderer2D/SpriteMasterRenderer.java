@@ -5,6 +5,7 @@ import engine.entity.GameObject;
 import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
 import engine.renderer.Texture2D;
+import engine.renderer.camera.ed_BaseCamera;
 import engine.renderer.shader.Shader;
 import org.joml.Matrix4f;
 
@@ -22,10 +23,12 @@ public class SpriteMasterRenderer {
 
     private static int quadsCount = 0;
 
+    private static final Shader shader = AssetPool.getShader("editorFiles/shaders/2D/defaultSprite.glsl", true);
+
     public static void add(GameObject go) { add(go.getComponent(SpriteRenderer.class)); }
 
     private static void add(SpriteRenderer renderer) {
-        Profiler.startTimer(String.format("Add in SpriteMasterRenderer. Obj Name - '%s'", renderer.gameObject.getName()));
+        Profiler.startTimer(String.format("SpriteMasterRenderer Add GameObject. Obj Name - '%s'", renderer.gameObject.getName()));
         boolean added = false;
         for (RenderBatch2D batch : batches) {
             if (batch.hasRoom() && batch.getZIndex() == renderer.gameObject.transform.getZIndex()) {
@@ -40,39 +43,33 @@ public class SpriteMasterRenderer {
 
         if (!added) {
             RenderBatch2D newBatch = new RenderBatch2D(MAX_BATCH_SIZE, renderer.gameObject.transform.getZIndex());
-            newBatch.start();
+            newBatch.init();
             batches.add(newBatch);
             newBatch.addSprite(renderer);
             Collections.sort(batches);
         }
-        Profiler.stopTimer(String.format("Add in SpriteMasterRenderer. Obj Name - '%s'", renderer.gameObject.getName()));
+        Profiler.stopTimer(String.format("SpriteMasterRenderer Add GameObject. Obj Name - '%s'", renderer.gameObject.getName()));
 
         quadsCount++;
     }
 
     public static void destroyGameObject(GameObject obj) {
-        Profiler.startTimer(String.format("Destroy GameObject in SpriteMasterRenderer - '%s'", obj.getName()));
+        Profiler.startTimer(String.format("SpriteMasterRenderer Destroy GameObject - '%s'", obj.getName()));
         for (RenderBatch2D batch : batches)
             if (batch.destroyIfExists(obj))
                 break;
         quadsCount--;
-        Profiler.stopTimer(String.format("Destroy GameObject in SpriteMasterRenderer - '%s'", obj.getName()));
+        Profiler.stopTimer(String.format("SpriteMasterRenderer Destroy GameObject - '%s'", obj.getName()));
     }
 
-    public static void render(Matrix4f projectionMatrix, Matrix4f viewMatrix) {
-        Shader shader = AssetPool.getShader("editorFiles/shaders/2D/defaultSprite.glsl");
-        render_SingleShader(projectionMatrix, viewMatrix, shader);
-    }
-
-    public static void render_SingleShader(Matrix4f projectionMatrix, Matrix4f viewMatrix, Shader shader) {
-        Profiler.startTimer("Render in SpriteMasterRenderer");
+    public static void render(ed_BaseCamera camera) {
+        Profiler.startTimer("SpriteMasterRenderer Render");
         glEnable(GL_BLEND);
 
         EntityRenderer.setShader(shader);
         shader.bind();
+        EntityRenderer.uploadSceneData(camera);
         shader.uploadMat4f("u_TransformationMatrix", new Matrix4f().identity());
-        shader.uploadMat4f("u_ProjectionMatrix", projectionMatrix);
-        shader.uploadMat4f("u_ViewMatrix", viewMatrix);
 
         for (int i = 0; i < batches.size(); i++) {
             batches.get(i).render();
@@ -83,7 +80,7 @@ public class SpriteMasterRenderer {
         }
 
         shader.unbind();
-        Profiler.stopTimer("Render in SpriteMasterRenderer");
+        Profiler.stopTimer("SpriteMasterRenderer Render");
     }
 
     public static void clear() { batches.clear(); }

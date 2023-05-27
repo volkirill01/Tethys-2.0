@@ -1,5 +1,6 @@
 package engine.editor.gui;
 
+import engine.logging.DebugLog;
 import engine.profiling.Profiler;
 import imgui.*;
 
@@ -11,6 +12,8 @@ public class GuiFont {
     private static final float fontSize = 0.9f;
 
     public static void init(ImGuiIO io) {
+        DebugLog.log("GuiFont:Init");
+
         Profiler.startTimer("Init ImGui Fonts");
         final ImFontAtlas fontAtlas = io.getFonts();
         final ImFontConfig fontConfig = new ImFontConfig(); // Natively allocated object, should be explicitly destroyed

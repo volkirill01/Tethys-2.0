@@ -1,6 +1,7 @@
 package engine.scenes;
 
 import engine.editor.windows.Outliner_Window;
+import engine.logging.DebugLog;
 import engine.profiling.Profiler;
 
 public class SceneManager {
@@ -8,6 +9,8 @@ public class SceneManager {
     private static Scene currentScene;
 
     public static void changeScene(String filepath) {
+        DebugLog.logInfo("SceneManager:ChangeScene: ", filepath);
+
         Profiler.startTimer(String.format("SceneManager Change Scene - '%s'", filepath));
         if (currentScene != null)
             currentScene.destroy();

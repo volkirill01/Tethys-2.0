@@ -4,8 +4,13 @@ layout (location = 1) in vec2 a_TextureCoordinates;
 layout (location = 1) in vec3 a_Normals;
 
 uniform mat4 u_TransformationMatrix;
-uniform mat4 u_ProjectionMatrix;
-uniform mat4 u_ViewMatrix;
+//uniform mat4 u_ProjectionMatrix;
+//uniform mat4 u_ViewMatrix;
+
+uniform u_SceneData {
+    mat4 u_ProjectionMatrix;
+    mat4 u_ViewMatrix;
+};
 
 out vec2 v_TextureCoordinates;
 out vec3 v_Normals;

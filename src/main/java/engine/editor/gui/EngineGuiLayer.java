@@ -8,6 +8,7 @@ import engine.eventListeners.KeyCode;
 import engine.eventListeners.KeyListener;
 import engine.eventListeners.MouseListener;
 import engine.layerStack.Layer;
+import engine.logging.DebugLog;
 import engine.observers.events.Event;
 import engine.observers.events.EventType;
 import engine.profiling.Profiler;
@@ -47,11 +48,28 @@ public class EngineGuiLayer extends Layer {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
 
     private static int windowId = 0;
-    private static final Map<Integer, Map.Entry<ImBoolean, EditorImGuiWindow>> windows = new LinkedHashMap<>();
-    private static EditorImGuiWindow windowOnFullscreen = null;
+    private static final Map<Integer, Map.Entry<ImBoolean, EditorGuiWindow>> windows = new LinkedHashMap<>();
+    private static EditorGuiWindow windowOnFullscreen = null;
+
+    private void createEditorWindows() {
+        Profiler.startTimer("Create EditorImGui Windows");
+
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new GameView_Window()));
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new SceneView_Window()));
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Outliner_Window()));
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new SceneHierarchy_Window()));
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Console_Window()));
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Content_Window()));
+
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(false), new Profiler_Window()));
+
+        Profiler.stopTimer("Create EditorImGui Windows");
+    }
 
     @Override
     public void init() {
+        DebugLog.logInfo("EngineGuiLayer:Init");
+
         createEditorWindows();
 
         Profiler.startTimer("Init ImGui");
@@ -186,20 +204,6 @@ public class EngineGuiLayer extends Layer {
         Profiler.stopTimer("Init ImGui");
     }
 
-    private void createEditorWindows() {
-        Profiler.startTimer("Create EditorImGui Windows");
-
-        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new GameView_Window()));
-        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new SceneView_Window()));
-        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Outliner_Window()));
-        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new SceneHierarchy_Window()));
-        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Console_Window()));
-
-        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(false), new Profiler_Window()));
-
-        Profiler.stopTimer("Create EditorImGui Windows");
-    }
-
     private final ImInt testTextureID = new ImInt(0);
     @Override
     public void update() {
@@ -219,7 +223,7 @@ public class EngineGuiLayer extends Layer {
                 ImGui.inputInt("Test Texture ID", testTextureID);
                 testTextureID.set(Maths.clamp(testTextureID.get(), 0, Integer.MAX_VALUE));
                 ImGui.image(testTextureID.get(), ImGui.getContentRegionAvailX(), ImGui.getContentRegionAvailX(), 0, 1, 1, 0);
-                ImGui.text("Hover GameObject ID: " + ((int) Window.getScreenFramebuffer().readPixel((int) Input.getMouseScreenPositionX(), (int) Input.getMouseScreenPositionY(), GL_COLOR_ATTACHMENT1) - 1));
+                ImGui.text("Hover GameObject ID: " + ((int) Window.getScreenFramebuffer().readPixel(1, (int) Input.getMouseScreenPositionX(), (int) Input.getMouseScreenPositionY()) - 1));
                 ImGui.end();
 
                 ImGui.showDemoWindow();
@@ -328,8 +332,9 @@ public class EngineGuiLayer extends Layer {
         ImGui.end(); // End of Editor DockSpace
     }
 
-    public static void setWindowOnFullscreen(EditorImGuiWindow windowOnFullscreen) { // TODO FIX THIS
+    public static void setWindowOnFullscreen(EditorGuiWindow windowOnFullscreen) { // TODO FIX THIS
         if (windowOnFullscreen != null) {
+            DebugLog.log("EditorGuiLayer:SetWindowOnFullScreen: ", windowOnFullscreen.getClass().getName());
 //            Gson gson = new GsonBuilder()
 //                    .setPrettyPrinting()
 //                    .registerTypeAdapter(EditorImGuiWindow.class, new EditorImGuiWindowDeserializer())
@@ -345,12 +350,12 @@ public class EngineGuiLayer extends Layer {
             EngineGuiLayer.windowOnFullscreen = null;
     }
 
-    public static EditorImGuiWindow getWindowOnFullscreen() { return windowOnFullscreen; }
+    public static EditorGuiWindow getWindowOnFullscreen() { return windowOnFullscreen; }
 
-    public static EditorImGuiWindow getWindow(int windowId) { return windows.get(windowId).getValue(); }
+    public static EditorGuiWindow getWindow(int windowId) { return windows.get(windowId).getValue(); }
 
-    public static  <T extends EditorImGuiWindow> List<EditorImGuiWindow> getWindows_ByType(Class<T> windowType, boolean includeNonVisible) {
-        List<EditorImGuiWindow> result = new ArrayList<>();
+    public static  <T extends EditorGuiWindow> List<EditorGuiWindow> getWindows_ByType(Class<T> windowType, boolean includeNonVisible) {
+        List<EditorGuiWindow> result = new ArrayList<>();
 
         for (int windowId : windows.keySet())
             if (windows.get(windowId).getKey().get() && windows.get(windowId).getValue().getClass() == windowType)
@@ -363,7 +368,7 @@ public class EngineGuiLayer extends Layer {
         return result;
     }
 
-    public static <T extends EditorImGuiWindow> boolean isAnyWindowVisible_ByType(Class<T> windowType) {
+    public static <T extends EditorGuiWindow> boolean isAnyWindowVisible_ByType(Class<T> windowType) {
         for (int windowId : windows.keySet())
             if (windows.get(windowId).getKey().get() && windows.get(windowId).getValue().getClass() == windowType)
                 if (windows.get(windowId).getValue().isVisible())
@@ -371,7 +376,7 @@ public class EngineGuiLayer extends Layer {
         return false;
     }
 
-    public static <T extends EditorImGuiWindow> boolean isAnyWindowSelected_ByType(Class<T> windowType) {
+    public static <T extends EditorGuiWindow> boolean isAnyWindowSelected_ByType(Class<T> windowType) {
         for (int windowId : windows.keySet())
             if (windows.get(windowId).getKey().get() && windows.get(windowId).getValue().getClass() == windowType)
                 if (windows.get(windowId).getValue().isSelected())
@@ -379,9 +384,10 @@ public class EngineGuiLayer extends Layer {
         return false;
     }
 
-    public static void selectWindow(EditorImGuiWindow window) { ImGui.setWindowFocus(window.actualWindowTitle); }
+    public static void selectWindow(EditorGuiWindow window) { ImGui.setWindowFocus(window.actualWindowTitle); }
 
-    public static  <T extends EditorImGuiWindow> void setWindowOpen(Class<T> window, boolean state) {
+    public static  <T extends EditorGuiWindow> void setWindowOpen(Class<T> window, boolean state) {
+        DebugLog.log("EditorGuiLayer:SetWindowOpen: ", window.getName(), ", state: ", state);
         for (int windowId : windows.keySet())
             if (windows.get(windowId).getValue().getClass() == window) {
                 windows.get(windowId).getKey().set(state);
@@ -393,14 +399,14 @@ public class EngineGuiLayer extends Layer {
 
     public static boolean isSceneWindowSelected() { return isAnyWindowVisible_ByType(SceneView_Window.class) && isAnyWindowSelected_ByType(SceneView_Window.class); }
     public static boolean getWantCaptureMouse() {
-        for (EditorImGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
+        for (EditorGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
             if (((SceneView_Window) window).getWantCaptureMouse())
                 return true;
 
         return false;
     }
     public static boolean isSceneWindowHovered() {
-        for (EditorImGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
+        for (EditorGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
             if (window.isHover())
                 return true;
         return false;
@@ -412,7 +418,7 @@ public class EngineGuiLayer extends Layer {
             return true;
 
         if (event.type == EventType.Engine_MouseButtonCallback || event.type == EventType.Engine_MousePositionCallback || event.type == EventType.Engine_MouseScrollCallback) //  || event.type == EventType.Engine_KeyboardButtonCallback
-            for (EditorImGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
+            for (EditorGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
                 if (((SceneView_Window) window).getWantCaptureMouse())
                     return false; // Pass through event to next layer
 

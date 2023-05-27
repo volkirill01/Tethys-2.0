@@ -1,6 +1,6 @@
 package engine.editor.windows;
 
-import engine.editor.gui.EditorImGuiWindow;
+import engine.editor.gui.EditorGuiWindow;
 import engine.entity.GameObject;
 import engine.entity.GameObject_Manager;
 import engine.scenes.SceneManager;
@@ -10,7 +10,7 @@ import imgui.flag.*;
 
 import java.util.List;
 
-public class SceneHierarchy_Window extends EditorImGuiWindow {
+public class SceneHierarchy_Window extends EditorGuiWindow {
 
     public SceneHierarchy_Window() { super("\uEF74 Hierarchy");}
 

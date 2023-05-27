@@ -2,7 +2,7 @@ package engine.physics.physics2D.components.colliders;
 
 import engine.editor.gui.EditorGUI;
 import engine.physics.physics2D.components.ed_Collider2D;
-import engine.renderer.debug.DebugDraw;
+import engine.renderer.debug.DebugRenderer;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -14,13 +14,13 @@ public class Circle2DCollider extends ed_Collider2D {
     @Override
     public void editorUpdate() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugDraw.addCircle2D(center, this.radius,  this.gameObject.transform.rotation);
+        DebugRenderer.addCircle2D(center, this.radius,  this.gameObject.transform.rotation);
     }
 
     @Override
     public void update() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugDraw.addCircle2D(center, this.radius, this.gameObject.transform.rotation);
+        DebugRenderer.addCircle2D(center, this.radius, this.gameObject.transform.rotation);
     }
 
     @Override
