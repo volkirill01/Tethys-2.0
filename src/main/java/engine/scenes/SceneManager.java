@@ -3,15 +3,19 @@ package engine.scenes;
 import engine.editor.windows.Outliner_Window;
 import engine.logging.DebugLog;
 import engine.profiling.Profiler;
+import engine.stuff.Window;
 
 public class SceneManager {
 
     private static Scene currentScene;
 
     public static void changeScene(String filepath) {
+        if (Window.isRuntimePlaying())
+            return; // TODO DISPLAY SAVE SCENE BEFORE EXIT WINDOW
+
         DebugLog.logInfo("SceneManager:ChangeScene: ", filepath);
 
-        Profiler.startTimer(String.format("SceneManager Change Scene - '%s'", filepath));
+        Profiler.startTimer(String.format("SceneManager Change Scene - '%s'", filepath.replace("\\", "/")));
         if (currentScene != null)
             currentScene.destroy();
 
@@ -20,7 +24,7 @@ public class SceneManager {
         currentScene.load(filepath);
         currentScene.init();
         currentScene.start();
-        Profiler.stopTimer(String.format("SceneManager Change Scene - '%s'", filepath));
+        Profiler.stopTimer(String.format("SceneManager Change Scene - '%s'", filepath.replace("\\", "/")));
     }
 
     public static Scene getCurrentScene() { return currentScene; }

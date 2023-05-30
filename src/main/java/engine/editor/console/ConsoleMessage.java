@@ -4,18 +4,27 @@ import engine.stuff.customVariables.Color;
 
 public class ConsoleMessage {
 
+    public enum LogType {
+        Simple,
+        Info,
+        Warning,
+        Error,
+        Success,
+        Custom
+    }
+
     public final LogType type;
     public final String message;
     public final Color color;
 
-    public ConsoleMessage(String message, LogType type) {
+    public ConsoleMessage(LogType type, String message) {
         this.type = type;
         this.message = message;
         this.color = null;
     }
 
-    public ConsoleMessage(String message, LogType type, Color customColor) {
-        this.type = type;
+    public ConsoleMessage(Color customColor, String message) {
+        this.type = LogType.Custom;
         this.message = message;
         this.color = customColor;
     }

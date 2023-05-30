@@ -243,7 +243,7 @@ public class Framebuffer {
 		return pixels[0];
 	}
 
-	public int[] readPixels(int attachmentIndex, Vector2i start, Vector2i end) { // TODO FIX DRAG SELECT OBJECTS
+	public int[] readPixels(int attachmentIndex, Vector2i start, Vector2i end) {
 		Profiler.startTimer(String.format("Framebuffer Read pixels from color Attachment - '%d'", attachmentIndex));
 		glBindFramebuffer(GL_FRAMEBUFFER, this.fboID);
 		bindColorAttachmentToRead(attachmentIndex);

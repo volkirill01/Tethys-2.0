@@ -16,7 +16,7 @@ public class EventSystem {
 
     public static void notify(Event event) {
         Profiler.startTimer(String.format("EventSystem Notify - '%s', data: '%s'", event.type.name(), event.data));
-        if (event.type != EventType.Engine_MousePositionCallback)
+        if (event.type != EventType.Engine_MousePositionCallback && event.type != EventType.Engine_MouseScrollCallback)
             DebugLog.log("EventSystem Notify(type: ", event.type, ", data: ", event.data, ").");
         for (int i = 0; i < observers.size(); i++)
             observers.get(i).onNotify(event);

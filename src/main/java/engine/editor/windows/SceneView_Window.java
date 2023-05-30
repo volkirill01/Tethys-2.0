@@ -1,6 +1,7 @@
 package engine.editor.windows;
 
 import engine.assets.Asset;
+import engine.editor.gui.EditorGUI;
 import engine.editor.gui.EditorGuiWindow;
 import engine.editor.gui.EngineGuiLayer;
 import engine.entity.GameObject;
@@ -23,9 +24,9 @@ import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiWindowFlags;
+import org.joml.Math;
 import org.joml.Matrix4f;
-
-import java.util.AbstractMap;
+import org.joml.Vector3f;
 
 public class SceneView_Window extends EditorGuiWindow implements Observer {
 
@@ -54,38 +55,31 @@ public class SceneView_Window extends EditorGuiWindow implements Observer {
         ImVec2 start = new ImVec2();
         ImGui.getCursorPos(start);
         ImGui.image(textureID, viewportSize.x, viewportSize.y, 0, 1, 1, 0);
-        if (ImGui.beginDragDropTarget()) {
-            AbstractMap.SimpleEntry<Asset.AssetType, String> payload = ImGui.getDragDropPayload("Asset");
-            if (payload != null)
-                if (payload.getKey().equals(Asset.AssetType.Scene)) {
-                    AbstractMap.SimpleEntry<Asset.AssetType, String> asset = ImGui.acceptDragDropPayload("Asset");
-                    if (asset != null)
-                        SceneManager.changeScene(asset.getValue());
-//                        System.out.println("Load Scene " + asset.getValue());
-                }
-            ImGui.endDragDropTarget();
-        }
+
+        String assetPath = EditorGUI.getDragDrop_Asset("Asset", Asset.AssetType.Scene);
+        if (assetPath != null)
+            SceneManager.changeScene(assetPath);
+
+        // TODO MOVE THIS CODE TO GIZMO SYSTEM CLASS
+        ImGuizmo.setOrthographic(SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Orthographic);
+        ImGuizmo.setDrawList();
+
+        // Set Gizmo draw area
+        ImGui.setCursorPos(viewportPos.x, viewportPos.y);
+        ImGuizmo.setRect(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY(), viewportSize.x, viewportSize.y);
+
+        // Camera
+        Matrix4f cameraProjection = SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix();
+        float[] projectionArray = new float[4 * 4];
+        cameraProjection.get(projectionArray);
+
+        Matrix4f cameraView = SceneManager.getCurrentScene().getEditorCamera().getViewMatrix();
+        float[] viewArray = new float[4 * 4];
+        cameraView.get(viewArray);
 
         // Gizmos
         GameObject activeObject = Outliner_Window.getActiveGameObject();
         if (activeObject != null) {
-            ImGuizmo.setOrthographic(SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Orthographic);
-            ImGuizmo.setDrawList();
-
-            // Set Gizmo draw area
-            ImGui.setCursorPos(viewportPos.x, viewportPos.y);
-            ImGuizmo.setRect(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY(), viewportSize.x, viewportSize.y);
-
-            // TODO MOVE THIS CODE TO GIZMO SYSTEM CLASS
-            // Camera
-            Matrix4f cameraProjection = SceneManager.getCurrentScene().getEditorCamera().getProjectionMatrix();
-            float[] projectionArray = new float[4 * 4];
-            cameraProjection.get(projectionArray);
-
-            Matrix4f cameraView = SceneManager.getCurrentScene().getEditorCamera().getViewMatrix();
-            float[] viewArray = new float[4 * 4];
-            cameraView.get(viewArray);
-
             // Active object Transform
             Matrix4f transform = Maths.createTransformationMatrix(activeObject.transform.position, activeObject.transform.rotation, activeObject.transform.scale);
             transform.get(transformArray);
@@ -127,16 +121,28 @@ public class SceneView_Window extends EditorGuiWindow implements Observer {
                 float[] tmpRotation = new float[3];
                 float[] tmpScale = new float[3];
                 ImGuizmo.decomposeMatrixToComponents(transformArray, tmpTranslation, tmpRotation, tmpScale);
+//                Matrix4f tmpMatrix = new Matrix4f();
+//                tmpMatrix.set(transformArray);
+//                Maths.decomposeTransformationMatrix(tmpMatrix, activeObject.transform.position, activeObject.transform.rotation, activeObject.transform.scale);
 
                 switch (ed_GizmoSystem.getActiveTool()) {
                     case Translate -> activeObject.transform.position.set(tmpTranslation);
-                    case Rotate -> activeObject.transform.rotation.set(tmpRotation);
-//                Vector3f deltaRotation = new Vector3f(tmpRotation[0], tmpRotation[1], tmpRotation[2]).sub(activeObject.transform.rotation); // TODO FIX ROTATION
-//                activeObject.transform.rotation.add(deltaRotation);
+//                    case Rotate -> activeObject.transform.rotation.set(Math.toRadians(tmpRotation[0]), Math.toRadians(tmpRotation[1]), Math.toRadians(tmpRotation[2]));
+                    case Rotate -> {
+                        Vector3f deltaRotation = new Vector3f(Math.toRadians(tmpRotation[0]), Math.toRadians(tmpRotation[1]), Math.toRadians(tmpRotation[2])).sub(activeObject.transform.rotation); // TODO FIX ROTATION
+                        activeObject.transform.rotation.add(deltaRotation);
+                    }
                     case Scale -> activeObject.transform.scale.set(tmpScale);
                 }
             }
         }
+
+        Matrix4f identityMatrix = new Matrix4f().identity();
+        float[] identityArray = new float[4 * 4];
+        identityMatrix.get(identityArray);
+
+        if (SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
+            ImGuizmo.drawGrid(viewArray, projectionArray, identityArray, 5); // TODO WRITE CUSTOM 3D GRID FUNCTION
 
         MouseListener.setGameViewportPos(topLeft);
         MouseListener.setGameViewportSize(viewportSize);

@@ -7,7 +7,6 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.IntBuffer;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL44.GL_DYNAMIC_STORAGE_BIT;
@@ -66,7 +65,7 @@ public class UniformBuffer {
     }
 
     private void uploadDataU(String uniformVariableName, Object data) {
-        Profiler.startTimer(String.format("UniformBuffer UploadData(%s, data: %s) - '%s'", uniformVariableName, "" + data, this.uniformBufferName));
+        Profiler.startTimer(String.format("UniformBuffer UploadData(%s) - '%s'", uniformVariableName, this.uniformBufferName));
         UniformBufferElement element = getBufferElement(uniformVariableName);
         if (element != null) {
             if (element.getTypeClass() != data.getClass())
@@ -81,7 +80,7 @@ public class UniformBuffer {
             updateDataArray();
             uploadDataToGPU();
         }
-        Profiler.stopTimer(String.format("UniformBuffer UploadData(%s, data: %s) - '%s'", uniformVariableName, "" + data, this.uniformBufferName));
+        Profiler.stopTimer(String.format("UniformBuffer UploadData(%s) - '%s'", uniformVariableName, this.uniformBufferName));
     }
 
     private void uploadDataToGPU() {

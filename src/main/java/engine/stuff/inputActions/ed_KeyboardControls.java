@@ -32,7 +32,8 @@ public class ed_KeyboardControls extends Component implements Observer {
 
     @Override
     public void update() {
-        this.debounce -= Time.deltaTime();
+        if (this.debounce > 0.0f)
+            this.debounce -= Time.deltaTime();
 
         if (Input.buttonDown(KeyCode.Left_Shift) || Input.buttonDown(KeyCode.Right_Shift))
             this.currentMoveMultiplayer = smallMoveMultiplayer;
@@ -65,7 +66,7 @@ public class ed_KeyboardControls extends Component implements Observer {
             }
             case KeyCode.D -> {
                 if (control && !shift) {
-                    if (this.debounce < 0.0f) {
+                    if (this.debounce <= 0.0f) {
                         this.debounce = startDebounce;
 
                         if (activeGameObjects.size() > 1) {
@@ -96,7 +97,7 @@ public class ed_KeyboardControls extends Component implements Observer {
             }
             case KeyCode.Page_Down -> {
                 if (!control && !shift)
-                    if (this.debounce < 0.0f) {
+                    if (this.debounce <= 0.0f) {
                         this.debounce = startDebounce;
 
                         for (GameObject obj : activeGameObjects)
@@ -105,7 +106,7 @@ public class ed_KeyboardControls extends Component implements Observer {
             }
             case KeyCode.Page_Up -> {
                 if (!control && !shift)
-                    if (this.debounce < 0.0f) {
+                    if (this.debounce <= 0.0f) {
                         this.debounce = startDebounce;
 
                         for (GameObject obj : activeGameObjects)
@@ -114,7 +115,7 @@ public class ed_KeyboardControls extends Component implements Observer {
             }
             case KeyCode.Arrow_Up -> {
                 if (!control)
-                    if (this.debounce < 0.0f) {
+                    if (this.debounce <= 0.0f) {
                         this.debounce = startDebounce;
 
                         for (GameObject obj : activeGameObjects)
@@ -123,7 +124,7 @@ public class ed_KeyboardControls extends Component implements Observer {
             }
             case KeyCode.Arrow_Down -> {
                 if (!control)
-                    if (this.debounce < 0.0f) {
+                    if (this.debounce <= 0.0f) {
                         this.debounce = startDebounce;
 
                         for (GameObject obj : activeGameObjects)
@@ -132,7 +133,7 @@ public class ed_KeyboardControls extends Component implements Observer {
             }
             case KeyCode.Arrow_Left -> {
                 if (!control)
-                    if (this.debounce < 0.0f) {
+                    if (this.debounce <= 0.0f) {
                         this.debounce = startDebounce;
 
                         for (GameObject obj : activeGameObjects)
@@ -141,7 +142,7 @@ public class ed_KeyboardControls extends Component implements Observer {
             }
             case KeyCode.Arrow_Right -> {
                 if (!control)
-                    if (this.debounce < 0.0f) {
+                    if (this.debounce <= 0.0f) {
                         this.debounce = startDebounce;
 
                         for (GameObject obj : activeGameObjects)

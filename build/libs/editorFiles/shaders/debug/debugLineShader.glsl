@@ -2,8 +2,10 @@
 layout (location = 0) in vec3 a_Pos;
 layout (location = 1) in vec4 a_Color;
 
-uniform mat4 u_ProjectionMatrix;
-uniform mat4 u_ViewMatrix;
+uniform u_SceneData {
+    mat4 u_ProjectionMatrix;
+    mat4 u_ViewMatrix;
+};
 
 out vec4 v_Color;
 

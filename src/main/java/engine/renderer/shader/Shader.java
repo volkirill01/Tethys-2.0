@@ -34,6 +34,7 @@ public class Shader {
     public Shader(String filepath) {
         Profiler.startTimer(String.format("Create new Shader - '%s'", filepath));
         this.filepath = filepath;
+
         try {
             String source = new String(Files.readAllBytes(Paths.get(filepath)));
             String[] splitString = source.split("(#type)( )+([a-zA-Z]+)");
@@ -53,14 +54,14 @@ public class Shader {
             else if (firstPattern.equals("fragment"))
                 this.fragmentSource = "#version " + Settings.SHADER_VERSION + "\n" + splitString[1];
             else
-                throw new IOException(String.format("Unexpected token '%s'", firstPattern));
+                throw new IllegalStateException(String.format("Unexpected token '%s'", firstPattern));
 
             if (secondPattern.equals("vertex"))
                 this.vertexSource = "#version " + Settings.SHADER_VERSION + "\n" + splitString[2];
             else if (secondPattern.equals("fragment"))
                 this.fragmentSource = "#version " + Settings.SHADER_VERSION + "\n" + splitString[2];
             else
-                throw new IOException(String.format("Unexpected token '%s'", secondPattern));
+                throw new IllegalStateException(String.format("Unexpected token '%s'", secondPattern));
 
             this.fragmentSource = buildFragmentShaderSource(Objects.requireNonNull(this.fragmentSource));
         } catch (IOException e) {

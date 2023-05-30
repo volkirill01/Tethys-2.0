@@ -29,7 +29,7 @@ public class Content_Window extends EditorGuiWindow {
 
     private boolean refreshNextFrame = true;
 
-    private float cellSize = 70.0f;
+    private float thumbnailSize = 70.0f;
     private static final float spacing = 8.0f;
     private static final float textAreaHeight = 42.0f;
 
@@ -56,10 +56,10 @@ public class Content_Window extends EditorGuiWindow {
         //<editor-fold desc="Calculating Cell size and spacing">
         float windowWidth = ImGui.getContentRegionAvailX();
 
-        int columnsCount = (int) (windowWidth / (this.cellSize + spacing));
+        int columnsCount = (int) (windowWidth / (this.thumbnailSize + spacing));
         if (columnsCount < 1)
             columnsCount = 1;
-        float availableWidth = windowWidth - columnsCount * (this.cellSize + spacing);
+        float availableWidth = windowWidth - columnsCount * (this.thumbnailSize + spacing);
         float itemSpacing = availableWidth / (columnsCount + 1) + spacing;
         if (columnsCount == 1)
             itemSpacing = 0.0f;
@@ -160,7 +160,7 @@ public class Content_Window extends EditorGuiWindow {
         ImVec2 startCursorPos = ImGui.getCursorPos();
 
         //<editor-fold desc="Cell Background">
-        ImGui.button("##AssetButton_" + asset.getFilepath(), this.cellSize, this.cellSize + textAreaHeight);
+        ImGui.button("##AssetButton_" + asset.getFilepath(), this.thumbnailSize, this.thumbnailSize + textAreaHeight);
         ImVec2 endCursorPos = ImGui.getCursorPos();
         if (ImGui.beginDragDropSource()) {
             ImGui.setDragDropPayload("Asset", new AbstractMap.SimpleEntry<>(asset.getType(), asset.getFilepath()), ImGuiCond.Once);
@@ -175,8 +175,8 @@ public class Content_Window extends EditorGuiWindow {
         ImGui.getWindowDrawList().addRectFilled(
                 ImGui.getCursorScreenPosX() + ImGui.getStyle().getFramePaddingY(),
                 ImGui.getCursorScreenPosY() + ImGui.getStyle().getFramePaddingY(),
-                ImGui.getCursorScreenPosX() + this.cellSize - ImGui.getStyle().getFramePaddingY(),
-                ImGui.getCursorScreenPosY() + this.cellSize - ImGui.getStyle().getFramePaddingY(),
+                ImGui.getCursorScreenPosX() + this.thumbnailSize - ImGui.getStyle().getFramePaddingY(),
+                ImGui.getCursorScreenPosY() + this.thumbnailSize - ImGui.getStyle().getFramePaddingY(),
                 ImGui.getColorU32(ImGuiCol.FrameBg),
                 ImGui.getStyle().getFrameRounding()
         );
@@ -187,8 +187,8 @@ public class Content_Window extends EditorGuiWindow {
                 asset.getIcon().getTextureID(),
                 ImGui.getCursorScreenPosX() + ImGui.getStyle().getFramePaddingY() * 2,
                 ImGui.getCursorScreenPosY() + ImGui.getStyle().getFramePaddingY() * 2,
-                ImGui.getCursorScreenPosX() + this.cellSize - ImGui.getStyle().getFramePaddingY() * 2,
-                ImGui.getCursorScreenPosY() + this.cellSize - ImGui.getStyle().getFramePaddingY() * 2,
+                ImGui.getCursorScreenPosX() + this.thumbnailSize - ImGui.getStyle().getFramePaddingY() * 2,
+                ImGui.getCursorScreenPosY() + this.thumbnailSize - ImGui.getStyle().getFramePaddingY() * 2,
                 0, 1, 1, 0
         );
         //</editor-fold>
@@ -198,10 +198,10 @@ public class Content_Window extends EditorGuiWindow {
                 GuiFont.getDefaultFont(),
                 ImGui.getFontSize(),
                 ImGui.getCursorScreenPosX() + ImGui.getStyle().getFramePaddingY(),
-                ImGui.getCursorScreenPosY() + this.cellSize,
+                ImGui.getCursorScreenPosY() + this.thumbnailSize,
                 ImGui.getColorU32(ImGuiCol.Text),
                 assetName,
-                this.cellSize - ImGui.getStyle().getFramePaddingY() * 2
+                this.thumbnailSize - ImGui.getStyle().getFramePaddingY() * 2
         );
         //</editor-fold>
 
@@ -221,9 +221,9 @@ public class Content_Window extends EditorGuiWindow {
         if (isInAssetsDirectory)
             ImGui.endDisabled();
 
-        float[] ImFloat = { this.cellSize };
-        if (ImGui.dragFloat("Cell Size", ImFloat, 1.0f, 40.0f, 250.0f))
-            this.cellSize = ImFloat[0];
+        float[] ImFloat = { this.thumbnailSize};
+        if (ImGui.dragFloat("Thumbnail Size", ImFloat, 1.0f, 40.0f, 250.0f))
+            this.thumbnailSize = ImFloat[0];
     }
 
     private void setRefreshNextFrame() { this.refreshNextFrame = true; }

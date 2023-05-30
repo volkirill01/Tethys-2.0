@@ -2,7 +2,6 @@ package engine.parsers;
 
 import de.javagl.obj.*;
 import engine.editor.console.Console;
-import engine.editor.console.LogType;
 import engine.logging.DebugLog;
 import engine.profiling.Profiler;
 import engine.renderer.buffers.IndexBuffer;
@@ -30,12 +29,13 @@ public class ModelParser {
 
         if (filepath.endsWith(".obj"))
             return loadOBJ(filepath);
-        Console.log(String.format("Unknown model extension - '%s'", filepath), LogType.Error);
+        DebugLog.logError("Unknown model extension - ", filepath);
+        Console.logError(String.format("Unknown model extension - '%s'", filepath));
         return null;
     }
 
     private static Mesh loadOBJ(String filepath) {
-        Profiler.startTimer("Parse OBJ File");
+        Profiler.startTimer(String.format("Parse OBJ File - '%s'", filepath.replace("\\", "/")));
         List<RawModel> models = new ArrayList<>();
 
         InputStream inputStream;
@@ -73,7 +73,7 @@ public class ModelParser {
             models.add(loadToVAO(verticesB, texCoordsB, normalsB, indicesB, "Material"));
         }
 
-        Profiler.stopTimer("Parse OBJ File");
+        Profiler.stopTimer(String.format("Parse OBJ File - '%s'", filepath.replace("\\", "/")));
         return new Mesh(models, filepath);
     }
 

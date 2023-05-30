@@ -46,7 +46,7 @@ public class MeshMasterRenderer {
 
                 Matrix4f transformationMatrix = Maths.createTransformationMatrix(render.gameObject.transform.position, render.gameObject.transform.rotation, render.gameObject.transform.scale);
 
-                shader.uploadInt("u_EntityID", render.gameObject.getUid() + 1);
+                shader.uploadInt("u_EntityID", render.gameObject.getIncrementedID() + 1);
                 shader.uploadMat4f("u_TransformationMatrix", transformationMatrix);
 
 //                // PBR TEST

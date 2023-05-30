@@ -1,13 +1,14 @@
 package engine.entity.component;
 
 import engine.editor.gui.EditorGUI;
+import org.joml.Math;
 import org.joml.Vector3f;
 
 public class Transform extends Component { // TODO ADD TRANSFORM CONSTRAINS(LIMIT POSITION, LOCK SCALE, ...)
 
     public final Vector3f position = new Vector3f(0.0f);
     public final Vector3f scale = new Vector3f(1.0f);
-    public final Vector3f rotation = new Vector3f(0.0f);
+    public final Vector3f rotation = new Vector3f(0.0f); // In radians
 
     private int zIndex = 0;
 
@@ -32,7 +33,9 @@ public class Transform extends Component { // TODO ADD TRANSFORM CONSTRAINS(LIMI
     @Override
     public void imgui() { // Overriding function for custom formatting and reset value of scale vector
         EditorGUI.field_Vector3f("Position", this.position, EditorGUI.DEFAULT_FLOAT_FORMAT + "m");
-        EditorGUI.field_Vector3f("Rotation", this.rotation, EditorGUI.DEFAULT_FLOAT_FORMAT + "deg"); // TODO REPLACE 'deg' WITH DEGREES SIGN '°' AND FIX DRAWING OF IT
+        Vector3f degreesRotation = new Vector3f((float) Math.toDegrees(this.rotation.x), (float) Math.toDegrees(this.rotation.y), (float) Math.toDegrees(this.rotation.z));
+        if (EditorGUI.field_Vector3f("Rotation", degreesRotation, EditorGUI.DEFAULT_FLOAT_FORMAT + "deg")) // TODO REPLACE 'deg' WITH DEGREES SIGN '°' AND FIX DRAWING OF IT
+            this.rotation.set(Math.toRadians(degreesRotation.x), Math.toRadians(degreesRotation.y), Math.toRadians(degreesRotation.z));
         EditorGUI.field_Vector3f("Scale", this.scale, new Vector3f(1.0f), EditorGUI.DEFAULT_FLOAT_FORMAT + "m");
         this.zIndex = EditorGUI.field_Int("ZIndex", this.zIndex);
     }

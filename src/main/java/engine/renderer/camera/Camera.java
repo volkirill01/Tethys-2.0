@@ -20,9 +20,9 @@ public class Camera extends ed_BaseCamera {
         Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
         this.viewMatrix.identity();
         this.viewMatrix.set(this.viewMatrix.lookAt(this.gameObject.transform.position, cameraFront.add(this.gameObject.transform.position), cameraUp));
-        this.viewMatrix.rotate((float) Math.toRadians(this.gameObject.transform.rotation.x), 1, 0, 0);
-        this.viewMatrix.rotate((float) Math.toRadians(this.gameObject.transform.rotation.y), 0, 1, 0);
-        this.viewMatrix.rotate((float) Math.toRadians(this.gameObject.transform.rotation.z), 0, 0, 1);
+        this.viewMatrix.rotate(this.gameObject.transform.rotation.x, 1, 0, 0);
+        this.viewMatrix.rotate(this.gameObject.transform.rotation.y, 0, 1, 0);
+        this.viewMatrix.rotate(this.gameObject.transform.rotation.z, 0, 0, 1);
 
         if (this.projectionType == ProjectionType.Perspective)
             this.viewMatrix.scale(1.0f / this.zoom); // Perspective camera zoom inverted to match the zoom of orthographic camera

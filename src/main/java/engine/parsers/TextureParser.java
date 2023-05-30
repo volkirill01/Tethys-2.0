@@ -15,7 +15,7 @@ public class TextureParser {
     public static int loadFromFile(String filepath, IntBuffer width, IntBuffer height) {
         DebugLog.logInfo("TextureParser:LoadFromFile: ", filepath);
 
-        Profiler.startTimer(String.format("Parse Texture - '%s'", filepath));
+        Profiler.startTimer(String.format("Parse Texture - '%s'", filepath.replace("\\", "/")));
         // Generate texture on GPU
         int textureID = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureID);
@@ -46,7 +46,7 @@ public class TextureParser {
         }
 
         stbi_image_free(image);
-        Profiler.stopTimer(String.format("Parse Texture - '%s'", filepath));
+        Profiler.stopTimer(String.format("Parse Texture - '%s'", filepath.replace("\\", "/")));
         return textureID;
     }
 }

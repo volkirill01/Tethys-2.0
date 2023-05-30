@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import engine.TestFieldsWindow;
 import engine.assets.AssetPool;
 import engine.editor.console.Console;
-import engine.editor.console.LogType;
 import engine.editor.gui.EditorGUI;
 import engine.entity.component.Component;
 import engine.entity.component.TagComponent;
@@ -12,6 +11,7 @@ import engine.logging.DebugLog;
 import engine.profiling.Profiler;
 import engine.renderer.renderer2D.SpriteRenderer;
 import engine.entity.component.Transform;
+import engine.stuff.UUID;
 import engine.stuff.utils.EditorGson;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -26,7 +26,7 @@ import java.util.List;
 public class GameObject {
 
     private static int ID_COUNTER = 1;
-    private int uid;
+    private transient int incrementedID;
 
     public transient Transform transform;
     public TagComponent tagComponent = new TagComponent();
@@ -38,7 +38,7 @@ public class GameObject {
 
     public GameObject(String name) {
         this.tagComponent.name = name;
-        this.uid = ID_COUNTER++;
+        this.incrementedID = ID_COUNTER++;
     }
 
     public <T extends Component> boolean hasComponent(Class<T> componentClass) { return getComponent(componentClass) != null; }
@@ -67,7 +67,7 @@ public class GameObject {
             }
         }
         DebugLog.logError("GameObject:RemoveComponent: ", getName(), ", not has Component: ", componentClass.getName());
-        Console.log(String.format("GameObject (%s) not has component - '%s'", getName(), componentClass.getName()), LogType.Error);
+        Console.logError(String.format("GameObject (%s) not has component - '%s'", getName(), componentClass.getName()));
     }
 
     public void addComponent(Component c) {
@@ -79,7 +79,7 @@ public class GameObject {
     }
 
     public void imgui() {
-        setName(EditorGUI.textFieldNoLabel("GameObject_Name_" + this.uid, getName(), "Name", ImGui.getContentRegionAvailX() / 1.5f));
+        setName(EditorGUI.textFieldNoLabel("GameObject_Name_" + this.tagComponent.id.toString(), getName(), "Name", ImGui.getContentRegionAvailX() / 1.5f));
         ImGui.sameLine();
 
         //<editor-fold desc="Add Component Button">
@@ -220,7 +220,8 @@ public class GameObject {
         String objAsGson = gson.toJson(this);
         GameObject copy = gson.fromJson(objAsGson, GameObject.class);
 
-        copy.generateUid();
+        copy.tagComponent.id = new UUID();
+        copy.generateIncrementedID();
         for (Component c : copy.components)
             c.generateID();
 
@@ -243,9 +244,11 @@ public class GameObject {
 
     public static void init(int maxID) { ID_COUNTER = maxID; }
 
-    public int getUid() { return this.uid; }
+    public long getUUID() { return this.tagComponent.id.get(); }
 
-    private void generateUid() { this.uid = ID_COUNTER++; }
+    public int getIncrementedID() { return this.incrementedID; }
+
+    private void generateIncrementedID() { this.incrementedID = ID_COUNTER++; }
 
     public List<Component> getAllComponents() { return this.components; }
 

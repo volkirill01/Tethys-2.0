@@ -14,23 +14,33 @@ public class Console {
     private static final List<ConsoleMessage> messages = new ArrayList<>();
     private static boolean stopOnError = true;
 
-    public static void log(String message) { log(message, LogType.Simple); }
-
-    public static void log(String message, Color customColor) {
-        DebugLog.log("Console:Log: ", message, ", type: ", LogType.Custom.name());
-        ConsoleMessage newMessage = new ConsoleMessage(message, LogType.Custom, customColor);
-        EventSystem.notify(new Event(EventType.Console_SendMessage, newMessage));
-        messages.add(newMessage);
-    }
-
-    public static void log(String message, LogType type) {
+    private static void sendMessage(ConsoleMessage.LogType type, String message) {
         DebugLog.log("Console:Log: ", message, ", type: ", type.name());
-        ConsoleMessage newMessage = new ConsoleMessage(message, type);
+        ConsoleMessage newMessage = new ConsoleMessage(type, message);
         EventSystem.notify(new Event(EventType.Console_SendMessage, newMessage));
         messages.add(newMessage);
     }
 
-    public static int getMessagesCount(LogType type) {
+    private static void sendMessage(Color customColor, String message) {
+        DebugLog.log("Console:Log: ", message, ", type: ", ConsoleMessage.LogType.Custom.name());
+        ConsoleMessage newMessage = new ConsoleMessage(customColor, message);
+        EventSystem.notify(new Event(EventType.Console_SendMessage, newMessage));
+        messages.add(newMessage);
+    }
+
+    public static void log(String message) { sendMessage(ConsoleMessage.LogType.Simple, message); }
+
+    public static void logInfo(String message) { sendMessage(ConsoleMessage.LogType.Info, message); }
+
+    public static void logWarning(String message) { sendMessage(ConsoleMessage.LogType.Warning, message); }
+
+    public static void logError(String message) { sendMessage(ConsoleMessage.LogType.Error, message); }
+
+    public static void logSuccess(String message) { sendMessage(ConsoleMessage.LogType.Success, message); }
+
+    public static void logCustom(String message, Color customColor) { sendMessage(customColor, message); }
+
+    public static int getMessagesCount(ConsoleMessage.LogType type) {
         int count = 0;
         for (ConsoleMessage message: messages)
             if (message.type == type)

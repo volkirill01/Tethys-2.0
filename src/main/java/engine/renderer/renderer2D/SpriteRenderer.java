@@ -1,9 +1,12 @@
 package engine.renderer.renderer2D;
 
+import engine.assets.Asset;
 import engine.assets.AssetPool;
 import engine.editor.gui.EditorGUI;
 import engine.entity.component.Component;
 import engine.entity.component.Transform;
+import engine.renderer.Texture;
+import engine.renderer.Texture2D;
 import engine.renderer.renderer2D.sprite.Sprite;
 import engine.stuff.customVariables.Color;
 import org.joml.Vector2f;
@@ -46,7 +49,12 @@ public class SpriteRenderer extends Component {
     public void imgui() {
         if (EditorGUI.field_Color("Color", this.color))
             this.isDirty = true;
-        if (EditorGUI.field_Vector2f("Tiling", this.tiling, new Vector2f(1.0f)))
+        Texture oldTexture = this.getSprite().getTexture();
+        this.sprite.setTexture((Texture2D) EditorGUI.field_Asset("Texture", this.sprite.getTexture(), Asset.AssetType.Texture));
+        if (!oldTexture.equals(this.sprite.getTexture()))
+            this.isDirty = true;
+
+        if (EditorGUI.field_Vector2f("Tiling", this.tiling, new Vector2f(1.0f), new Vector2f(0.0f)))
             this.isDirty = true;
     }
 
@@ -79,5 +87,5 @@ public class SpriteRenderer extends Component {
 
     public void setDirty(boolean dirty) { this.isDirty = dirty; }
 
-    public Vector2f getTiling() { return this.tiling; } // TODO MOVE THIS IN MATERIAL
+    public Vector2f getTiling() { return this.tiling; }
 }

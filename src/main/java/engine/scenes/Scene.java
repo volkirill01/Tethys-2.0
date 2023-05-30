@@ -19,7 +19,6 @@ import engine.renderer.camera.Camera;
 import engine.renderer.renderer2D.sprite.Sprite;
 import engine.renderer.renderer2D.sprite.SpriteSheet;
 import engine.renderer.renderer3D.MeshRenderer;
-import engine.stuff.ColoredText;
 import engine.stuff.Settings;
 import engine.stuff.inputActions.ed_KeyboardControls;
 import engine.stuff.inputActions.ed_MouseControls;
@@ -55,7 +54,7 @@ public class Scene {
     public void init() {
         DebugLog.logInfo("Scene:Init: ", this.filepath);
 
-        Profiler.startTimer(String.format("Init Scene - '%s'", this.filepath));
+        Profiler.startTimer(String.format("Init Scene - '%s'", this.filepath.replace("\\", "/")));
         loadResources();
         this.editorStuff.addComponent(new ed_KeyboardControls());
         this.editorStuff.addComponent(new ed_MouseControls());
@@ -65,11 +64,11 @@ public class Scene {
         this.editorStuff.start();
 
         this.sprites = AssetPool.getSpriteSheet("Assets/decorationsAndBlocks.png");
-        Profiler.stopTimer(String.format("Init Scene - '%s'", this.filepath));
+        Profiler.stopTimer(String.format("Init Scene - '%s'", this.filepath.replace("\\", "/")));
     }
 
     private void loadResources() {
-        Profiler.startTimer(String.format("Scene LoadResources - '%s'", this.filepath));
+        Profiler.startTimer(String.format("Scene LoadResources - '%s'", this.filepath.replace("\\", "/")));
         AssetPool.addSpriteSheet("Assets/decorationsAndBlocks.png",
                 new SpriteSheet(AssetPool.getTexture("Assets/decorationsAndBlocks.png"),
                         16, 16, 81, 0, 0, 0, 0));
@@ -110,11 +109,11 @@ public class Scene {
                     renderer.setMesh(AssetPool.getMesh(renderer.getMesh().getFilepath()));
             }
         }
-        Profiler.stopTimer(String.format("Scene LoadResources - '%s'", this.filepath));
+        Profiler.stopTimer(String.format("Scene LoadResources - '%s'", this.filepath.replace("\\", "/")));
     }
 
     public void editorUpdate() {
-        Profiler.startTimer(String.format("Scene EditorUpdate - '%s'", this.filepath));
+        Profiler.startTimer(String.format("Scene EditorUpdate - '%s'", this.filepath.replace("\\", "/")));
         this.editorStuff.update();
         SceneManager.getCurrentScene().getEditorCamera().adjustProjectionMatrix();
 
@@ -139,11 +138,11 @@ public class Scene {
             Physics2D.add(obj);
         }
         this.pendingGameObjects.clear();
-        Profiler.stopTimer(String.format("Scene EditorUpdate - '%s'", this.filepath));
+        Profiler.stopTimer(String.format("Scene EditorUpdate - '%s'", this.filepath.replace("\\", "/")));
     }
 
     public void update() {
-        Profiler.startTimer(String.format("Scene RuntimeUpdate - '%s'", this.filepath));
+        Profiler.startTimer(String.format("Scene RuntimeUpdate - '%s'", this.filepath.replace("\\", "/")));
         this.editorStuff.update();
 
         // Update physics only in runtime
@@ -170,20 +169,20 @@ public class Scene {
             Physics2D.add(obj);
         }
         this.pendingGameObjects.clear();
-        Profiler.stopTimer(String.format("Scene RuntimeUpdate - '%s'", this.filepath));
+        Profiler.stopTimer(String.format("Scene RuntimeUpdate - '%s'", this.filepath.replace("\\", "/")));
     }
 
     public void start() {
         DebugLog.log("Scene:Start: ", this.filepath);
 
-        Profiler.startTimer(String.format("Scene Start - '%s'", this.filepath));
+        Profiler.startTimer(String.format("Scene Start - '%s'", this.filepath.replace("\\", "/")));
         for (GameObject obj : this.gameObjects) {
             obj.start();
             EntityRenderer.add(obj);
             Physics2D.add(obj);
         }
         this.isRunning = true;
-        Profiler.stopTimer(String.format("Scene Start - '%s'", this.filepath));
+        Profiler.stopTimer(String.format("Scene Start - '%s'", this.filepath.replace("\\", "/")));
     }
 
     public GameObject createGameObject(String name) {
@@ -202,8 +201,10 @@ public class Scene {
             this.pendingGameObjects.add(obj);
     }
 
-    public GameObject getGameObject(int uid) {
-        Optional<GameObject> result = this.gameObjects.stream().filter(gameObject -> gameObject.getUid() == uid).findFirst();
+    public List<GameObject> getAllGameObjects() { return this.gameObjects; }
+
+    public GameObject getGameObject(int incrementID) {
+        Optional<GameObject> result = this.gameObjects.stream().filter(gameObject -> gameObject.getIncrementedID() == incrementID).findFirst();
         return result.orElse(null);
     }
 
@@ -212,21 +213,27 @@ public class Scene {
         return result.orElse(null);
     }
 
-    public <T extends Component> GameObject getGameObjectWithComponent(Class<T> _class) {
+    public <T extends Component> GameObject getGameObjectWithComponent(Class<T> type) {
         for (GameObject obj : this.gameObjects)
-            if (obj.hasComponent(_class))
+            if (obj.hasComponent(type))
                 return obj;
         return null;
     }
 
-    public List<GameObject> getAllGameObjects() { return this.gameObjects; }
-
-    public List<Camera> getAllCameras() {
-        List<Camera> cameras = new ArrayList<>();
+    public <T extends Component> List<GameObject> getAllGameObjectsWithComponent(Class<T> type) {
+        List<GameObject> result = new ArrayList<>();
         for (GameObject obj : this.gameObjects)
-            if (obj.hasComponent(Camera.class))
-                cameras.add(obj.getComponent(Camera.class));
-        return cameras;
+            if (obj.hasComponent(type))
+                result.add(obj);
+        return result;
+    }
+
+    public <T extends Component> List<Component> getAllComponents(Class<T> type) {
+        List<Component> result = new ArrayList<>();
+        for (GameObject obj : this.gameObjects)
+            if (obj.hasComponent(type))
+                result.add(obj.getComponent(type));
+        return result;
     }
 
     public Camera getMainCamera() {
@@ -239,10 +246,10 @@ public class Scene {
     public void destroy() {
         DebugLog.logInfo("Scene:Destroy: ", this.filepath);
 
-        Profiler.startTimer(String.format("Destroy Scene - '%s'", this.filepath));
+        Profiler.startTimer(String.format("Destroy Scene - '%s'", this.filepath.replace("\\", "/")));
         for (GameObject obj : this.gameObjects)
             obj.destroy();
-        Profiler.stopTimer(String.format("Destroy Scene - '%s'", this.filepath));
+        Profiler.stopTimer(String.format("Destroy Scene - '%s'", this.filepath.replace("\\", "/")));
     }
 
     public String getFilepath() { return this.filepath; }
@@ -332,7 +339,7 @@ public class Scene {
     public void saveAs(String filepath) {
         DebugLog.logInfo("Scene:SaveAs: ", this.filepath, ", save path: ", filepath);
 
-        Profiler.startTimer(String.format("SaveAs Scene - '%s'", this.filepath));
+        Profiler.startTimer(String.format("SaveAs Scene - '%s'", this.filepath.replace("\\", "/")));
         Gson gson = EditorGson.getGsonBuilder();
 
         try {
@@ -347,13 +354,13 @@ public class Scene {
         } catch (IOException e) {
             throw new RuntimeException(String.format("Error in saving Scene - '%s'", filepath), e);
         }
-        Profiler.stopTimer(String.format("SaveAs Scene - '%s'", this.filepath));
+        Profiler.stopTimer(String.format("SaveAs Scene - '%s'", this.filepath.replace("\\", "/")));
     }
 
     public void load(String filepath) {
         DebugLog.logInfo("Scene:Load: ", this.filepath, ", load path: ", filepath);
 
-        Profiler.startTimer(String.format("Load Scene - '%s'", this.filepath));
+        Profiler.startTimer(String.format("Load Scene - '%s'", this.filepath.replace("\\", "/")));
         Gson gson = EditorGson.getGsonBuilder();
 
         String inFile = "";
@@ -377,8 +384,8 @@ public class Scene {
                     if (c.getUid() > maxComponentID)
                         maxComponentID = c.getUid();
 
-                if (obj.getUid() > maxGameObjectID)
-                    maxGameObjectID = obj.getUid();
+                if (obj.getIncrementedID() > maxGameObjectID)
+                    maxGameObjectID = obj.getIncrementedID();
             }
 
             maxGameObjectID++;
@@ -390,6 +397,6 @@ public class Scene {
 //            // TODO LOAD DEFAULT EMPTY SCENE
 //            throw new NullPointerException("Scene is Empty - '" + "level.txt" + "'");
 //        }
-        Profiler.stopTimer(String.format("Load Scene - '%s'", this.filepath));
+        Profiler.stopTimer(String.format("Load Scene - '%s'", this.filepath.replace("\\", "/")));
     }
 }

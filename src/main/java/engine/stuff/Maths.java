@@ -20,7 +20,7 @@ public class Maths {
         Matrix4f transformationMatrix = new Matrix4f().identity();
 
         transformationMatrix.translate(translation.x, translation.y, translation.z);
-        transformationMatrix.rotateXYZ((float) Math.toRadians(rotation.x), (float) Math.toRadians(rotation.y), (float) Math.toRadians(rotation.z));
+        transformationMatrix.rotateXYZ(rotation.x, rotation.y, rotation.z);
         transformationMatrix.scale(scale.x, scale.y, scale.z);
 
         return transformationMatrix;
@@ -138,10 +138,10 @@ public class Maths {
 //
 //        outRotation.y = (float) org.joml.Math.toDegrees(org.joml.Math.asin(-row[0].z));
 //        if (org.joml.Math.cos(outRotation.y) != 0) {
-//            outRotation.x = (float) org.joml.Math.toDegrees(org.joml.Math.atan2(row[1].z, row[2].z));
-//            outRotation.z = (float) org.joml.Math.toDegrees(org.joml.Math.atan2(row[0].y, row[0].x));
+//            outRotation.x = org.joml.Math.atan2(row[1].z, row[2].z);
+//            outRotation.z = org.joml.Math.atan2(row[0].y, row[0].x);
 //        } else {
-//            outRotation.x = (float) org.joml.Math.toDegrees(org.joml.Math.atan2(-row[2].x, row[1].y));
+//            outRotation.x = org.joml.Math.atan2(-row[2].x, row[1].y);
 //            outRotation.z = 0.0f;
 //        }
 //

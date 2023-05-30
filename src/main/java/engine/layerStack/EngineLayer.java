@@ -1,5 +1,9 @@
 package engine.layerStack;
 
+import engine.editor.gui.EngineGuiLayer;
+import engine.editor.windows.GameView_Window;
+import engine.editor.windows.Outliner_Window;
+import engine.entity.component.Component;
 import engine.observers.events.Event;
 import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
@@ -56,12 +60,16 @@ public class EngineLayer extends Layer {
 
             if (!Window.isRuntimePause() || Window.isNextFrame()) {
                 Profiler.startTimer("Render Game Cameras");
-                for (Camera c : SceneManager.getCurrentScene().getAllCameras()) {
-                    c.getOutputFob().bindToWrite();
-                    Color backgroundColor = new Color(c.getBackgroundColor());
-                    backgroundColor.a = 255.0f;
-                    renderPass(c, backgroundColor);
-                    c.getOutputFob().unbind();
+                for (Component c : SceneManager.getCurrentScene().getAllComponents(Camera.class)) {
+                    Camera cam = (Camera) c;
+
+                    if (Outliner_Window.getActiveGameObjects().contains(cam.gameObject) || (EngineGuiLayer.isAnyWindowVisible_ByType(GameView_Window.class))) {
+                        cam.getOutputFob().bindToWrite();
+                        Color backgroundColor = new Color(cam.getBackgroundColor());
+                        backgroundColor.a = 255.0f;
+                        renderPass(cam, backgroundColor);
+                        cam.getOutputFob().unbind();
+                    }
                 }
                 Profiler.stopTimer("Render Game Cameras");
             }

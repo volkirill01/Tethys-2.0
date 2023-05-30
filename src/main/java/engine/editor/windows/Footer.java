@@ -2,7 +2,6 @@ package engine.editor.windows;
 
 import engine.editor.console.Console;
 import engine.editor.console.ConsoleMessage;
-import engine.editor.console.LogType;
 import engine.stuff.Window;
 import engine.stuff.customVariables.Color;
 import imgui.ImGui;
@@ -44,7 +43,7 @@ public class Footer {
         ImGui.alignTextToFramePadding();
         ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() / 1.2f - offset);
         float startX = ImGui.getCursorPosX();
-        for (LogType type : LogType.values()) {
+        for (ConsoleMessage.LogType type : ConsoleMessage.LogType.values()) {
             Color tmpColor = ConsoleMessage.getMessageColor(type);
             String tmpString = ConsoleMessage.getMessageIcon(type);
             ImVec4 tmpVec4 = new ImVec4(tmpColor.r / 255.0f, tmpColor.g / 255.0f, tmpColor.b / 255.0f, tmpColor.a / 255.0f);

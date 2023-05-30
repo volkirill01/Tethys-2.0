@@ -1,5 +1,8 @@
 package engine.editor.gui;
 
+import engine.assets.Asset;
+import engine.assets.AssetPool;
+import engine.logging.DebugLog;
 import engine.stuff.Settings;
 import engine.stuff.customVariables.Color;
 import imgui.ImGui;
@@ -13,6 +16,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,7 +126,7 @@ public class EditorGUI {
         return field;
     }
 
-    private static float drawVectorField(float vectorField, float resetValue, ImBoolean isValueChanged, String label, int color, int hoverColor, float itemWidth, String format) {
+    private static float drawVectorField(float vectorField, float resetValue, float minimum, float maximum, ImBoolean isValueChanged, String label, int color, int hoverColor, float itemWidth, String format) {
         int currentColor = color;
         float frameHeight = ImGui.getFrameHeight();
         if (ImGui.isMouseHoveringRect(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY(), ImGui.getCursorScreenPosX() + frameHeight, ImGui.getCursorScreenPosY() + frameHeight))
@@ -180,7 +184,7 @@ public class EditorGUI {
         ImGui.pushStyleColor(ImGuiCol.FrameBgHovered, 0.0f, 0.0f, 0.0f, 0.0f);
         ImGui.pushStyleColor(ImGuiCol.FrameBgActive, 0.0f, 0.0f, 0.0f, 0.0f);
         float[] ImFloat = { vectorField };
-        if (ImGui.dragFloat("##field_Vectorf_Axis(" + label + ")", ImFloat, DRAG_SPEED, -Float.MAX_VALUE, Float.MAX_VALUE, format)) {
+        if (ImGui.dragFloat("##field_Vectorf_Axis(" + label + ")", ImFloat, DRAG_SPEED, minimum, maximum, format)) {
             vectorField = ImFloat[0];
             isValueChanged.set(true);
         }
@@ -188,10 +192,12 @@ public class EditorGUI {
         return vectorField;
     }
 
-    public static boolean field_Vector2f(String label, Vector2f field) { return field_Vector2f(label, field, new Vector2f(0.0f), DEFAULT_FLOAT_FORMAT); }
-    public static boolean field_Vector2f(String label, Vector2f field, String format) { return field_Vector2f(label, field, new Vector2f(0.0f), format); }
-    public static boolean field_Vector2f(String label, Vector2f field, Vector2f resetValue) { return field_Vector2f(label, field, resetValue, DEFAULT_FLOAT_FORMAT); }
-    public static boolean field_Vector2f(String label, Vector2f field, Vector2f resetValue, String format) {
+    public static boolean field_Vector2f(String label, Vector2f field) { return field_Vector2f(label, field, new Vector2f(0.0f), new Vector2f(-Float.MAX_VALUE), new Vector2f(Float.MAX_VALUE), DEFAULT_FLOAT_FORMAT); }
+    public static boolean field_Vector2f(String label, Vector2f field, String format) { return field_Vector2f(label, field, new Vector2f(0.0f), new Vector2f(-Float.MAX_VALUE), new Vector2f(Float.MAX_VALUE), format); }
+    public static boolean field_Vector2f(String label, Vector2f field, Vector2f resetValue) { return field_Vector2f(label, field, resetValue, new Vector2f(-Float.MAX_VALUE), new Vector2f(Float.MAX_VALUE), DEFAULT_FLOAT_FORMAT); }
+    public static boolean field_Vector2f(String label, Vector2f field, Vector2f resetValue, String format) { return field_Vector2f(label, field, resetValue, new Vector2f(-Float.MAX_VALUE), new Vector2f(Float.MAX_VALUE), format); }
+    public static boolean field_Vector2f(String label, Vector2f field, Vector2f resetValue, Vector2f minimum) { return field_Vector2f(label, field, resetValue, minimum, new Vector2f(Float.MAX_VALUE), DEFAULT_FLOAT_FORMAT); }
+    public static boolean field_Vector2f(String label, Vector2f field, Vector2f resetValue, Vector2f minimum, Vector2f maximum, String format) {
         beginField(label);
 
         ImBoolean isValueChanged = new ImBoolean(false);
@@ -202,13 +208,13 @@ public class EditorGUI {
 
         int xButtonColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR.r / 255.0f, Settings.X_AXIS_COLOR.g / 255.0f, Settings.X_AXIS_COLOR.b / 255.0f, Settings.X_AXIS_COLOR.a / 255.0f);
         int xButtonHoverColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR_HOVER.r / 255.0f, Settings.X_AXIS_COLOR_HOVER.g / 255.0f, Settings.X_AXIS_COLOR_HOVER.b / 255.0f, Settings.X_AXIS_COLOR_HOVER.a / 255.0f);
-        field.x = drawVectorField(field.x, resetValue.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach, format);
+        field.x = drawVectorField(field.x, resetValue.x, minimum.x, maximum.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int yButtonColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR.r / 255.0f, Settings.Y_AXIS_COLOR.g / 255.0f, Settings.Y_AXIS_COLOR.b / 255.0f, Settings.Y_AXIS_COLOR.a / 255.0f);
         int yButtonHoverColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR_HOVER.r / 255.0f, Settings.Y_AXIS_COLOR_HOVER.g / 255.0f, Settings.Y_AXIS_COLOR_HOVER.b / 255.0f, Settings.Y_AXIS_COLOR_HOVER.a / 255.0f);
-        field.y = drawVectorField(field.y, resetValue.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach, format);
+        field.y = drawVectorField(field.y, resetValue.y, minimum.y, maximum.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach, format);
 
         ImGui.popItemWidth();
         ImGui.popStyleVar();
@@ -220,10 +226,12 @@ public class EditorGUI {
         return isValueChanged.get();
     }
 
-    public static boolean field_Vector3f(String label, Vector3f field) { return field_Vector3f(label, field, new Vector3f(0.0f), DEFAULT_FLOAT_FORMAT); }
-    public static boolean field_Vector3f(String label, Vector3f field, String format) { return field_Vector3f(label, field, new Vector3f(0.0f), format); }
-    public static boolean field_Vector3f(String label, Vector3f field, Vector3f resetValue) { return field_Vector3f(label, field, resetValue, DEFAULT_FLOAT_FORMAT); }
-    public static boolean field_Vector3f(String label, Vector3f field, Vector3f resetValue, String format) {
+    public static boolean field_Vector3f(String label, Vector3f field) { return field_Vector3f(label, field, new Vector3f(0.0f), new Vector3f(-Float.MAX_VALUE), new Vector3f(Float.MAX_VALUE), DEFAULT_FLOAT_FORMAT); }
+    public static boolean field_Vector3f(String label, Vector3f field, String format) { return field_Vector3f(label, field, new Vector3f(0.0f), new Vector3f(-Float.MAX_VALUE), new Vector3f(Float.MAX_VALUE), format); }
+    public static boolean field_Vector3f(String label, Vector3f field, Vector3f resetValue) { return field_Vector3f(label, field, resetValue, new Vector3f(-Float.MAX_VALUE), new Vector3f(Float.MAX_VALUE), DEFAULT_FLOAT_FORMAT); }
+    public static boolean field_Vector3f(String label, Vector3f field, Vector3f resetValue, String format) { return field_Vector3f(label, field, resetValue, new Vector3f(-Float.MAX_VALUE), new Vector3f(Float.MAX_VALUE), format); }
+    public static boolean field_Vector3f(String label, Vector3f field, Vector3f resetValue, Vector3f minimum) { return field_Vector3f(label, field, resetValue, minimum, new Vector3f(Float.MAX_VALUE), DEFAULT_FLOAT_FORMAT); }
+    public static boolean field_Vector3f(String label, Vector3f field, Vector3f resetValue, Vector3f minimum, Vector3f maximum, String format) {
         beginField(label);
 
         ImBoolean isValueChanged = new ImBoolean(false);
@@ -234,19 +242,19 @@ public class EditorGUI {
 
         int xButtonColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR.r / 255.0f, Settings.X_AXIS_COLOR.g / 255.0f, Settings.X_AXIS_COLOR.b / 255.0f, Settings.X_AXIS_COLOR.a / 255.0f);
         int xButtonHoverColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR_HOVER.r / 255.0f, Settings.X_AXIS_COLOR_HOVER.g / 255.0f, Settings.X_AXIS_COLOR_HOVER.b / 255.0f, Settings.X_AXIS_COLOR_HOVER.a / 255.0f);
-        field.x = drawVectorField(field.x, resetValue.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach, format);
+        field.x = drawVectorField(field.x, resetValue.x, minimum.x, maximum.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int yButtonColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR.r / 255.0f, Settings.Y_AXIS_COLOR.g / 255.0f, Settings.Y_AXIS_COLOR.b / 255.0f, Settings.Y_AXIS_COLOR.a / 255.0f);
         int yButtonHoverColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR_HOVER.r / 255.0f, Settings.Y_AXIS_COLOR_HOVER.g / 255.0f, Settings.Y_AXIS_COLOR_HOVER.b / 255.0f, Settings.Y_AXIS_COLOR_HOVER.a / 255.0f);
-        field.y = drawVectorField(field.y, resetValue.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach, format);
+        field.y = drawVectorField(field.y, resetValue.y, minimum.y, maximum.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int zButtonColorU32 = ImGui.getColorU32(Settings.Z_AXIS_COLOR.r / 255.0f, Settings.Z_AXIS_COLOR.g / 255.0f, Settings.Z_AXIS_COLOR.b / 255.0f, Settings.Z_AXIS_COLOR.a / 255.0f);
         int zButtonHoverColorU32 = ImGui.getColorU32(Settings.Z_AXIS_COLOR_HOVER.r / 255.0f, Settings.Z_AXIS_COLOR_HOVER.g / 255.0f, Settings.Z_AXIS_COLOR_HOVER.b / 255.0f, Settings.Z_AXIS_COLOR_HOVER.a / 255.0f);
-        field.z = drawVectorField(field.z, resetValue.z, isValueChanged, "Z", zButtonColorU32, zButtonHoverColorU32, widthEach, format);
+        field.z = drawVectorField(field.z, resetValue.z, minimum.z, maximum.z, isValueChanged, "Z", zButtonColorU32, zButtonHoverColorU32, widthEach, format);
 
         ImGui.popItemWidth();
         ImGui.popStyleVar();
@@ -258,10 +266,12 @@ public class EditorGUI {
         return isValueChanged.get();
     }
 
-    public static boolean field_Vector4f(String label, Vector4f field) { return field_Vector4f(label, field, new Vector4f(0.0f), DEFAULT_FLOAT_FORMAT); }
-    public static boolean field_Vector4f(String label, Vector4f field, String format) { return field_Vector4f(label, field, new Vector4f(0.0f), format); }
-    public static boolean field_Vector4f(String label, Vector4f field, Vector4f resetValue) { return field_Vector4f(label, field, resetValue, DEFAULT_FLOAT_FORMAT); }
-    public static boolean field_Vector4f(String label, Vector4f field, Vector4f resetValue, String format) {
+    public static boolean field_Vector4f(String label, Vector4f field) { return field_Vector4f(label, field, new Vector4f(0.0f), new Vector4f(-Float.MAX_VALUE), new Vector4f(Float.MAX_VALUE), DEFAULT_FLOAT_FORMAT); }
+    public static boolean field_Vector4f(String label, Vector4f field, String format) { return field_Vector4f(label, field, new Vector4f(0.0f), new Vector4f(-Float.MAX_VALUE), new Vector4f(Float.MAX_VALUE), format); }
+    public static boolean field_Vector4f(String label, Vector4f field, Vector4f resetValue) { return field_Vector4f(label, field, resetValue, new Vector4f(-Float.MAX_VALUE), new Vector4f(Float.MAX_VALUE), DEFAULT_FLOAT_FORMAT); }
+    public static boolean field_Vector4f(String label, Vector4f field, Vector4f resetValue, String format) { return field_Vector4f(label, field, resetValue, new Vector4f(-Float.MAX_VALUE), new Vector4f(Float.MAX_VALUE), format); }
+    public static boolean field_Vector4f(String label, Vector4f field, Vector4f resetValue, Vector4f minimum) { return field_Vector4f(label, field, resetValue, minimum, new Vector4f(Float.MAX_VALUE), DEFAULT_FLOAT_FORMAT); }
+    public static boolean field_Vector4f(String label, Vector4f field, Vector4f resetValue, Vector4f minimum, Vector4f maximum, String format) {
         beginField(label);
 
         ImBoolean isValueChanged = new ImBoolean(false);
@@ -272,25 +282,25 @@ public class EditorGUI {
 
         int xButtonColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR.r / 255.0f, Settings.X_AXIS_COLOR.g / 255.0f, Settings.X_AXIS_COLOR.b / 255.0f, Settings.X_AXIS_COLOR.a / 255.0f);
         int xButtonHoverColorU32 = ImGui.getColorU32(Settings.X_AXIS_COLOR_HOVER.r / 255.0f, Settings.X_AXIS_COLOR_HOVER.g / 255.0f, Settings.X_AXIS_COLOR_HOVER.b / 255.0f, Settings.X_AXIS_COLOR_HOVER.a / 255.0f);
-        field.x = drawVectorField(field.x, resetValue.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach, format);
+        field.x = drawVectorField(field.x, resetValue.x, minimum.x, maximum.x, isValueChanged, "X", xButtonColorU32, xButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int yButtonColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR.r / 255.0f, Settings.Y_AXIS_COLOR.g / 255.0f, Settings.Y_AXIS_COLOR.b / 255.0f, Settings.Y_AXIS_COLOR.a / 255.0f);
         int yButtonHoverColorU32 = ImGui.getColorU32(Settings.Y_AXIS_COLOR_HOVER.r / 255.0f, Settings.Y_AXIS_COLOR_HOVER.g / 255.0f, Settings.Y_AXIS_COLOR_HOVER.b / 255.0f, Settings.Y_AXIS_COLOR_HOVER.a / 255.0f);
-        field.y = drawVectorField(field.y, resetValue.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach, format);
+        field.y = drawVectorField(field.y, resetValue.y, minimum.y, maximum.y, isValueChanged, "Y", yButtonColorU32, yButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int zButtonColorU32 = ImGui.getColorU32(Settings.Z_AXIS_COLOR.r / 255.0f, Settings.Z_AXIS_COLOR.g / 255.0f, Settings.Z_AXIS_COLOR.b / 255.0f, Settings.Z_AXIS_COLOR.a / 255.0f);
         int zButtonHoverColorU32 = ImGui.getColorU32(Settings.Z_AXIS_COLOR_HOVER.r / 255.0f, Settings.Z_AXIS_COLOR_HOVER.g / 255.0f, Settings.Z_AXIS_COLOR_HOVER.b / 255.0f, Settings.Z_AXIS_COLOR_HOVER.a / 255.0f);
-        field.z = drawVectorField(field.z, resetValue.z, isValueChanged, "Z", zButtonColorU32, zButtonHoverColorU32, widthEach, format);
+        field.z = drawVectorField(field.z, resetValue.z, minimum.z, maximum.z, isValueChanged, "Z", zButtonColorU32, zButtonHoverColorU32, widthEach, format);
 
         ImGui.sameLine();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getItemInnerSpacingX());
         int wButtonColorU32 = ImGui.getColorU32(Settings.W_AXIS_COLOR.r / 255.0f, Settings.W_AXIS_COLOR.g / 255.0f, Settings.W_AXIS_COLOR.b / 255.0f, Settings.W_AXIS_COLOR.a / 255.0f);
         int wButtonHoverColorU32 = ImGui.getColorU32(Settings.W_AXIS_COLOR_HOVER.r / 255.0f, Settings.W_AXIS_COLOR_HOVER.g / 255.0f, Settings.W_AXIS_COLOR_HOVER.b / 255.0f, Settings.W_AXIS_COLOR_HOVER.a / 255.0f);
-        field.w = drawVectorField(field.w, resetValue.w, isValueChanged, "W", wButtonColorU32, wButtonHoverColorU32, widthEach, format);
+        field.w = drawVectorField(field.w, resetValue.w, minimum.w, maximum.w, isValueChanged, "W", wButtonColorU32, wButtonHoverColorU32, widthEach, format);
 
         ImGui.popItemWidth();
         ImGui.popStyleVar();
@@ -375,6 +385,25 @@ public class EditorGUI {
         return -1;
     }
 
+    public static Object field_Asset(String label, Object field, Asset.AssetType type) {
+        Object result = field;
+
+        beginField(label);
+
+        ImGui.button("DragDropField##" + label, ImGui.getContentRegionAvailX(), ImGui.getFrameHeight());
+
+        String assetPath = getDragDrop_Asset("Asset", type);
+        if (assetPath != null) {
+            switch (type) {
+                case Texture -> result = AssetPool.getTexture(assetPath);
+                default -> DebugLog.logError("EditorGUI field_Asset drag and drop, Default: ", assetPath, ", type: ", type.name());
+            }
+        }
+
+        endField();
+        return result;
+    }
+
     private static final List<String> isCollapsingHeaderBegin = new ArrayList<>();
     public static boolean beginCollapsingHeader(String label) { return beginCollapsingHeader(label, ImGuiTreeNodeFlags.None); }
     public static boolean beginCollapsingHeader(String label, int flags) { // TODO FIX INDENT(LEFT) SPACING OF COLLAPSING HEADER
@@ -392,5 +421,22 @@ public class EditorGUI {
     public static void endCollapsingHeader() {
         isCollapsingHeaderBegin.remove(isCollapsingHeaderBegin.size() - 1);
         ImGui.unindent();
+    }
+
+    public static String getDragDrop_Asset(String payloadType, Asset.AssetType acceptedType) {
+        String result = null;
+
+        if (ImGui.beginDragDropTarget()) {
+            AbstractMap.SimpleEntry<Asset.AssetType, String> payload = ImGui.getDragDropPayload(payloadType);
+            if (payload != null) {
+                if (payload.getKey() == acceptedType) {
+                    AbstractMap.SimpleEntry<Asset.AssetType, String> asset = ImGui.acceptDragDropPayload(payloadType);
+                    if (asset != null)
+                        result = asset.getValue();
+                }
+            }
+            ImGui.endDragDropTarget();
+        }
+        return result;
     }
 }

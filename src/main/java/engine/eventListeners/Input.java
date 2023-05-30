@@ -1,7 +1,6 @@
 package engine.eventListeners;
 
 import engine.editor.console.Console;
-import engine.editor.console.LogType;
 import engine.profiling.Profiler;
 import engine.stuff.Window;
 import org.joml.Vector2f;
@@ -26,7 +25,7 @@ public class Input {
         else if (keyCode <= 7)
             return MouseListener.isButtonDown(keyCode);
 
-        Console.log(String.format(String.format("'%d' - button out of bounds of Listeners.", keyCode), LogType.Error));
+        Console.logError(String.format(String.format("'%d' - button out of bounds of Listeners.", keyCode)));
         return false;
     }
 
@@ -36,7 +35,7 @@ public class Input {
         else if (keyCode <= 7)
             return MouseListener.isButtonClick(keyCode);
 
-        Console.log(String.format(String.format("'%d' - button out of bounds of Listeners.", keyCode), LogType.Error));
+        Console.logError(String.format(String.format("'%d' - button out of bounds of Listeners.", keyCode)));
         return false;
     }
 

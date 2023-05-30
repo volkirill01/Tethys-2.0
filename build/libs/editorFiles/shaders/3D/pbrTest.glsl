@@ -6,8 +6,11 @@ layout (location = 2) in vec3 a_Normals;
 out vec2 v_TextureCoordinates;
 
 uniform mat4 u_TransformationMatrix;
-uniform mat4 u_ProjectionMatrix;
-uniform mat4 u_ViewMatrix;
+
+uniform u_SceneData {
+    mat4 u_ProjectionMatrix;
+    mat4 u_ViewMatrix;
+};
 
 void main() {
     v_TextureCoordinates = a_TextureCoordinates;

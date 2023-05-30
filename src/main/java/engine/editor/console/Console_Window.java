@@ -25,20 +25,20 @@ public class Console_Window extends EditorGuiWindow implements Observer {
         //<editor-fold desc="MenuBar">
         ImGui.beginMenuBar();
         if (ImGui.menuItem("Send test messages")) {
-            Console.log("Test simple 1", LogType.Simple);
-            Console.log("Test simple 2", LogType.Simple);
-            Console.log("Test info 1", LogType.Info);
-            Console.log("Test info 2", LogType.Info);
-            Console.log("Test warning 1", LogType.Warning);
-            Console.log("Test warning 2", LogType.Warning);
-            Console.log("Test error 1", LogType.Error);
-            Console.log("Test error 2", LogType.Error);
-            Console.log("Test success 1", LogType.Success);
-            Console.log("Test success 2", LogType.Success);
-            Console.log("Test custom 1", new Color(255.0f, 255.0f, 0.0f));
-            Console.log("Test custom 2", new Color(255.0f, 255.0f, 0.0f));
-            Console.log("Test custom 3", new Color(255.0f, 0.0f, 255.0f));
-            Console.log("Test custom 4", new Color(255.0f, 0.0f, 255.0f));
+            Console.log("Test simple 1");
+            Console.log("Test simple 2");
+            Console.logInfo("Test info 1");
+            Console.logInfo("Test info 2");
+            Console.logWarning("Test warning 1");
+            Console.logWarning("Test warning 2");
+            Console.logError("Test error 1");
+            Console.logError("Test error 2");
+            Console.logSuccess("Test success 1");
+            Console.logSuccess("Test success 2");
+            Console.logCustom("Test custom 1", new Color(255.0f, 255.0f, 0.0f));
+            Console.logCustom("Test custom 2", new Color(255.0f, 255.0f, 0.0f));
+            Console.logCustom("Test custom 3", new Color(255.0f, 0.0f, 255.0f));
+            Console.logCustom("Test custom 4", new Color(255.0f, 0.0f, 255.0f));
         }
         if (ImGui.menuItem("\uEE09 Clear"))
             Console.clear();

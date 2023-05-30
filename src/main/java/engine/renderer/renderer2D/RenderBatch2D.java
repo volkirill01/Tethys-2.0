@@ -224,7 +224,7 @@ public class RenderBatch2D implements Comparable<RenderBatch2D> {
             vertices[offset + 9]    = textureID;
 
             // Load entity ID
-            vertices[offset + 10]   = sprite.gameObject.getUid() + 1; // We used 0 id for invalid object
+            vertices[offset + 10]   = sprite.gameObject.getIncrementedID() + 1; // We used 0 id for invalid object
 
             // Load texture tiling
             vertices[offset + 11]   = sprite.getTiling().x;

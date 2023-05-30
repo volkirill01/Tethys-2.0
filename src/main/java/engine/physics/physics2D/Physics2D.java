@@ -40,25 +40,29 @@ public class Physics2D {
 
         if (obj.getComponent(RigidBody2D.class).getRawBody() == null) {
             BodyDef bodyDef = new BodyDef();
-            bodyDef.angle = (float) Math.toRadians(obj.transform.rotation.z); // TODO DEBUG COLLISIONS AND FIX ROTATION OR SOMETHING ELSE
-            bodyDef.position.set(obj.transform.position.x, obj.transform.position.y);
-            bodyDef.angularDamping = rb.getAngularDamping();
-            bodyDef.linearDamping = rb.getLinearDamping();
-            bodyDef.fixedRotation = rb.isFixedRotation();
-            bodyDef.bullet = rb.isContinuesCollision();
-            bodyDef.gravityScale = rb.getGravityScale();
-            bodyDef.angularVelocity = rb.getAngularVelocity();
-            bodyDef.userData = rb.gameObject;
-
             switch (rb.getBodyType()) {
                 case Static -> bodyDef.type = BodyType.STATIC;
                 case Dynamic -> bodyDef.type = BodyType.DYNAMIC;
                 case Kinematic -> bodyDef.type = BodyType.KINEMATIC;
             }
+            bodyDef.fixedRotation = rb.isFixedRotation();
+            bodyDef.bullet = rb.isContinuesCollision();
+
+            bodyDef.position.set(obj.transform.position.x, obj.transform.position.y);
+            bodyDef.angle = obj.transform.rotation.z;
+
+            bodyDef.userData = rb.gameObject;
 
             Body body = world.createBody(bodyDef);
-            body.m_mass = rb.getMass();
+            body.setFixedRotation(rb.isFixedRotation());
             rb.setRawBody(body);
+
+//            bodyDef.angularDamping = rb.getAngularDamping();
+//            bodyDef.linearDamping = rb.getLinearDamping();
+//            bodyDef.gravityScale = rb.getGravityScale();
+//            bodyDef.angularVelocity = rb.getAngularVelocity();
+//
+//            body.m_mass = rb.getMass();
 
             if (obj.hasComponent(Box2DCollider.class))
                 addBox2DCollider(rb, obj.getComponent(Box2DCollider.class));
@@ -162,16 +166,19 @@ public class Physics2D {
 
         PolygonShape shape = new PolygonShape();
 
-        Vector2f halfSize = new Vector2f(collider.getSize()).div(2.0f).mul(rb.gameObject.transform.scale.x, rb.gameObject.transform.scale.y);
+        Vector2f halfSize = new Vector2f(collider.getSize()).mul(rb.gameObject.transform.scale.x, rb.gameObject.transform.scale.y).div(2.0f); // Divide our scale to match half scale in Box2D
         Vector2f offset = collider.getOffset();
-        shape.setAsBox(Math.abs(halfSize.x), Math.abs(halfSize.y), new Vec2(offset.x, offset.y), (float) Math.toRadians(rb.gameObject.transform.rotation.z));
+        shape.setAsBox(Math.abs(halfSize.x), Math.abs(halfSize.y), new Vec2(offset.x, offset.y), 0.0f);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = rb.getDensity();
         fixtureDef.friction = rb.getFriction();
-        fixtureDef.userData = collider.gameObject;
+        fixtureDef.restitution = rb.getRestitution();
         fixtureDef.isSensor = rb.isTrigger();
+
+        fixtureDef.userData = collider.gameObject;
+
         body.createFixture(fixtureDef);
         Profiler.stopTimer(String.format("Physics2D Add BoxCollider2D - '%s'", rb.gameObject.getName()));
     }
@@ -188,10 +195,13 @@ public class Physics2D {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0f;
+        fixtureDef.density = rb.getDensity();
         fixtureDef.friction = rb.getFriction();
-        fixtureDef.userData = collider.gameObject;
+        fixtureDef.restitution = rb.getRestitution();
         fixtureDef.isSensor = rb.isTrigger();
+
+        fixtureDef.userData = collider.gameObject;
+
         body.createFixture(fixtureDef);
         Profiler.stopTimer(String.format("Physics2D Add CircleCollider2D - '%s'", rb.gameObject.getName()));
     }

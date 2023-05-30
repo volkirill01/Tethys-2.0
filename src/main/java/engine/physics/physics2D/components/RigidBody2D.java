@@ -4,29 +4,33 @@ import engine.editor.gui.EditorGUI;
 import engine.entity.component.Component;
 import engine.physics.physics2D.Physics2D;
 import engine.physics.physics2D.enums.BodyType;
-import engine.stuff.Window;
 import imgui.ImGui;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
-import org.joml.Math;
 import org.joml.Vector2f;
 
 public class RigidBody2D extends Component {
 
-    private final Vector2f velocity = new Vector2f();
-    private float angularDamping = 0.8f;
-    private float linearDamping = 0.9f;
-    private float mass = 1.0f;
+    private transient Body rawBody = null;
+
     private BodyType bodyType = BodyType.Dynamic;
-    private float friction = 0.1f;
-    private float angularVelocity = 0.0f;
-    private float gravityScale = 1.0f;
-    private boolean isTrigger = false;
+    private final Vector2f velocity = new Vector2f();
 
     private boolean fixedRotation = false;
     private boolean continuesCollision = false;
 
-    private transient Body rawBody = null;
+    private float density = 1.0f;
+    private float friction = 0.5f;
+    private float restitution = 0.0f; // Bounciness
+
+    // ==========================
+    // TODO MOVE THIS IN TO PHYSICS MATERIAL
+    private float angularDamping = 0.8f;
+    private float linearDamping = 0.9f;
+    private float mass = 1.0f;
+    private float angularVelocity = 0.0f;
+    private float gravityScale = 1.0f;
+    private boolean isTrigger = false;
 
     @Override
     public void update() {
@@ -34,10 +38,10 @@ public class RigidBody2D extends Component {
             return;
 
         switch (this.bodyType) {
-            case Static -> this.rawBody.setTransform(new Vec2(this.gameObject.transform.position.x, this.gameObject.transform.position.y), Math.toRadians(this.gameObject.transform.rotation.z));
+            case Static -> this.rawBody.setTransform(new Vec2(this.gameObject.transform.position.x, this.gameObject.transform.position.y), this.gameObject.transform.rotation.z);
             case Dynamic, Kinematic -> {
                 this.gameObject.transform.position.set(this.rawBody.getPosition().x, this.rawBody.getPosition().y, this.gameObject.transform.position.z);
-                this.gameObject.transform.rotation.z = (float) Math.toDegrees(this.rawBody.getAngle());
+                this.gameObject.transform.rotation.z = this.rawBody.getAngle();
                 Vec2 velocity = this.rawBody.getLinearVelocity();
                 this.velocity.set(velocity.x, velocity.y);
             }
@@ -52,18 +56,24 @@ public class RigidBody2D extends Component {
         ImGui.beginDisabled();
         EditorGUI.field_Vector2f("Velocity", this.velocity);
         ImGui.endDisabled();
-        this.angularDamping = EditorGUI.field_Float("Angular Damping", this.angularDamping);
-        this.linearDamping = EditorGUI.field_Float("Linear Damping", this.linearDamping);
-        this.mass = EditorGUI.field_Float("Mass", this.mass, EditorGUI.DEFAULT_FLOAT_FORMAT + "kg");
         this.bodyType = (BodyType) EditorGUI.field_Enum("Body Type", this.bodyType);
-        this.friction = EditorGUI.field_Float("Friction", this.friction);
-        this.angularVelocity = EditorGUI.field_Float("Angular Velocity", this.angularVelocity);
-        this.gravityScale = EditorGUI.field_Float("Gravity Scale", this.gravityScale);
-        this.isTrigger = EditorGUI.field_Boolean("Is Trigger", this.isTrigger);
+
         this.fixedRotation = EditorGUI.field_Boolean("Fixed Rotation", this.fixedRotation);
         this.continuesCollision = EditorGUI.field_Boolean("Continues Collision", this.continuesCollision);
+
+        this.density = EditorGUI.field_Float("Density", this.density);
+        this.friction = EditorGUI.field_Float("Friction", this.friction);
+        this.restitution = EditorGUI.field_Float("Restitution(Bounciness)", this.restitution);
+
+//        this.angularDamping = EditorGUI.field_Float("Angular Damping", this.angularDamping);
+//        this.linearDamping = EditorGUI.field_Float("Linear Damping", this.linearDamping);
+//        this.mass = EditorGUI.field_Float("Mass", this.mass, EditorGUI.DEFAULT_FLOAT_FORMAT + "kg");
+//        this.angularVelocity = EditorGUI.field_Float("Angular Velocity", this.angularVelocity);
+//        this.gravityScale = EditorGUI.field_Float("Gravity Scale", this.gravityScale);
+//        this.isTrigger = EditorGUI.field_Boolean("Is Trigger", this.isTrigger);
     }
 
+    // =========================================
     public void addVelocity(Vector2f force) {
         if (this.rawBody != null)
             this.rawBody.applyForceToCenter(new Vec2(force.x, force.y));
@@ -74,6 +84,15 @@ public class RigidBody2D extends Component {
             this.rawBody.applyLinearImpulse(new Vec2(force.x, force.y), this.rawBody.getWorldCenter());
     }
 
+    // =========================================
+    public Body getRawBody() { return this.rawBody; }
+
+    public void setRawBody(Body rawBody) { this.rawBody = rawBody; }
+
+    public BodyType getBodyType() { return this.bodyType; }
+
+    public void setBodyType(BodyType bodyType) { this.bodyType = bodyType; }
+
     public Vector2f getVelocity() { return this.velocity; }
 
     public void setVelocity(Vector2f velocity) {
@@ -82,30 +101,27 @@ public class RigidBody2D extends Component {
             this.rawBody.setLinearVelocity(new Vec2(this.velocity.x, this.velocity.y));
     }
 
-    public void setAngularVelocity(float velocity) {
-        this.angularVelocity = velocity;
-        if (this.rawBody != null)
-            this.rawBody.setAngularVelocity(this.angularVelocity);
-    }
+    public boolean isFixedRotation() { return this.fixedRotation; }
 
-    public void setGravityScale(float gravityScale) {
-        this.gravityScale = gravityScale;
-        if (this.rawBody != null)
-            this.rawBody.setGravityScale(this.gravityScale);
-    }
+    public void setFixedRotation(boolean fixedRotation) { this.fixedRotation = fixedRotation; }
 
-    public void setIsTrigger(boolean isTrigger) {
-        this.isTrigger = isTrigger;
-        if (this.rawBody != null)
-            Physics2D.setIsTrigger(this, isTrigger);
-    }
+    public boolean isContinuesCollision() { return this.continuesCollision; }
 
-    public boolean isTrigger() { return this.isTrigger; }
+    public void setContinuesCollision(boolean continuesCollision) { this.continuesCollision = continuesCollision; }
+
+    public float getDensity() { return this.density; }
+
+    public void setDensity(float density) { this.density = density; }
 
     public float getFriction() { return this.friction; }
 
     public void setFriction(float friction) { this.friction = friction; }
 
+    public float getRestitution() { return this.restitution; }
+
+    public void setRestitution(float restitution) { this.restitution = restitution; }
+
+    // ==========================
     public float getAngularDamping() { return this.angularDamping; }
 
     public void setAngularDamping(float angularDamping) { this.angularDamping = angularDamping; }
@@ -118,23 +134,27 @@ public class RigidBody2D extends Component {
 
     public void setMass(float mass) { this.mass = mass; }
 
-    public BodyType getBodyType() { return this.bodyType; }
-
-    public void setBodyType(BodyType bodyType) { this.bodyType = bodyType; }
-
-    public boolean isFixedRotation() { return this.fixedRotation; }
-
-    public void setFixedRotation(boolean fixedRotation) { this.fixedRotation = fixedRotation; }
-
-    public boolean isContinuesCollision() { return this.continuesCollision; }
-
-    public void setContinuesCollision(boolean continuesCollision) { this.continuesCollision = continuesCollision; }
-
     public float getAngularVelocity() { return this.angularVelocity; }
+
+    public void setAngularVelocity(float velocity) {
+        this.angularVelocity = velocity;
+        if (this.rawBody != null)
+            this.rawBody.setAngularVelocity(this.angularVelocity);
+    }
 
     public float getGravityScale() { return this.gravityScale; }
 
-    public Body getRawBody() { return this.rawBody; }
+    public void setGravityScale(float gravityScale) {
+        this.gravityScale = gravityScale;
+        if (this.rawBody != null)
+            this.rawBody.setGravityScale(this.gravityScale);
+    }
 
-    public void setRawBody(Body rawBody) { this.rawBody = rawBody; }
+    public boolean isTrigger() { return this.isTrigger; }
+
+    public void setIsTrigger(boolean isTrigger) {
+        this.isTrigger = isTrigger;
+        if (this.rawBody != null)
+            Physics2D.setIsTrigger(this, isTrigger);
+    }
 }

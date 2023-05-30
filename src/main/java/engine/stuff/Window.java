@@ -1,9 +1,12 @@
 package engine.stuff;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.reflect.TypeToken;
 import engine.assets.AssetPool;
 import engine.editor.console.Console;
 import engine.editor.console.ConsoleMessage;
-import engine.editor.console.LogType;
 import engine.editor.windows.Outliner_Window;
 import engine.eventListeners.Input;
 import engine.eventListeners.KeyCode;
@@ -25,6 +28,7 @@ import engine.scenes.SceneManager;
 import engine.stuff.fileDialogs.FileDialogs;
 import engine.stuff.fileDialogs.FileTypeFilter;
 import engine.stuff.utils.Time;
+import org.joml.Vector2f;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.openal.AL;
@@ -36,11 +40,12 @@ import org.lwjgl.opengl.GL;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Objects;
+import java.util.*;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -57,8 +62,8 @@ public class Window implements Observer {
     private static int positionX;
     private static int positionY;
     private static final String title = "Tethys";
-    private static final String windowIniFilepath = "window.ini";
-    private static final String engineConfigFilepath = "engine.conf";
+    private static final String windowIniFilepath = "window_ini";
+    private static final String engineConfigFilepath = "engine_conf";
 
     private static boolean isMinimized = false;
     private static boolean isClosed = false;
@@ -68,7 +73,7 @@ public class Window implements Observer {
     private static long audioContext;
     private static long audioDevice;
 
-    private static boolean runtimePlaying = false;
+    private static boolean runtimePlaying = false; // TODO MAYBE REWRITE THIS BUTCH OF BOOLEANS IN TO STATE MACHINE
     private static boolean runtimePause = false;
     private static boolean nextFrame = false;
     private static String lastOpenedScenePath = "";
@@ -269,27 +274,37 @@ public class Window implements Observer {
 
     private void loadWindowIniFile() {
         DebugLog.logInfo("Load Window ini file.");
+
         // Set default window parameters
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         screen_width = (int) screenSize.getWidth();
         screen_height = (int) screenSize.getHeight();
 
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String inFile = "";
         try {
             inFile = new String(Files.readAllBytes(Paths.get(windowIniFilepath)));
         } catch (IOException e) {
-            DebugLog.logError("No Window ini file.");
+            DebugLog.logError("No Window ini file: ", windowIniFilepath);
         }
 
         if (!inFile.equals("")) {
-            width = Integer.parseInt(inFile.split("size = ")[1].split(", ")[0]);
-            height = Integer.parseInt(inFile.split("size = ")[1].split(", ")[1].split("\n")[0]);
+            try {
+                Type typeOfHashMap = new TypeToken<Map<String, Object>>() { }.getType();
+                Map<String, Object> newMap = gson.fromJson(inFile, typeOfHashMap); // This type must match TypeToken
+                LinkedTreeMap<String, Object> tmpLinkedMap = (LinkedTreeMap<String, Object>) newMap.get("position");
+                Vector2f tmpVector = new Vector2f((float) (double) tmpLinkedMap.get("x"), (float) (double) tmpLinkedMap.get("y"));
+                positionX = (int) tmpVector.x;
+                positionY = (int) tmpVector.y;
 
-            positionX = Integer.parseInt(inFile.split("position = ")[1].split(", ")[0].split("\n")[0]);
-            positionY = Integer.parseInt(inFile.split("position = ")[1].split(", ")[1].split("\n")[0]);
+                tmpLinkedMap = (LinkedTreeMap<String, Object>) newMap.get("size");
+                tmpVector = new Vector2f((float) (double) tmpLinkedMap.get("x"), (float) (double) tmpLinkedMap.get("y"));
+                width = (int) tmpVector.x;
+                height = (int) tmpVector.y;
 
-            isMinimized = !Boolean.parseBoolean(inFile.split("isMaximized = ")[1]);
-            return;
+                isMinimized = !(boolean) newMap.get("isMaximized");
+                return;
+            } catch (NullPointerException ignored) { }
         }
 
         width = screen_width;
@@ -303,17 +318,27 @@ public class Window implements Observer {
 
     private void loadEngineConfigFile() {
         DebugLog.logInfo("Load Engine config file.");
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String inFile = "";
         try {
             inFile = new String(Files.readAllBytes(Paths.get(engineConfigFilepath)));
         } catch (IOException e) {
-            DebugLog.logError("No Engine config file.");
+            DebugLog.logError("No Engine config file: ", engineConfigFilepath);
         }
 
         if (!inFile.equals("")) {
-            SceneManager.changeScene(inFile.split("currentScene = ")[1]);
-            lastOpenedScenePath = SceneManager.getCurrentScene().getFilepath();
-            return;
+            try {
+                Type typeOfHashMap = new TypeToken<Map<String, Object>>() {
+                }.getType();
+                Map<String, Object> newMap = gson.fromJson(inFile, typeOfHashMap); // This type must match TypeToken
+
+                SceneManager.changeScene((String) newMap.get("currentScene"));
+
+                lastOpenedScenePath = SceneManager.getCurrentScene().getFilepath();
+
+                return;
+            } catch (NullPointerException ignored) { }
         }
 
         SceneManager.changeScene("Assets/defaultScene.scene"); // Load default Scene
@@ -322,39 +347,46 @@ public class Window implements Observer {
 
     private static void saveWindowIniFile() {
         DebugLog.logInfo("Save Window ini file.");
+
+        int[] tmpPositionX = new int[1];
+        int[] tmpPositionY = new int[1];
+        glfwGetWindowPos(glfwWindow, tmpPositionX, tmpPositionY);
+        int[] tmpSizeX = new int[1];
+        int[] tmpSizeY = new int[1];
+        glfwGetWindowSize(glfwWindow, tmpSizeX, tmpSizeY);
+
+        Map<String, Object> windowParametersMap = new HashMap<>();
+        windowParametersMap.put("position", new Vector2f(tmpPositionX[0], tmpPositionY[0]));
+        windowParametersMap.put("size", new Vector2f(tmpSizeX[0], tmpSizeY[0]));
+        windowParametersMap.put("isMaximized", glfwGetWindowAttrib(glfwWindow, GLFW_MAXIMIZED) == 1);
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String json = gson.toJson(windowParametersMap);
+
         try {
-            FileOutputStream outputStream = new FileOutputStream(windowIniFilepath);
-
-            int[] tmpPositionX = new int[1];
-            int[] tmpPositionY = new int[1];
-            glfwGetWindowPos(glfwWindow, tmpPositionX, tmpPositionY);
-
-            int[] tmpSizeX = new int[1];
-            int[] tmpSizeY = new int[1];
-            glfwGetWindowSize(glfwWindow, tmpSizeX, tmpSizeY);
-
-            outputStream.write(String.format("position = %d, %d\n", tmpPositionX[0], tmpPositionY[0]).getBytes());
-            outputStream.write(String.format("size = %d, %d\n", tmpSizeX[0], tmpSizeY[0]).getBytes());
-            outputStream.write(String.format("isMaximized = %b", glfwGetWindowAttrib(glfwWindow, GLFW_MAXIMIZED) == 1).getBytes());
-            outputStream.flush();
-
-            outputStream.close();
+            FileWriter writer = new FileWriter(windowIniFilepath);
+            writer.write(json);
+            writer.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(String.format("Error in saving Window ini file. Filepath - '%s'", windowIniFilepath), e);
         }
     }
 
     private static void saveEngineConfigFile() {
         DebugLog.logInfo("Save Engine config file.");
+
+        Map<String, Object> engineParametersMap = new HashMap<>();
+        engineParametersMap.put("currentScene", SceneManager.getCurrentScene().getFilepath().replace("\\", "/"));
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String json = gson.toJson(engineParametersMap);
+
         try {
-            FileOutputStream outputStream = new FileOutputStream(engineConfigFilepath);
-
-            outputStream.write(String.format("currentScene = %s", SceneManager.getCurrentScene().getFilepath()).getBytes());
-            outputStream.flush();
-
-            outputStream.close();
+            FileWriter writer = new FileWriter(engineConfigFilepath);
+            writer.write(json);
+            writer.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(String.format("Error in saving Engine config file. Filepath - '%s'", engineConfigFilepath), e);
         }
     }
 
@@ -402,7 +434,7 @@ public class Window implements Observer {
     @Override
     public void onNotify(Event event) {
         if (Console.isStopOnError() && runtimePlaying)
-            if (event.type == EventType.Console_SendMessage && ((ConsoleMessage) event.data).type == LogType.Error) {
+            if (event.type == EventType.Console_SendMessage && ((ConsoleMessage) event.data).type == ConsoleMessage.LogType.Error) {
                 EventSystem.notify(new Event(EventType.Engine_StopPlay));
                 return;
             }
