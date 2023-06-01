@@ -6,9 +6,6 @@ layout (location = 3) in float a_TextureID;
 layout (location = 4) in float a_EntityID;
 layout (location = 5) in vec2 a_Tiling;
 
-//uniform mat4 u_ProjectionMatrix;
-//uniform mat4 u_ViewMatrix;
-
 uniform u_SceneData {
     mat4 u_ProjectionMatrix;
     mat4 u_ViewMatrix;

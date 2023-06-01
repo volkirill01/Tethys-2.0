@@ -3,24 +3,25 @@ package engine.physics.physics2D.components.colliders;
 import engine.editor.gui.EditorGUI;
 import engine.physics.physics2D.components.ed_Collider2D;
 import engine.renderer.debug.DebugRenderer;
+import org.joml.Math;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class Circle2DCollider extends ed_Collider2D {
 
-    private float radius = 1.0f;
+    private float radius = 0.5f;
     private final Vector2f offset = new Vector2f(0.0f);
 
     @Override
     public void editorUpdate() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugRenderer.addCircle2D(center, this.radius,  this.gameObject.transform.rotation);
+        DebugRenderer.addCircle2D(center, this.radius * Math.max(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y),  this.gameObject.transform.rotation);
     }
 
     @Override
     public void update() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugRenderer.addCircle2D(center, this.radius, this.gameObject.transform.rotation);
+        DebugRenderer.addCircle2D(center, this.radius * Math.max(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
     }
 
     @Override

@@ -1,0 +1,68 @@
+[
+  {
+    "tagComponent": {
+      "name": "Empty",
+      "id": {
+        "uuid": 516996975720097792
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 12
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Dynamic",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 18
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Circle2DCollider",
+        "properties": {
+          "radius": 0.5,
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 19
+        }
+      }
+    ],
+    "clickable": true
+  }
+]

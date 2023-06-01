@@ -14,6 +14,7 @@ import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
+import org.joml.Math;
 import org.joml.Vector2f;
 
 public class Physics2D {
@@ -189,7 +190,7 @@ public class Physics2D {
         if (body == null) throw new NullPointerException(String.format("'%s' - Raw Body must not be null.", rb.gameObject.getName()));
 
         CircleShape shape = new CircleShape();
-        shape.setRadius(collider.getRadius() / 2.0f);
+        shape.setRadius(collider.getRadius() * Math.max(rb.gameObject.transform.scale.x, rb.gameObject.transform.scale.y));
         Vector2f offset = collider.getOffset();
         shape.m_p.set(offset.x, offset.y);
 

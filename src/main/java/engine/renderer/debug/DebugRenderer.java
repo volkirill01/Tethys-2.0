@@ -12,9 +12,7 @@ import engine.stuff.customVariables.Color;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.lwjgl.opengl.GL30.*;
 
@@ -31,6 +29,17 @@ public class DebugRenderer {
     private static int vboID;
 
     private static boolean started = false;
+
+    private static final Map<String, Boolean> drawDebugOptions = new LinkedHashMap<>();
+
+    private static void addDrawDebugOptions() {
+        drawDebugOptions.put("Draw Debug", true);
+        drawDebugOptions.put("Draw Debug/Grid 2D", true);
+        drawDebugOptions.put("Draw Debug/Box Colliders2D", true);
+        drawDebugOptions.put("Draw Debug/Circle Colliders2D", true);
+        drawDebugOptions.put("Draw Debug/Cube Colliders", true);
+        drawDebugOptions.put("Draw Debug/Sphere Colliders", true);
+    }
 
     public static void init() {
         Profiler.startTimer("DebugRenderer Init");
@@ -51,6 +60,8 @@ public class DebugRenderer {
         glEnableVertexAttribArray(1);
 
         glLineWidth(3.0f);
+
+        addDrawDebugOptions();
         Profiler.stopTimer("DebugRenderer Init");
     }
 
@@ -129,6 +140,9 @@ public class DebugRenderer {
     public static void addLine(Vector3f from, Vector3f to, Color color) { addLine(from, to, color, 1); }
     /** @param lifetime in frames */
     public static void addLine(Vector3f from, Vector3f to, Color color, int lifetime) {
+        if (!drawDebugOptions.get("Draw Debug"))
+            return;
+
         ed_EditorCamera camera = SceneManager.getCurrentScene().getEditorCamera();
 
         Vector2f cameraProjectionSize = new Vector2f(camera.getOrthographicProjectionSize()).mul(camera.getZoom());
@@ -153,6 +167,9 @@ public class DebugRenderer {
     public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation, Color color) { addBox2D(center, size, rotation, color, 1); }
     /** @param lifetime in frames */
     public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation, Color color, int lifetime) {
+        if (!drawDebugOptions.get("Draw Debug") || !drawDebugOptions.get("Draw Debug/Box Colliders2D"))
+            return;
+
         Vector3f min = new Vector3f(center).sub(size.x / 2.0f, size.y / 2.0f, 0.0f);
         Vector3f max = new Vector3f(center).add(size.x / 2.0f, size.y / 2.0f, 0.0f);
 
@@ -180,6 +197,9 @@ public class DebugRenderer {
     public static void addCube(Vector3f center, Vector3f size, Vector3f rotation, Color color) { addCube(center, size, rotation, color, 1); }
     /** @param lifetime in frames */
     public static void addCube(Vector3f center, Vector3f size, Vector3f rotation, Color color, int lifetime) {
+        if (!drawDebugOptions.get("Draw Debug") || !drawDebugOptions.get("Draw Debug/Cube Colliders"))
+            return;
+
         Vector3f halfSize = new Vector3f(size).div(2.0f);
         Vector3f min = new Vector3f(center).sub(halfSize);
         Vector3f max = new Vector3f(center).add(halfSize);
@@ -224,12 +244,15 @@ public class DebugRenderer {
     public static void addCircle2D(Vector3f center, float radius, Vector3f rotation, Color color) { addCircle2D(center, radius, rotation, color, 1); }
     /** @param lifetime in frames */
     public static void addCircle2D(Vector3f center, float radius, Vector3f rotation, Color color, int lifetime) {
+        if (!drawDebugOptions.get("Draw Debug") || !drawDebugOptions.get("Draw Debug/Circle Colliders2D"))
+            return;
+
         Vector3f[] points = new Vector3f[30];
         int increment = 360 / points.length;
         int currentAngle = 0;
 
         for (int i = 0; i < points.length; i++) {
-            Vector2f tmp = new Vector2f(radius / 2.0f + 0.001f, 0.0f);
+            Vector2f tmp = new Vector2f(radius + 0.001f, 0.0f);
             Maths.rotate(tmp, currentAngle, new Vector2f(0.0f));
             Vector3f point = new Vector3f(tmp.x, tmp.y, 0.0f);
             Maths.rotate3D(point, rotation);
@@ -253,12 +276,15 @@ public class DebugRenderer {
     public static void addSphere(Vector3f center, float radius, Vector3f rotation, Color color) { addSphere(center, radius, rotation, color, 1); }
     /** @param lifetime in frames */
     public static void addSphere(Vector3f center, float radius, Vector3f rotation, Color color, int lifetime) {
+        if (!drawDebugOptions.get("Draw Debug") || !drawDebugOptions.get("Draw Debug/Sphere Colliders"))
+            return;
+
         Vector3f[] points = new Vector3f[90];
         int increment = 360 / 30;
         int currentAngle = 0;
 
         for (int i = 0; i < 30; i++) {
-            Vector2f tmp = new Vector2f(radius / 2.0f + 0.001f, 0.0f);
+            Vector2f tmp = new Vector2f(radius + 0.001f, 0.0f);
             Maths.rotate(tmp, currentAngle, new Vector2f(0.0f));
             Vector3f point = new Vector3f(tmp.x, tmp.y, 0.0f);
             points[i] = point.add(center);
@@ -272,7 +298,7 @@ public class DebugRenderer {
 
         currentAngle = 0;
         for (int i = 30; i < 60; i++) {
-            Vector2f tmp = new Vector2f(radius / 2.0f + 0.001f, 0.0f);
+            Vector2f tmp = new Vector2f(radius + 0.001f, 0.0f);
             Maths.rotate(tmp, currentAngle, new Vector2f(0.0f));
             Vector3f point = new Vector3f(tmp.x, tmp.y, 0.0f);
             Maths.rotateY(point, 90.0f);
@@ -287,7 +313,7 @@ public class DebugRenderer {
 
         currentAngle = 0;
         for (int i = 60; i < 90; i++) {
-            Vector2f tmp = new Vector2f(radius / 2.0f + 0.001f, 0.0f);
+            Vector2f tmp = new Vector2f(radius + 0.001f, 0.0f);
             Maths.rotate(tmp, currentAngle, new Vector2f(0.0f));
             Vector3f point = new Vector3f(tmp.x, tmp.y, 0.0f);
             Maths.rotateX(point, 90.0f);
@@ -307,4 +333,6 @@ public class DebugRenderer {
         lines.clear();
         Arrays.fill(vertexArray, 0.0f);
     }
+
+    public static Map<String, Boolean> getDebugDrawOptions() { return drawDebugOptions; }
 }

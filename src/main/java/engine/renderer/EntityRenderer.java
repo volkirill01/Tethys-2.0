@@ -4,13 +4,10 @@ import engine.entity.GameObject;
 import engine.profiling.Profiler;
 import engine.renderer.buffers.VertexArray;
 import engine.renderer.camera.ed_BaseCamera;
-import engine.renderer.renderer2D.SpriteMasterRenderer;
-import engine.renderer.renderer2D.SpriteRenderer;
+import engine.renderer.renderer2D.*;
 import engine.renderer.renderer3D.MeshMasterRenderer;
 import engine.renderer.renderer3D.MeshRenderer;
 import engine.renderer.shader.Shader;
-import engine.scenes.SceneManager;
-import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.IntBuffer;
@@ -27,6 +24,7 @@ public class EntityRenderer {
     public static void init() {
         Profiler.startTimer("EntityRenderer Init");
         glEnable(GL_BLEND | GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         // Initialize texture slots count variable to GPU texture slots count
@@ -38,7 +36,7 @@ public class EntityRenderer {
 
     public static void render(ed_BaseCamera camera) {
         Profiler.startTimer("EntityRenderer Render");
-        SpriteMasterRenderer.render(camera);
+        MasterRenderer2D.render(camera);
         MeshMasterRenderer.render(camera);
         Profiler.stopTimer("EntityRenderer Render");
     }
@@ -74,10 +72,10 @@ public class EntityRenderer {
 
     public static void setShader(Shader shader) { currentShader = shader; }
 
-    public static void add(GameObject obj) {
+    public static void add(GameObject obj) { // TODO FIX BUG ADDING COMPONENT TO GAME OBJECT NOT ADD IT TO RENDERERS
         Profiler.startTimer("EntityRenderer Add GameObject");
-        if (obj.hasComponent(SpriteRenderer.class))
-            SpriteMasterRenderer.add(obj);
+        if (obj.hasComponent(ed_Renderer.class))
+            MasterRenderer2D.add(obj);
         if (obj.hasComponent(MeshRenderer.class))
             MeshMasterRenderer.add(obj);
         Profiler.stopTimer("EntityRenderer Add GameObject");
@@ -85,8 +83,8 @@ public class EntityRenderer {
 
     public static void destroyGameObject(GameObject obj) {
         Profiler.startTimer("EntityRenderer Destroy GameObject");
-        if (obj.hasComponent(SpriteRenderer.class))
-            SpriteMasterRenderer.destroyGameObject(obj);
+        if (obj.hasComponent(ed_Renderer.class))
+            MasterRenderer2D.destroyGameObject(obj);
         if (obj.hasComponent(MeshRenderer.class))
             MeshMasterRenderer.destroyGameObject(obj);
         Profiler.stopTimer("EntityRenderer Destroy GameObject");
@@ -94,7 +92,7 @@ public class EntityRenderer {
 
     public static void clear() {
         Profiler.startTimer("EntityRenderer Clear");
-        SpriteMasterRenderer.clear();
+        MasterRenderer2D.clear();
         MeshMasterRenderer.clear();
         Profiler.stopTimer("EntityRenderer Clear");
     }

@@ -7,13 +7,66 @@ import engine.observers.events.Event;
 import engine.observers.events.EventType;
 import engine.profiling.Profiler_Window;
 import engine.renderer.camera.ed_BaseCamera;
+import engine.renderer.debug.DebugRenderer;
 import engine.scenes.SceneManager;
 import engine.stuff.Window;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.*;
 
+import java.util.Map;
+
 public class MainMenuBar {
+
+    private static void drawEditorMenuBar() {
+        //<editor-fold desc="Camera Mode Button">
+        ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 2.0f);
+        ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getStyle().getFramePaddingX() + ImGui.getContentRegionMaxX() / 8, ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY());
+        if (ImGui.button(SceneManager.getCurrentScene().getEditorCamera().getProjectionType().name())) {
+            if (SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
+                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Orthographic);
+            else
+                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Perspective);
+        }
+        ImGui.setCursorPosY(ImGui.getCursorStartPosY());
+        ImGui.popStyleVar();
+        ImGui.popStyleColor();
+        //</editor-fold>
+
+        drawPlayPauseButtons();
+
+        drawDebugDrawOptionsButton();
+    }
+
+    private static void drawWindowMenuBar() {
+        if (ImGui.beginMenu("File")) {
+            if (ImGui.menuItem("Save Scene"))
+                EventSystem.notify(new Event(EventType.Engine_SaveScene));
+            if (ImGui.menuItem("Save Scene As"))
+                EventSystem.notify(new Event(EventType.Engine_SaveSceneAs));
+            if (ImGui.menuItem("Open Scene"))
+                EventSystem.notify(new Event(EventType.Engine_OpenScene));
+            if (ImGui.menuItem("Reload Scene"))
+                EventSystem.notify(new Event(EventType.Engine_ReloadScene));
+            ImGui.endMenu();
+        }
+        if (ImGui.beginMenu("Windows")) {
+            if (ImGui.menuItem("Open Profiler"))
+                EngineGuiLayer.setWindowOpen(Profiler_Window.class, true);
+            ImGui.endMenu();
+        }
+
+        if (ImGui.beginMenu("Editor")) {
+            if (ImGui.menuItem("Minimize"))
+                Window.minimize();
+            if (ImGui.menuItem("Maximize"))
+                Window.maximize();
+            if (ImGui.menuItem("Close"))
+                Window.close();
+            ImGui.endMenu();
+        }
+    }
 
     public static float imgui() {
         int windowFlags = ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoTitleBar |
@@ -42,22 +95,7 @@ public class MainMenuBar {
         return menuBarHeight;
     }
 
-    private static void drawEditorMenuBar() {
-        //<editor-fold desc="Camera Mode Button">
-        ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
-        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 2.0f);
-        ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getStyle().getFramePaddingX() + ImGui.getContentRegionMaxX() / 8, ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY());
-        if (ImGui.button(SceneManager.getCurrentScene().getEditorCamera().getProjectionType().name())) {
-            if (SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
-                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Orthographic);
-            else
-                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Perspective);
-        }
-        ImGui.setCursorPosY(ImGui.getCursorStartPosY());
-        ImGui.popStyleVar();
-        ImGui.popStyleColor();
-        //</editor-fold>
-
+    private static void drawPlayPauseButtons() {
         boolean isPlayButtonEnabled = !Window.isRuntimePlaying();
         boolean isPauseButtonEnabled = !Window.isRuntimePause() && Window.isRuntimePlaying();
         boolean isNextFrameButtonEnabled = Window.isRuntimePause() && Window.isRuntimePlaying();
@@ -71,7 +109,7 @@ public class MainMenuBar {
 //        );
 
         //<editor-fold desc="Play Button">
-        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + (ImGui.getContentRegionMaxX() / 2) - (ImGui.getFrameHeight() * 3 + ImGui.getStyle().getItemInnerSpacingX() * 2) / 2 + 8.0f); // TODO FIX THIS + 8.0f VALUE
+        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + (ImGui.getContentRegionMaxX() / 2) - (ImGui.getFrameHeight() * 3 + ImGui.getStyle().getItemInnerSpacingX() * 2) / 2 + 8.0f); // TODO REPLACE THIS + 8.0f VALUE TO IMGUI VALUE
         ImVec4 playButtonColor = isPlayButtonEnabled ? new ImVec4(EditorThemeSystem.activeColor.r / 255.0f, EditorThemeSystem.activeColor.g / 255.0f, EditorThemeSystem.activeColor.b / 255.0f, EditorThemeSystem.activeColor.a / 255.0f) : new ImVec4(0.889f, 0.191f, 0.062f, 1.0f);
         if (drawSquareButton(isPlayButtonEnabled ? "\uEC74" : "\uEFFC", true, playButtonColor))
             EventSystem.notify(new Event(isPlayButtonEnabled ? EventType.Engine_StartPlay : EventType.Engine_StopPlay));
@@ -94,6 +132,38 @@ public class MainMenuBar {
         if (!isNextFrameButtonEnabled)
             ImGui.endDisabled();
         //</editor-fold>
+    }
+
+    private static void drawDebugDrawOptionsButton() {
+        float buttonWidth = ImGui.calcTextSize("Debug Drawing").x + ImGui.getStyle().getFramePaddingX() * 2;
+
+        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getWindowSizeX() - (ImGui.getContentRegionMaxX() / 3) - buttonWidth / 2 + 8.0f); // TODO REPLACE THIS + 8.0f VALUE TO IMGUI VALUE
+        if (beginComboButton("Debug Drawing")) {
+            Map<String, Boolean> debugDrawOptions = DebugRenderer.getDebugDrawOptions();
+
+            for (String key : debugDrawOptions.keySet()) {
+                ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() / 2, ImGui.getStyle().getFramePaddingY() / 2);
+                if (key.split("/").length == 1) {
+                    if (ImGui.checkbox(key, debugDrawOptions.get(key)))
+                        debugDrawOptions.replace(key, !debugDrawOptions.get(key));
+                    ImGui.popStyleVar();
+                } else {
+                    if (!debugDrawOptions.get(key.split("/")[0]))
+                        ImGui.beginDisabled();
+
+                    ImGui.indent();
+                    if (ImGui.checkbox(key.split("/")[1], debugDrawOptions.get(key)))
+                        debugDrawOptions.replace(key, !debugDrawOptions.get(key));
+                    ImGui.unindent();
+                    ImGui.popStyleVar();
+
+                    if (!debugDrawOptions.get(key.split("/")[0]))
+                        ImGui.endDisabled();
+                }
+            }
+
+            endComboButton();
+        }
     }
 
     private static boolean drawSquareButton(String text, boolean isEnabled, ImVec4 textColor) {
@@ -134,32 +204,49 @@ public class MainMenuBar {
         return isClick;
     }
 
-    private static void drawWindowMenuBar() {
-        if (ImGui.beginMenu("File")) {
-            if (ImGui.menuItem("Save Scene"))
-                EventSystem.notify(new Event(EventType.Engine_SaveScene));
-            if (ImGui.menuItem("Save Scene As"))
-                EventSystem.notify(new Event(EventType.Engine_SaveSceneAs));
-            if (ImGui.menuItem("Open Scene"))
-                EventSystem.notify(new Event(EventType.Engine_OpenScene));
-            if (ImGui.menuItem("Reload Scene"))
-                EventSystem.notify(new Event(EventType.Engine_ReloadScene));
-            ImGui.endMenu();
-        }
-        if (ImGui.beginMenu("Windows")) {
-            if (ImGui.menuItem("Open Profiler"))
-                EngineGuiLayer.setWindowOpen(Profiler_Window.class, true);
-            ImGui.endMenu();
-        }
+    private static boolean drawRectangleButton(String text, boolean isEnabled, ImVec4 textColor) {
+        boolean isClick = false;
 
-        if (ImGui.beginMenu("Editor")) {
-            if (ImGui.menuItem("Minimize"))
-                Window.minimize();
-            if (ImGui.menuItem("Maximize"))
-                Window.maximize();
-            if (ImGui.menuItem("Close"))
-                Window.close();
-            ImGui.endMenu();
-        }
+        ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleColor(ImGuiCol.Text, textColor.x, textColor.y, textColor.z, textColor.w);
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 2.0f);
+
+        ImGui.setCursorPosY(ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY());
+        if (ImGui.button(text))
+            if (!isEnabled)
+                isClick = true;
+        ImGui.setCursorPosY(ImGui.getCursorStartPosY());
+        ImGui.popStyleVar();
+        ImGui.popStyleColor(2);
+
+        return isClick;
+    }
+
+    private static boolean beginComboButton(String label) {
+        boolean isOpen = false;
+
+        ImVec4 tmp = ImGui.getStyle().getColor(ImGuiCol.Button);
+        ImGui.pushStyleColor(ImGuiCol.FrameBg, tmp.x, tmp.y, tmp.z, tmp.w);
+        tmp = ImGui.getStyle().getColor(ImGuiCol.ButtonHovered);
+        ImGui.pushStyleColor(ImGuiCol.FrameBgHovered, tmp.x, tmp.y, tmp.z, tmp.w);
+        tmp = ImGui.getStyle().getColor(ImGuiCol.ButtonActive);
+        ImGui.pushStyleColor(ImGuiCol.FrameBgActive, tmp.x, tmp.y, tmp.z, tmp.w);
+        ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0.0f);
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 2.0f);
+
+        ImGui.setCursorPosY(ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY());
+
+        ImGui.setNextItemWidth(ImGui.calcTextSize(label).x + ImGui.getStyle().getFramePaddingX() * 2 + ImGui.getFrameHeight());
+        if (ImGui.beginCombo("##" + label, label))
+            isOpen = true;
+
+        ImGui.setCursorPosY(ImGui.getCursorStartPosY());
+        ImGui.popStyleVar(2);
+        ImGui.popStyleColor(3);
+
+        return isOpen;
+    }
+    private static void endComboButton() {
+        ImGui.endCombo();
     }
 }

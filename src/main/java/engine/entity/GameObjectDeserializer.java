@@ -26,9 +26,10 @@ public class GameObjectDeserializer implements JsonDeserializer<GameObject> {
         go.tagComponent.id = new UUID(uuid);
         for (JsonElement e : components) {
             Component c = context.deserialize(e, Component.class);
+            if (c.getClass() == Transform.class)
+                go.transform = (Transform) c;
             go.addComponent(c);
         }
-        go.transform = go.getComponent(Transform.class);
 
         Profiler.stopTimer(String.format("Deserialize GameObject - '%s'", name));
 

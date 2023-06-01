@@ -96,13 +96,17 @@ public class EditorGUI {
         return field;
     }
 
-    public static float field_Float(String label, float field) { return field_Float(label, field, DEFAULT_FLOAT_FORMAT); }
-    public static float field_Float(String label, float field, String format) {
+    public static float field_Float(String label, float field) { return field_Float(label, field, -Float.MAX_VALUE, Float.MAX_VALUE, DEFAULT_FLOAT_FORMAT); }
+    public static float field_Float(String label, float field, String format) { return field_Float(label, field, -Float.MAX_VALUE, Float.MAX_VALUE, format); }
+    public static float field_Float(String label, float field, float minimum) { return field_Float(label, field, minimum, Float.MAX_VALUE, DEFAULT_FLOAT_FORMAT); }
+    public static float field_Float(String label, float field, float minimum, String format) { return field_Float(label, field, minimum, Float.MAX_VALUE, format); }
+    public static float field_Float(String label, float field, float minimum, float maximum) { return field_Float(label, field, minimum, maximum, DEFAULT_FLOAT_FORMAT); }
+    public static float field_Float(String label, float field, float minimum, float maximum, String format) {
         beginField(label);
 
         ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
         float[] ImFloat = { field };
-        if (ImGui.dragFloat("##field_Float_" + label, ImFloat, DRAG_SPEED, -Float.MAX_VALUE, Float.MAX_VALUE, format))
+        if (ImGui.dragFloat("##field_Float_" + label, ImFloat, DRAG_SPEED, minimum, maximum, format))
             field = ImFloat[0];
         ImGui.popItemWidth();
 
@@ -112,12 +116,16 @@ public class EditorGUI {
     }
 
     public static int field_Int(String label, int field) { return field_Int(label, field, DEFAULT_INTEGER_FORMAT); }
-    public static int field_Int(String label, int field, String format) {
+    public static int field_Int(String label, int field, String format) { return field_Int(label, field, -Integer.MAX_VALUE, Integer.MAX_VALUE, format); }
+    public static int field_Int(String label, int field, int minimum) { return field_Int(label, field, minimum, Integer.MAX_VALUE, DEFAULT_INTEGER_FORMAT); }
+    public static int field_Int(String label, int field, int minimum, String format) { return field_Int(label, field, minimum, Integer.MAX_VALUE, format); }
+    public static int field_Int(String label, int field, int minimum, int maximum) { return field_Int(label, field, minimum, maximum, DEFAULT_INTEGER_FORMAT); }
+    public static int field_Int(String label, int field, int minimum, int maximum, String format) {
         beginField(label);
 
         ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
         int[] ImInt = { field };
-        if (ImGui.dragInt("##field_Int_" + label, ImInt, DRAG_SPEED, -Integer.MAX_VALUE, Integer.MAX_VALUE, format))
+        if (ImGui.dragInt("##field_Int_" + label, ImInt, DRAG_SPEED, minimum, maximum, format))
             field = ImInt[0];
         ImGui.popItemWidth();
 

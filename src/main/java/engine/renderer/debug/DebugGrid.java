@@ -14,13 +14,16 @@ public class DebugGrid {
     private static final Color gridColor = new Color(20.0f, 20.0f, 20.0f);
 
     public static void addGrid() {
+        if (!DebugRenderer.getDebugDrawOptions().get("Draw Debug/Grid 2D"))
+            return;
+
         Profiler.startTimer("Debug AddGrid");
         ed_EditorCamera camera = SceneManager.getCurrentScene().getEditorCamera();
         if (camera.getZoom() > 5.0f || camera.getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
             return;
 
         Vector3f cameraPosition = camera.getPosition();
-        Vector2f projectionSize = new Vector2f(camera.getOrthographicProjectionSize()).mul(camera.getZoom()); // TODO FIX SCALING OF GRID
+        Vector2f projectionSize = new Vector2f(camera.getOrthographicProjectionSize()).mul(camera.getZoom());
 
         float firstX = ((int) ((cameraPosition.x - projectionSize.x / 2) / Settings.GRID_WIDTH) - 2) * Settings.GRID_WIDTH + Settings.GRID_WIDTH / 2.0f;
         float firstY = ((int) ((cameraPosition.y - projectionSize.y / 2) / Settings.GRID_HEIGHT) - 2) * Settings.GRID_HEIGHT + Settings.GRID_HEIGHT / 2.0f;

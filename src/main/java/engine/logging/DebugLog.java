@@ -7,6 +7,8 @@ import java.time.temporal.ChronoField;
 
 public class DebugLog {
 
+    private static final boolean sendLogMessages = true;
+
     private static void logTime() {
         LocalDateTime time = LocalDateTime.now();
         int hour = time.getHour();
@@ -18,10 +20,16 @@ public class DebugLog {
     }
 
     public static void log(Object... arguments) {
+        if (!sendLogMessages)
+            return;
+
         logTime();
         log_WithoutTime(arguments);
     }
     public static void log_WithoutTime(Object... arguments) {
+        if (!sendLogMessages)
+            return;
+
         for (Object argument : arguments)
             System.out.print(argument);
         System.out.print("\n");

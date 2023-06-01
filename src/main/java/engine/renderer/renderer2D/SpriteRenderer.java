@@ -3,7 +3,6 @@ package engine.renderer.renderer2D;
 import engine.assets.Asset;
 import engine.assets.AssetPool;
 import engine.editor.gui.EditorGUI;
-import engine.entity.component.Component;
 import engine.entity.component.Transform;
 import engine.renderer.Texture;
 import engine.renderer.Texture2D;
@@ -11,13 +10,12 @@ import engine.renderer.renderer2D.sprite.Sprite;
 import engine.stuff.customVariables.Color;
 import org.joml.Vector2f;
 
-public class SpriteRenderer extends Component {
+public class SpriteRenderer extends ed_Renderer {
 
     private final Color color = Color.WHITE.copy();
     private Sprite sprite = AssetPool.getDefaultSprite();
 
     private transient Transform lastTransform;
-    private transient boolean isDirty = true;
 
     private final Vector2f tiling = new Vector2f(1.0f); // TODO MOVE THIS IN MATERIAL
 
@@ -29,7 +27,7 @@ public class SpriteRenderer extends Component {
         if (this.lastTransform != null)
             if (!this.lastTransform.equals(this.gameObject.transform)) {
                 this.gameObject.transform.copy(this.lastTransform);
-                this.isDirty = true;
+                setDirty(true);
             }
     }
 
@@ -38,24 +36,21 @@ public class SpriteRenderer extends Component {
         if (this.lastTransform != null)
             if (!this.lastTransform.equals(this.gameObject.transform)) {
                 this.gameObject.transform.copy(this.lastTransform);
-                this.isDirty = true;
+                setDirty(true);
             }
     }
 
     @Override
-    public void destroy() { SpriteMasterRenderer.destroyGameObject(this.gameObject); }
-
-    @Override
     public void imgui() {
         if (EditorGUI.field_Color("Color", this.color))
-            this.isDirty = true;
+            setDirty(true);
         Texture oldTexture = this.getSprite().getTexture();
         this.sprite.setTexture((Texture2D) EditorGUI.field_Asset("Texture", this.sprite.getTexture(), Asset.AssetType.Texture));
         if (!oldTexture.equals(this.sprite.getTexture()))
-            this.isDirty = true;
+            setDirty(true);
 
         if (EditorGUI.field_Vector2f("Tiling", this.tiling, new Vector2f(1.0f), new Vector2f(0.0f)))
-            this.isDirty = true;
+            setDirty(true);
     }
 
     public Color getColor() { return this.color; }
@@ -63,14 +58,7 @@ public class SpriteRenderer extends Component {
     public void setColor(Color color) {
         if (!this.color.equals(color)) {
             this.color.set(color);
-            this.isDirty = true;
-        }
-    }
-
-    public void setColor(float scalar) {
-        if (!this.color.equals(new Color(scalar, scalar, scalar, scalar))) {
-            this.color.set(scalar, scalar, scalar, scalar);
-            this.isDirty = true;
+            setDirty(true);
         }
     }
 
@@ -79,13 +67,9 @@ public class SpriteRenderer extends Component {
     public void setSprite(Sprite sprite) {
         if (!this.sprite.equals(sprite)) {
             this.sprite = (sprite);
-            this.isDirty = true;
+            setDirty(true);
         }
     }
-
-    public boolean isDirty() { return this.isDirty; }
-
-    public void setDirty(boolean dirty) { this.isDirty = dirty; }
 
     public Vector2f getTiling() { return this.tiling; }
 }
