@@ -16,6 +16,7 @@ import engine.entity.component.Transform;
 import engine.physics.physics2D.Physics2D;
 import engine.renderer.camera.ed_EditorCamera;
 import engine.renderer.camera.Camera;
+import engine.renderer.renderer2D.ed_Renderer;
 import engine.renderer.renderer2D.sprite.Sprite;
 import engine.renderer.renderer2D.sprite.SpriteSheet;
 import engine.renderer.renderer3D.MeshRenderer;
@@ -125,7 +126,7 @@ public class Scene {
                 if (Outliner_Window.getActiveGameObjects().contains(this.gameObjects.get(i)))
                     Outliner_Window.removeActiveGameObject(this.gameObjects.get(i));
                 this.gameObjects.remove(i);
-                EntityRenderer.destroyGameObject(obj);
+                EntityRenderer.destroyGameObject(obj, ed_Renderer.class);
                 Physics2D.destroyGameObject(obj);
                 i--;
             }
@@ -156,7 +157,7 @@ public class Scene {
                 if (Outliner_Window.getActiveGameObjects().contains(this.gameObjects.get(i)))
                     Outliner_Window.removeActiveGameObject(this.gameObjects.get(i));
                 this.gameObjects.remove(i);
-                EntityRenderer.destroyGameObject(obj);
+                EntityRenderer.destroyGameObject(obj, ed_Renderer.class);
                 Physics2D.destroyGameObject(obj);
                 i--;
             }

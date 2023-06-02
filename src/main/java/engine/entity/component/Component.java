@@ -1,8 +1,11 @@
 package engine.entity.component;
 
+import engine.assets.Asset;
 import engine.editor.gui.EditorGUI;
 import engine.entity.GameObject;
 import engine.profiling.Profiler;
+import engine.renderer.Texture;
+import engine.renderer.renderer3D.mesh.Mesh;
 import engine.stuff.Settings;
 import engine.stuff.customVariables.Color;
 import imgui.ImGui;
@@ -75,6 +78,10 @@ public abstract class Component {
                     EditorGUI.field_Vector4f(name, (Vector4f) value);
                 else if (type == Color.class)
                     EditorGUI.field_Color(name, (Color) value);
+                else if (type == Texture.class)
+                    field.set(this, EditorGUI.field_Asset(name, value, Asset.AssetType.Texture));
+                else if (type == Mesh.class)
+                    field.set(this, EditorGUI.field_Asset(name, value, Asset.AssetType.Mesh));
                 else
                     ImGui.text(name + ", " + type.getCanonicalName() + " - Custom inspector not added yet.");
 

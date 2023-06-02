@@ -10,11 +10,13 @@ public class FileDialogs {
     private static String targetPath = "";
     private static JFileChooser chooser;
 
-    public static String openFile(FileTypeFilter filter, String currentDirectory) {
+    public static String openFile(FileTypeFilter filter, String currentDirectory) { // TODO FIX BUG, JFileChooser WINDOWS NOT APPEAR ON FRONT OF MAIN WINDOW(BECAUSE ITS PARENT IS NULL)
         DebugLog.log("FileDialogs:OpenFile: filter: ", filter, ", current directory: ", currentDirectory);
 
         chooser = new JFileChooser();
+        chooser.setMultiSelectionEnabled(false);
         chooser.setDialogTitle("Specify a file to open");
+
         chooser.setFileFilter(filter);
         chooser.addChoosableFileFilter(filter);
         chooser.setCurrentDirectory(new File(currentDirectory));
@@ -34,6 +36,7 @@ public class FileDialogs {
         DebugLog.log("FileDialogs:SaveFile: file: ", file.getAbsoluteFile(), ", filter: ", filter, ", current directory: ", currentDirectory);
 
         chooser = new JFileChooser();
+        chooser.setMultiSelectionEnabled(false);
         chooser.setDialogTitle("Specify a file to save");
 
         chooser.setFileFilter(filter);

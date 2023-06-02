@@ -5,6 +5,7 @@ import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiMouseButton;
+import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 
@@ -14,6 +15,7 @@ public abstract class EditorGuiWindow {
     protected final String windowTitle;
     protected final String actualWindowTitle;
     protected final int windowFlags;
+    protected final int customWindowFlags;
 
     private ImBoolean isOpen = new ImBoolean(true);
     private boolean isVisible = true;
@@ -25,6 +27,7 @@ public abstract class EditorGuiWindow {
         this.id = EngineGuiLayer.getNextWindowId() - 1;
         this.windowTitle = windowTitle;
         this.windowFlags = ImGuiWindowFlags.None;
+        this.customWindowFlags = 0;
 
         this.actualWindowTitle = " " + this.windowTitle + " ##" + this.id;
     }
@@ -33,6 +36,16 @@ public abstract class EditorGuiWindow {
         this.id = EngineGuiLayer.getNextWindowId() - 1;
         this.windowTitle = windowTitle;
         this.windowFlags = windowFlags;
+        this.customWindowFlags = 0;
+
+        this.actualWindowTitle = " " + this.windowTitle + " ##" + this.id;
+    }
+
+    public EditorGuiWindow(String windowTitle, int windowFlags, int customWindowFlags) {
+        this.id = EngineGuiLayer.getNextWindowId() - 1;
+        this.windowTitle = windowTitle;
+        this.windowFlags = windowFlags;
+        this.customWindowFlags = customWindowFlags;
 
         this.actualWindowTitle = " " + this.windowTitle + " ##" + this.id;
     }
@@ -52,7 +65,14 @@ public abstract class EditorGuiWindow {
             ImGui.pushStyleColor(ImGuiCol.TabUnfocusedActive, tabUnfocusedColor.x, tabUnfocusedColor.y, tabUnfocusedColor.z, tabUnfocusedColor.w);
             ImGui.pushStyleColor(ImGuiCol.TabActive, tabColor.x, tabColor.y, tabColor.z, tabColor.w);
             ImGui.pushStyleColor(ImGuiCol.TabHovered, tabHoverColor.x, tabHoverColor.y, tabHoverColor.z, tabHoverColor.w);
+
+            if ((this.customWindowFlags & CustomImGuiWindowFlags.NoWindowPadding) != 0.0f)
+                ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0.0f, 0.0f);
+
             if (ImGui.begin(this.actualWindowTitle, this.isOpen, this.windowFlags)) {
+                if ((this.customWindowFlags & CustomImGuiWindowFlags.NoWindowPadding) != 0.0f)
+                    ImGui.popStyleVar();
+
                 ImGui.popStyleColor(5);
                 if (ImGui.isItemHovered())
                     if (ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
@@ -81,6 +101,9 @@ public abstract class EditorGuiWindow {
                 this.isVisible = true;
                 drawWindow();
             } else {
+                if ((this.customWindowFlags & CustomImGuiWindowFlags.NoWindowPadding) != 0.0f)
+                    ImGui.popStyleVar();
+
                 ImGui.popStyleColor(5);
                 this.isVisible = false;
                 this.isHover = false;

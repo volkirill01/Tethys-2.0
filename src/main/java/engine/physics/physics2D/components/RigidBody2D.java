@@ -33,6 +33,17 @@ public class RigidBody2D extends Component {
     private boolean isTrigger = false;
 
     @Override
+    public void start() { Physics2D.add(this.gameObject); }
+
+    @Override
+    public void editorUpdate() {
+        if (this.rawBody == null)
+            return;
+
+        this.rawBody.setTransform(new Vec2(this.gameObject.transform.position.x, this.gameObject.transform.position.y), this.gameObject.transform.rotation.z); // TODO FIX BUG, COLLIDER ON FIRST START OFFSET NOT UPDATED
+    }
+
+    @Override
     public void update() {
         if (this.rawBody == null)
             return;
@@ -56,7 +67,7 @@ public class RigidBody2D extends Component {
         ImGui.beginDisabled();
         EditorGUI.field_Vector2f("Velocity", this.velocity);
         ImGui.endDisabled();
-        this.bodyType = (BodyType) EditorGUI.field_Enum("Body Type", this.bodyType);
+        setBodyType((BodyType) EditorGUI.field_Enum("Body Type", this.bodyType));
 
         this.fixedRotation = EditorGUI.field_Boolean("Fixed Rotation", this.fixedRotation);
         this.continuesCollision = EditorGUI.field_Boolean("Continues Collision", this.continuesCollision);
@@ -91,7 +102,14 @@ public class RigidBody2D extends Component {
 
     public BodyType getBodyType() { return this.bodyType; }
 
-    public void setBodyType(BodyType bodyType) { this.bodyType = bodyType; }
+    public void setBodyType(BodyType bodyType) {
+        this.bodyType = bodyType;
+        switch (this.bodyType) {
+            case Static -> this.rawBody.setType(org.jbox2d.dynamics.BodyType.STATIC);
+            case Dynamic -> this.rawBody.setType(org.jbox2d.dynamics.BodyType.DYNAMIC);
+            case Kinematic -> this.rawBody.setType(org.jbox2d.dynamics.BodyType.KINEMATIC);
+        }
+    }
 
     public Vector2f getVelocity() { return this.velocity; }
 

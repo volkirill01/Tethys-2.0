@@ -13,15 +13,12 @@ public class Circle2DCollider extends ed_Collider2D {
     private final Vector2f offset = new Vector2f(0.0f);
 
     @Override
-    public void editorUpdate() {
-        Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugRenderer.addCircle2D(center, this.radius * Math.max(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y),  this.gameObject.transform.rotation);
-    }
+    public void editorUpdate() { update(); }
 
     @Override
     public void update() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugRenderer.addCircle2D(center, this.radius * Math.max(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
+        DebugRenderer.addCircle2D(center, this.gameObject.transform.position, this.radius * Math.max(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
     }
 
     @Override

@@ -47,7 +47,8 @@ public class Console_Window extends EditorGuiWindow implements Observer {
         ImGui.endMenuBar();
         //</editor-fold>
 
-        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, ImGui.getStyle().getItemSpacingX(), ImGui.getStyle().getItemSpacingY() / 2);
+        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 1.5f);
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() / 2, ImGui.getStyle().getFramePaddingY() / 2);
         for (int i = 0; i < Console.getMessages().size(); i++) {
             ConsoleMessage message = Console.getMessages().get(i);
             ImVec4 messageColor = new ImVec4(message.getMessageColor().r / 255.0f, message.getMessageColor().g / 255.0f, message.getMessageColor().b / 255.0f, message.getMessageColor().a / 255.0f);
@@ -76,12 +77,12 @@ public class Console_Window extends EditorGuiWindow implements Observer {
             //</editor-fold>
 
             //<editor-fold desc="Delete Button">
-            ImGui.pushStyleColor(ImGuiCol.Button, messageColor.x, messageColor.y, messageColor.z, messageColor.w / 6);
-            ImGui.pushStyleColor(ImGuiCol.ButtonHovered, messageColor.x + 0.05f, messageColor.y + 0.05f, messageColor.z + 0.05f, messageColor.w / 6 + 0.05f);
-            ImGui.pushStyleColor(ImGuiCol.ButtonActive, messageColor.x + 0.1f, messageColor.y + 0.1f, messageColor.z + 0.1f, messageColor.w / 6 + 0.1f);
+            ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
+            ImGui.pushStyleColor(ImGuiCol.Button, 0.0f, 0.0f, 0.0f, 0.0f);
+            ImGui.pushStyleColor(ImGuiCol.ButtonHovered, messageColor.x, messageColor.y, messageColor.z, messageColor.w / 6);
+            ImGui.pushStyleColor(ImGuiCol.ButtonActive, messageColor.x + 0.05f, messageColor.y + 0.05f, messageColor.z + 0.05f, messageColor.w / 6 + 0.05f);
             ImGui.sameLine();
             ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() / 3, ImGui.getStyle().getFramePaddingY() / 3);
-            ImGui.pushStyleVar(ImGuiStyleVar.FrameRounding, 99.0f);
             ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() - ImGui.getFrameHeight() - ImGui.getStyle().getWindowPaddingX(), ImGui.getCursorPosY() + ImGui.getStyle().getFramePaddingY() * 2);
             if (ImGui.button("##Button_DeleteConsoleMessage_" + i, ImGui.getFrameHeight(), ImGui.getFrameHeight()))
                 Console.removeMessage(i);
@@ -89,13 +90,30 @@ public class Console_Window extends EditorGuiWindow implements Observer {
             ImGui.setCursorPos(ImGui.getCursorPosX() - ImGui.getFrameHeight() + ImGui.getStyle().getFramePaddingY() - ImGui.getStyle().getItemSpacingX() + 2.0f, ImGui.getCursorPosY() - ImGui.getStyle().getFramePaddingY() * 2);
             ImGui.text("\uEEE4");
             ImGui.setCursorPosY(ImGui.getCursorPosY() + ImGui.getStyle().getFramePaddingY() * 2);
-            ImGui.popStyleVar(2);
-            ImGui.popStyleColor(3);
+            ImGui.popStyleVar();
+            ImGui.popStyleColor(4);
             //</editor-fold>
+//            // <editor-fold desc="Delete Button">
+//            ImGui.pushStyleColor(ImGuiCol.Button, messageColor.x, messageColor.y, messageColor.z, messageColor.w / 6);
+//            ImGui.pushStyleColor(ImGuiCol.ButtonHovered, messageColor.x + 0.05f, messageColor.y + 0.05f, messageColor.z + 0.05f, messageColor.w / 6 + 0.05f);
+//            ImGui.pushStyleColor(ImGuiCol.ButtonActive, messageColor.x + 0.1f, messageColor.y + 0.1f, messageColor.z + 0.1f, messageColor.w / 6 + 0.1f);
+//            ImGui.sameLine();
+//            ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() / 3, ImGui.getStyle().getFramePaddingY() / 3);
+//            ImGui.pushStyleVar(ImGuiStyleVar.FrameRounding, 99.0f);
+//            ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() - ImGui.getFrameHeight() - ImGui.getStyle().getWindowPaddingX(), ImGui.getCursorPosY() + ImGui.getStyle().getFramePaddingY() * 2);
+//            if (ImGui.button("##Button_DeleteConsoleMessage_" + i, ImGui.getFrameHeight(), ImGui.getFrameHeight()))
+//                Console.removeMessage(i);
+//            ImGui.sameLine();
+//            ImGui.setCursorPos(ImGui.getCursorPosX() - ImGui.getFrameHeight() + ImGui.getStyle().getFramePaddingY() - ImGui.getStyle().getItemSpacingX() + 2.0f, ImGui.getCursorPosY() - ImGui.getStyle().getFramePaddingY() * 2);
+//            ImGui.text("\uEEE4");
+//            ImGui.setCursorPosY(ImGui.getCursorPosY() + ImGui.getStyle().getFramePaddingY() * 2);
+//            ImGui.popStyleVar(2);
+//            ImGui.popStyleColor(3);
+//            //</editor-fold>
 
             ImGui.setCursorPosY(ImGui.getCursorPosY() - 3.0f);
         }
-        ImGui.popStyleVar();
+        ImGui.popStyleVar(2);
     }
 
     @Override

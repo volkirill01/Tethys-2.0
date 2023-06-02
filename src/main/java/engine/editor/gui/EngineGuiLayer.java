@@ -397,7 +397,6 @@ public class EngineGuiLayer extends Layer {
 
     public static int getNextWindowId() { return windowId++; }
 
-    public static boolean isSceneWindowSelected() { return isAnyWindowVisible_ByType(SceneView_Window.class) && isAnyWindowSelected_ByType(SceneView_Window.class); }
     public static boolean getWantCaptureMouse() {
         for (EditorGuiWindow window : getWindows_ByType(SceneView_Window.class, false))
             if (((SceneView_Window) window).getWantCaptureMouse())

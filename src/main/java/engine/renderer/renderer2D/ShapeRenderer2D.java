@@ -2,6 +2,7 @@ package engine.renderer.renderer2D;
 
 import engine.editor.gui.EditorGUI;
 import engine.entity.component.Transform;
+import engine.renderer.EntityRenderer;
 import engine.stuff.customVariables.Color;
 import imgui.ImGui;
 
@@ -22,30 +23,31 @@ public class ShapeRenderer2D extends ed_Renderer {
     private float fade = 0.0f;
 
     @Override
-    public void start() { this.lastTransform = gameObject.transform.copy(); }
+    public void start() {
+        super.start();
+        this.lastTransform = gameObject.transform.copy();
+    }
 
     @Override
     public void editorUpdate() {
         if (this.lastTransform != null)
-            if (!this.lastTransform.equals(this.gameObject.transform)) {
+            if (!this.lastTransform.equals(this.gameObject.transform))
                 this.gameObject.transform.copy(this.lastTransform);
-                setDirty(true);
-            }
     }
 
     @Override
     public void update() {
         if (this.lastTransform != null)
-            if (!this.lastTransform.equals(this.gameObject.transform)) {
+            if (!this.lastTransform.equals(this.gameObject.transform))
                 this.gameObject.transform.copy(this.lastTransform);
-                setDirty(true);
-            }
     }
 
     @Override
+    public void destroy() { EntityRenderer.destroyGameObject(this.gameObject, ShapeRenderer2D.class); }
+
+    @Override
     public void imgui() {
-        if (EditorGUI.field_Color("Color", this.color))
-            setDirty(true);
+        EditorGUI.field_Color("Color", this.color);
 
         setShapeType((ShapeType) EditorGUI.field_Enum("Shape Type", this.shapeType));
 
@@ -66,37 +68,23 @@ public class ShapeRenderer2D extends ed_Renderer {
     public Color getColor() { return this.color; }
 
     public void setColor(Color color) {
-        if (!this.color.equals(color)) {
+        if (!this.color.equals(color))
             this.color.set(color);
-            setDirty(true);
-        }
     }
 
     public ShapeType getShapeType() { return this.shapeType; }
 
-    public void setShapeType(ShapeType shapeType) {
-        this.shapeType = shapeType;
-        setDirty(true);
-    }
+    public void setShapeType(ShapeType shapeType) { this.shapeType = shapeType; }
 
     public float getRadius() { return this.radius; }
 
-    public void setRadius(float radius) {
-        this.radius = radius;
-        setDirty(true);
-    }
+    public void setRadius(float radius) { this.radius = radius;  }
 
     public float getThickness() { return this.thickness; }
 
-    public void setThickness(float thickness) {
-        this.thickness = thickness;
-        setDirty(true);
-    }
+    public void setThickness(float thickness) { this.thickness = thickness;  }
 
     public float getFade() { return this.fade; }
 
-    public void setFade(float fade) {
-        this.fade = fade;
-        setDirty(true);
-    }
+    public void setFade(float fade) { this.fade = fade; }
 }

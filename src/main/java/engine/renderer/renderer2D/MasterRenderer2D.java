@@ -77,10 +77,10 @@ public class MasterRenderer2D {
         quadsCount++;
     }
 
-    public static void destroyGameObject(GameObject obj) {
+    public static <T extends ed_Renderer> void destroyGameObject(GameObject obj, Class<T> rendererType) {
         Profiler.startTimer(String.format("SpriteMasterRenderer Destroy GameObject - '%s'", obj.getName()));
         for (RenderBatch2D batch : batches)
-            if (batch.destroyIfExists(obj))
+            if (batch.destroyIfExists(obj, rendererType))
                 break;
         quadsCount--;
         Profiler.stopTimer(String.format("SpriteMasterRenderer Destroy GameObject - '%s'", obj.getName()));
@@ -104,16 +104,15 @@ public class MasterRenderer2D {
             }
 
             batches.get(i).render();
+
+            if (batches.get(i).getClass() == Sprite_RenderBatch2D.class)
+                spriteShader.unbind();
+            else if (batches.get(i).getClass() == Circle_RenderBatch2D.class)
+                circleShader.unbind();
+
             if (batches.get(i).isEmpty()) {
                 batches.remove(i);
                 i--;
-            }
-
-            if (batches.size() != 0) {
-                if (batches.get(i).getClass() == Sprite_RenderBatch2D.class)
-                    spriteShader.unbind();
-                else if (batches.get(i).getClass() == Circle_RenderBatch2D.class)
-                    circleShader.unbind();
             }
         }
 

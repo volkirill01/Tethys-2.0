@@ -20,7 +20,10 @@ public class MeshMasterRenderer {
 
     public static void add(GameObject go) { add(go.getComponent(MeshRenderer.class)); }
 
-    private static void add(MeshRenderer renderer) { meshes.add(renderer); }
+    private static void add(MeshRenderer renderer) {
+        if (!meshes.contains(renderer))
+            meshes.add(renderer);
+    }
 
     public static void destroyGameObject(GameObject obj) {
         Profiler.startTimer(String.format("Destroy GameObject in MeshMasterRenderer - '%s'", obj.getName()));
@@ -41,6 +44,9 @@ public class MeshMasterRenderer {
 
         // Send data tu GPU only if data is changed
         for (MeshRenderer render : meshes) {
+            if (render.getMesh() == null)
+                continue;
+
             for (RawModel rawModel : render.getMesh().getModels()) {
 //                rawModel.getVao().getVertexBuffer().bind();
 

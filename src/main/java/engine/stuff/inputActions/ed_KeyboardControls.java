@@ -2,6 +2,8 @@ package engine.stuff.inputActions;
 
 import engine.editor.gui.EngineGuiLayer;
 import engine.editor.windows.Outliner_Window;
+import engine.editor.windows.SceneHierarchy_Window;
+import engine.editor.windows.SceneView_Window;
 import engine.entity.GameObject;
 import engine.entity.component.Component;
 import engine.eventListeners.Input;
@@ -43,7 +45,7 @@ public class ed_KeyboardControls extends Component implements Observer {
 
     @Override
     public void onNotify(Event event) {
-        if (event.type != EventType.Engine_KeyboardButtonCallback || !EngineGuiLayer.isSceneWindowSelected())
+        if (event.type != EventType.Engine_KeyboardButtonCallback || !(EngineGuiLayer.isAnyWindowSelected_ByType(SceneView_Window.class) || EngineGuiLayer.isAnyWindowSelected_ByType(SceneHierarchy_Window.class)))
             return;
 
         List<GameObject> activeGameObjects = Outliner_Window.getActiveGameObjects();

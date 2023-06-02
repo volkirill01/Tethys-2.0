@@ -17,6 +17,9 @@ import org.jbox2d.dynamics.*;
 import org.joml.Math;
 import org.joml.Vector2f;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Physics2D {
 
     private static final Vec2 gravity = new Vec2(Settings.GRAVITY_2D.x, Settings.GRAVITY_2D.y);
@@ -26,14 +29,18 @@ public class Physics2D {
     private static final int velocityIterations = 8;
     private static final int positionIterations = 3;
 
+    private static final List<GameObject> objects = new ArrayList<>();
+
     static {
         world.setContactListener(new ContactListener2D());
     }
 
-    public static void add(GameObject obj) {
+    public static void add(GameObject obj) { // TODO FIX ROTATION BUG ON FIRST START OF SCENE
         if (!obj.hasComponent(RigidBody2D.class) || !obj.hasComponent(ed_Collider2D.class))
             return;
 
+        if (!objects.contains(obj))
+            objects.add(obj);
         DebugLog.log("Physics2D:Add: ", obj.getName());
 
         Profiler.startTimer(String.format("Physics2D Add GameObject - '%s'", obj.getName()));
@@ -79,6 +86,8 @@ public class Physics2D {
 
     public static void destroyGameObject(GameObject obj) {
         DebugLog.log("Physics2D:Destroy: ", obj.getName());
+
+        objects.remove(obj);
 
         Profiler.startTimer(String.format("Physics2D Destroy GameObject - '%s'", obj.getName()));
         if (!obj.hasComponent(RigidBody2D.class)) return;

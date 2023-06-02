@@ -61,20 +61,17 @@ public class Sprite_RenderBatch2D extends RenderBatch2D {
                 continue;
 
             SpriteRenderer renderer = (SpriteRenderer) this.quads[i];
-            if (renderer.isDirty()) {
-                if (!hasTexture(renderer.getSprite().getTexture()) && renderer.getSprite().getTexture() != null) {
-                    MasterRenderer2D.destroyGameObject(renderer.gameObject);
-                    MasterRenderer2D.add(renderer.gameObject);
-                } else {
-                    loadVertexProperties(i);
-                    renderer.setDirty(false);
-                    rebufferData = true;
-                }
+            if (!hasTexture(renderer.getSprite().getTexture()) && renderer.getSprite().getTexture() != null) {
+                MasterRenderer2D.destroyGameObject(renderer.gameObject, SpriteRenderer.class);
+                MasterRenderer2D.add(renderer.gameObject);
+            } else {
+                loadVertexProperties(i);
+                rebufferData = true;
             }
 
             // TODO GET BETTER SOLUTION FOR THIS
             if (renderer.gameObject.transform.getZIndex() != this.zIndex) {
-                destroyIfExists(renderer.gameObject);
+                destroyIfExists(renderer.gameObject, SpriteRenderer.class);
                 MasterRenderer2D.add(renderer.gameObject);
                 i--;
             }

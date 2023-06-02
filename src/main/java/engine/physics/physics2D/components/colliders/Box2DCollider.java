@@ -12,15 +12,12 @@ public class Box2DCollider extends ed_Collider2D {
     private final Vector2f offset = new Vector2f(0.0f);
 
     @Override
-    public void editorUpdate() {
-        Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugRenderer.addBox2D(center, new Vector2f(this.size).mul(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
-    }
+    public void editorUpdate() { update(); }
 
     @Override
     public void update() {
         Vector3f center = new Vector3f(this.gameObject.transform.position).add(this.getOffset().x, this.getOffset().y, 0.0f);
-        DebugRenderer.addBox2D(center, new Vector2f(this.size).mul(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
+        DebugRenderer.addBox2D(center, this.gameObject.transform.position, new Vector2f(this.size).mul(this.gameObject.transform.scale.x, this.gameObject.transform.scale.y), this.gameObject.transform.rotation);
     }
 
     @Override

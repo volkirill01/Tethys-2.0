@@ -39,7 +39,7 @@ public class ed_BaseCamera extends Component {
 
     protected ProjectionType projectionType = ProjectionType.Orthographic;
 
-    protected final Color backgroundColor = Color.WHITE.copy();
+    protected final Color backgroundColor = Color.BLACK.copy();
 
     public ed_BaseCamera(Vector3f position, Vector3f rotation) {
         this.position.set(position);

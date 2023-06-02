@@ -8,6 +8,7 @@ import engine.renderer.renderer2D.*;
 import engine.renderer.renderer3D.MeshMasterRenderer;
 import engine.renderer.renderer3D.MeshRenderer;
 import engine.renderer.shader.Shader;
+import engine.stuff.customVariables.Color;
 import org.lwjgl.BufferUtils;
 
 import java.nio.IntBuffer;
@@ -34,10 +35,18 @@ public class EntityRenderer {
         Profiler.stopTimer("EntityRenderer Init");
     }
 
-    public static void render(ed_BaseCamera camera) {
+    public static void render(ed_BaseCamera camera, Color backgroundColor) {
         Profiler.startTimer("EntityRenderer Render");
+        RenderCommand.setClearColor(backgroundColor);
+        RenderCommand.clear(RenderCommand.BufferBit.COLOR_AND_DEPTH_BUFFER);
+        // Clear entity ID attachment to -1
+//        SceneManager.getCurrentScene().getEditorCamera().getOutputFob().clearColorAttachment(1, -1); // TODO FIX CLEARING THE COLOR BUFFER
+//        EntityRenderer.beginScene();
+
         MasterRenderer2D.render(camera);
         MeshMasterRenderer.render(camera);
+
+//        EntityRenderer.endScene();
         Profiler.stopTimer("EntityRenderer Render");
     }
 
@@ -81,12 +90,16 @@ public class EntityRenderer {
         Profiler.stopTimer("EntityRenderer Add GameObject");
     }
 
-    public static void destroyGameObject(GameObject obj) {
+    public static <T extends ed_Renderer> void destroyGameObject(GameObject obj, Class<T> rendererType) {
         Profiler.startTimer("EntityRenderer Destroy GameObject");
-        if (obj.hasComponent(ed_Renderer.class))
-            MasterRenderer2D.destroyGameObject(obj);
-        if (obj.hasComponent(MeshRenderer.class))
-            MeshMasterRenderer.destroyGameObject(obj);
+        if (obj.hasComponent(ed_Renderer.class)) {
+            if (obj.hasComponent(SpriteRenderer.class) && (rendererType == SpriteRenderer.class || rendererType == ed_Renderer.class))
+                MasterRenderer2D.destroyGameObject(obj, SpriteRenderer.class);
+            if (obj.hasComponent(ShapeRenderer2D.class) && (rendererType == ShapeRenderer2D.class || rendererType == ed_Renderer.class))
+                MasterRenderer2D.destroyGameObject(obj, ShapeRenderer2D.class);
+            if (obj.hasComponent(MeshRenderer.class) && (rendererType == MeshRenderer.class || rendererType == ed_Renderer.class))
+                MeshMasterRenderer.destroyGameObject(obj);
+        }
         Profiler.stopTimer("EntityRenderer Destroy GameObject");
     }
 

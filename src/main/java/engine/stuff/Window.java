@@ -450,6 +450,7 @@ public class Window implements Observer {
             }
             case Engine_StopPlay -> {
                 runtimePlaying = false;
+                runtimePause = false;
                 nextFrame = true;
                 SceneManager.changeScene("tmpRuntimeScene.scene"); // Load from tmp scene file, to provide user not save scene before he starts playing
                 SceneManager.getCurrentScene().saveAs(lastOpenedScenePath);

@@ -11,6 +11,7 @@ import engine.renderer.debug.DebugRenderer;
 import engine.scenes.SceneManager;
 import engine.stuff.Window;
 import imgui.ImGui;
+import imgui.ImVec2;
 import imgui.ImVec4;
 import imgui.flag.*;
 
@@ -20,20 +21,17 @@ public class MainMenuBar {
 
     private static void drawEditorMenuBar() {
         //<editor-fold desc="Camera Mode Button">
-        ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
-        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 2.0f);
-        ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getStyle().getFramePaddingX() + ImGui.getContentRegionMaxX() / 8, ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY());
-        if (ImGui.button(SceneManager.getCurrentScene().getEditorCamera().getProjectionType().name())) {
+        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getStyle().getFramePaddingX() + ImGui.getContentRegionMaxX() / 8);
+        if (drawRectangleButton(SceneManager.getCurrentScene().getEditorCamera().getProjectionType().name(), true)) {
             if (SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
                 SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Orthographic);
             else
                 SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Perspective);
         }
-        ImGui.setCursorPosY(ImGui.getCursorStartPosY());
-        ImGui.popStyleVar();
-        ImGui.popStyleColor();
         //</editor-fold>
 
+        ImGui.sameLine();
+        ImGui.setCursorPosY(ImGui.getCursorStartPosY());
         drawPlayPauseButtons();
 
         drawDebugDrawOptionsButton();
@@ -97,7 +95,7 @@ public class MainMenuBar {
 
     private static void drawPlayPauseButtons() {
         boolean isPlayButtonEnabled = !Window.isRuntimePlaying();
-        boolean isPauseButtonEnabled = !Window.isRuntimePause() && Window.isRuntimePlaying();
+        boolean isPauseButtonEnabled = !Window.isRuntimePause();
         boolean isNextFrameButtonEnabled = Window.isRuntimePause() && Window.isRuntimePlaying();
 
 //        ImGui.getWindowDrawList().addRectFilled(                                          // Debug line in center of menu bar
@@ -118,7 +116,7 @@ public class MainMenuBar {
         //<editor-fold desc="Pause Button">
         ImGui.setCursorPosX(ImGui.getCursorPosX() - ImGui.getStyle().getItemSpacingX() + ImGui.getStyle().getItemInnerSpacingX());
         ImVec4 pauseButtonColor = isPauseButtonEnabled ? ImGui.getStyle().getColor(ImGuiCol.Text) : ImGui.getStyle().getColor(ImGuiCol.TextDisabled);
-        if (drawSquareButton("\uEC72", Window.isRuntimePlaying(), pauseButtonColor))
+        if (drawSquareButton("\uEC72", true, pauseButtonColor))
             EventSystem.notify(new Event(Window.isRuntimePause() ? EventType.Engine_Play : EventType.Engine_Pause));
         //</editor-fold>
 
@@ -161,7 +159,6 @@ public class MainMenuBar {
                         ImGui.endDisabled();
                 }
             }
-
             endComboButton();
         }
     }
@@ -204,20 +201,25 @@ public class MainMenuBar {
         return isClick;
     }
 
-    private static boolean drawRectangleButton(String text, boolean isEnabled, ImVec4 textColor) {
+    private static boolean drawRectangleButton(String text, boolean isEnabled) {
         boolean isClick = false;
 
         ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
-        ImGui.pushStyleColor(ImGuiCol.Text, textColor.x, textColor.y, textColor.z, textColor.w);
-        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 2.0f);
-
-        ImGui.setCursorPosY(ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY());
+        ImGui.pushStyleColor(ImGuiCol.Text, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.setCursorPosY(ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY() / 2);
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 1.7f);
+        ImVec2 startCursorPos = ImGui.getCursorPos();
+        if (!isEnabled)
+            ImGui.beginDisabled();
         if (ImGui.button(text))
-            if (!isEnabled)
-                isClick = true;
+            isClick = true;
+        if (!isEnabled)
+            ImGui.endDisabled();
         ImGui.setCursorPosY(ImGui.getCursorStartPosY());
+        ImGui.setCursorPos(startCursorPos.x + ImGui.getStyle().getFramePaddingX(), startCursorPos.y + ImGui.getStyle().getFramePaddingY() / 2);
         ImGui.popStyleVar();
         ImGui.popStyleColor(2);
+        ImGui.text(text);
 
         return isClick;
     }
@@ -232,13 +234,20 @@ public class MainMenuBar {
         tmp = ImGui.getStyle().getColor(ImGuiCol.ButtonActive);
         ImGui.pushStyleColor(ImGuiCol.FrameBgActive, tmp.x, tmp.y, tmp.z, tmp.w);
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0.0f);
-        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 2.0f);
-
-        ImGui.setCursorPosY(ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY());
+        ImGui.setCursorPosY(ImGui.getCursorStartPosY() + ImGui.getStyle().getFramePaddingY() / 2);
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX(), ImGui.getStyle().getFramePaddingY() / 1.7f);
 
         ImGui.setNextItemWidth(ImGui.calcTextSize(label).x + ImGui.getStyle().getFramePaddingX() * 2 + ImGui.getFrameHeight());
-        if (ImGui.beginCombo("##" + label, label))
+        ImVec2 startCursorPos = ImGui.getCursorScreenPos(); // TODO FIX PADDING OF DROPDOWN BUTTON
+        if (ImGui.beginCombo("##" + label, ""))
             isOpen = true;
+
+        ImGui.getForegroundDrawList().addText(
+                startCursorPos.x + ImGui.getStyle().getFramePaddingX(),
+                startCursorPos.y + ImGui.getStyle().getFramePaddingY() / 2,
+                ImGui.getColorU32(ImGuiCol.Text),
+                label
+        );
 
         ImGui.setCursorPosY(ImGui.getCursorStartPosY());
         ImGui.popStyleVar(2);
@@ -246,7 +255,5 @@ public class MainMenuBar {
 
         return isOpen;
     }
-    private static void endComboButton() {
-        ImGui.endCombo();
-    }
+    private static void endComboButton() { ImGui.endCombo(); }
 }

@@ -4,6 +4,7 @@ import engine.TestFieldsWindow;
 import engine.assets.Asset;
 import engine.assets.AssetPool;
 import engine.assets.assetTypes.Asset_Folder;
+import engine.assets.assetTypes.Asset_Mesh;
 import engine.assets.assetTypes.Asset_Scene;
 import engine.assets.assetTypes.Asset_Texture;
 import engine.editor.gui.EditorGuiWindow;
@@ -85,6 +86,8 @@ public class Content_Window extends EditorGuiWindow {
                             goToDirectory(asset.getFilepath());
                 }
                 case Texture -> {
+                }
+                case Mesh -> {
                 }
                 case Scene -> {
                 }
@@ -250,6 +253,7 @@ public class Content_Window extends EditorGuiWindow {
 
             switch (filepath.split("\\.")[filepath.split("\\.").length - 1]) {
                 case "png" -> this.assets.add(new Asset_Texture(filepath, AssetPool.getTexture(file.getAbsolutePath())));
+                case "obj" -> this.assets.add(new Asset_Mesh(filepath));
                 case "scene" -> this.assets.add(new Asset_Scene(filepath));
                 default -> this.assets.add(new Asset(filepath, Asset.AssetType.Other, AssetPool.getTexture("editorFiles/icons/assets/icon=file-solid-(256x256).png")));
             }

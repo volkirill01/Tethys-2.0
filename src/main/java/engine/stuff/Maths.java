@@ -173,21 +173,22 @@ public class Maths {
         point.x = (float) (distance * Math.sin(newAngle));
     }
 
-    public static void rotate3D(Vector3f point, Vector3f rotation) {
+    public static void rotate3D(Vector3f point, Vector3f origin, Vector3f rotation) {
+        point.sub(origin);
+
         Vector4f tmp = new Vector4f(point.x, point.y, point.z, 1.0f);
         Matrix4f rotationMatrix = Maths.createTransformationMatrix(new Vector3f(0.0f), rotation, new Vector3f(1.0f));
 
         tmp.mul(rotationMatrix);
 
         point.set(tmp.x, tmp.y, tmp.z);
+
+        point.add(origin);
     }
 
     public static void rotate3DVertices(Vector3f[] points, Vector3f origin, Vector3f rotation) {
-        for (Vector3f point : points) {
-            point.sub(origin);
-            rotate3D(point, rotation);
-            point.add(origin);
-        }
+        for (Vector3f point : points)
+            rotate3D(point, origin, rotation);
     }
 
     public static void rotate(Vector2f vec, float angleDeg, Vector2f origin) {

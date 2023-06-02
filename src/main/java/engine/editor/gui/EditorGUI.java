@@ -30,7 +30,7 @@ public class EditorGUI {
     public static void separator() {
         ImVec4 color = ImGui.getStyle().getColor(ImGuiCol.Separator);
 
-        ImGui.pushStyleColor(ImGuiCol.Separator, color.x / 2, color.y / 2, color.z / 2, color.w);
+        ImGui.pushStyleColor(ImGuiCol.Separator, color.x / 1.5f, color.y / 1.5f, color.z / 1.5f, color.w);
         ImGui.separator();
         ImGui.popStyleColor();
     }
@@ -72,7 +72,7 @@ public class EditorGUI {
     public static String field_String(String label, String field, String hint) {
         beginField(label);
 
-        ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
+        ImGui.pushItemWidth(ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2);
         ImString ImString = new ImString(field, 256);
 
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() * 1.5f, ImGui.getStyle().getFramePaddingY());
@@ -104,7 +104,7 @@ public class EditorGUI {
     public static float field_Float(String label, float field, float minimum, float maximum, String format) {
         beginField(label);
 
-        ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
+        ImGui.pushItemWidth(ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2);
         float[] ImFloat = { field };
         if (ImGui.dragFloat("##field_Float_" + label, ImFloat, DRAG_SPEED, minimum, maximum, format))
             field = ImFloat[0];
@@ -123,7 +123,7 @@ public class EditorGUI {
     public static int field_Int(String label, int field, int minimum, int maximum, String format) {
         beginField(label);
 
-        ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
+        ImGui.pushItemWidth(ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2);
         int[] ImInt = { field };
         if (ImGui.dragInt("##field_Int_" + label, ImInt, DRAG_SPEED, minimum, maximum, format))
             field = ImInt[0];
@@ -210,7 +210,7 @@ public class EditorGUI {
 
         ImBoolean isValueChanged = new ImBoolean(false);
 
-        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() * 2 - ImGui.getStyle().getItemInnerSpacingX()) / 2; // 2 buttons, 1 spacing between them
+        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2 - ImGui.getFrameHeight() * 2 - ImGui.getStyle().getItemInnerSpacingX()) / 2; // 2 buttons, 1 spacing between them
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
         ImGui.pushItemWidth(widthEach);
 
@@ -244,7 +244,7 @@ public class EditorGUI {
 
         ImBoolean isValueChanged = new ImBoolean(false);
 
-        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() * 3 - ImGui.getStyle().getItemInnerSpacingX() * 2) / 3; // 3 buttons, 2 spacing between them
+        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2 - ImGui.getFrameHeight() * 3 - ImGui.getStyle().getItemInnerSpacingX() * 2) / 3; // 3 buttons, 2 spacing between them
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
         ImGui.pushItemWidth(widthEach);
 
@@ -284,7 +284,7 @@ public class EditorGUI {
 
         ImBoolean isValueChanged = new ImBoolean(false);
 
-        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() * 4 - ImGui.getStyle().getItemInnerSpacingX() * 3) / 4; // 4 buttons, 3 spacing between them
+        float widthEach = (ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2 - ImGui.getFrameHeight() * 4 - ImGui.getStyle().getItemInnerSpacingX() * 3) / 4; // 4 buttons, 3 spacing between them
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0.0f, 0.0f);
         ImGui.pushItemWidth(widthEach);
 
@@ -325,7 +325,7 @@ public class EditorGUI {
 
         boolean isValueChanged = false;
 
-        ImGui.setNextItemWidth(ImGui.getContentRegionAvailX());
+        ImGui.setNextItemWidth(ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2);
         float[] ImColor = { field.r / 255.0f, field.g / 255.0f, field.b / 255.0f, field.a / 255.0f };
         if (ImGui.colorEdit4("##field_Color_" + label, ImColor, ImGuiColorEditFlags.AlphaBar | ImGuiColorEditFlags.AlphaPreviewHalf)) {
             field.set(ImColor[0] * 255.0f, ImColor[1] * 255.0f, ImColor[2] * 255.0f, ImColor[3] * 255.0f);
@@ -340,7 +340,7 @@ public class EditorGUI {
         beginField(label);
 
         int currentFrameColor = ImGui.getColorU32(ImGuiCol.Button);
-        if (ImGui.isMouseHoveringRect(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY(), ImGui.getCursorScreenPosX() + ImGui.getContentRegionAvailX(), ImGui.getCursorScreenPosY() + ImGui.getFrameHeight())) {
+        if (ImGui.isMouseHoveringRect(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY(), ImGui.getCursorScreenPosX() + ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2, ImGui.getCursorScreenPosY() + ImGui.getFrameHeight())) {
             currentFrameColor = ImGui.getColorU32(ImGuiCol.ButtonHovered);
             if (ImGui.isMouseDown(ImGuiMouseButton.Left))
                 currentFrameColor = ImGui.getColorU32(ImGuiCol.ButtonActive);
@@ -349,7 +349,7 @@ public class EditorGUI {
         ImGui.getWindowDrawList().addRectFilled(
                 ImGui.getCursorScreenPosX(),
                 ImGui.getCursorScreenPosY(),
-                ImGui.getCursorScreenPosX() + ImGui.getContentRegionAvailX(),
+                ImGui.getCursorScreenPosX() + ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2,
                 ImGui.getCursorScreenPosY() + ImGui.getFrameHeight(),
                 currentFrameColor,
                 ImGui.getStyle().getFrameRounding()
@@ -364,7 +364,7 @@ public class EditorGUI {
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.0f, 0.0f, 0.0f, 0.0f);
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.0f, 0.0f, 0.0f, 0.0f);
 
-        ImGui.pushItemWidth(ImGui.getContentRegionAvailX());
+        ImGui.pushItemWidth(ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2);
         String[] enumValues = getEnumValues(field);
         String enumType = field.name();
         ImInt index = new ImInt(indexOf(enumType, enumValues));
@@ -398,12 +398,13 @@ public class EditorGUI {
 
         beginField(label);
 
-        ImGui.button("DragDropField##" + label, ImGui.getContentRegionAvailX(), ImGui.getFrameHeight());
+        ImGui.button("Asset_DragDropField##" + label, ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2, ImGui.getFrameHeight());
 
         String assetPath = getDragDrop_Asset("Asset", type);
         if (assetPath != null) {
             switch (type) {
                 case Texture -> result = AssetPool.getTexture(assetPath);
+                case Mesh -> result = AssetPool.getMesh(assetPath);
                 default -> DebugLog.logError("EditorGUI field_Asset drag and drop, Default: ", assetPath, ", type: ", type.name());
             }
         }

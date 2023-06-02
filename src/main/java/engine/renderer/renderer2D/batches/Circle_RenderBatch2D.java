@@ -42,16 +42,13 @@ public class Circle_RenderBatch2D extends RenderBatch2D {
             if (this.quads[i].getClass() != ShapeRenderer2D.class)
                 continue;
 
-            ShapeRenderer2D renderer = (ShapeRenderer2D) this.quads[i];
-            if (renderer.isDirty()) {
-                loadVertexProperties(i);
-                renderer.setDirty(false);
-                rebufferData = true;
-            }
+            loadVertexProperties(i);
+            rebufferData = true;
 
             // TODO GET BETTER SOLUTION FOR THIS
+            ShapeRenderer2D renderer = (ShapeRenderer2D) this.quads[i];
             if (renderer.gameObject.transform.getZIndex() != this.zIndex) {
-                destroyIfExists(renderer.gameObject);
+                destroyIfExists(renderer.gameObject, ShapeRenderer2D.class);
                 MasterRenderer2D.add(renderer.gameObject);
                 i--;
             }

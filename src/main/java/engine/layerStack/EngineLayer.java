@@ -3,13 +3,12 @@ package engine.layerStack;
 import engine.editor.gui.EngineGuiLayer;
 import engine.editor.windows.GameView_Window;
 import engine.editor.windows.Outliner_Window;
+import engine.editor.windows.SceneView_Window;
 import engine.entity.component.Component;
 import engine.observers.events.Event;
 import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
-import engine.renderer.RenderCommand;
 import engine.renderer.camera.Camera;
-import engine.renderer.camera.ed_BaseCamera;
 import engine.renderer.debug.DebugRenderer;
 import engine.renderer.debug.DebugGrid;
 import engine.scenes.SceneManager;
@@ -25,12 +24,10 @@ public class EngineLayer extends Layer {
 
     @Override
     public void update() {
-        if (!Window.isMinimized()) { // && (ImGuiLayer.getWindow(SceneView_Window.class).isVisible() || ImGuiLayer.getWindow(GameView_Window.class).isVisible()) // TODO SEPARATE UPDATE AND RENDERING
+        if (!Window.isMinimized()) {
             EntityRenderer.resetStats();
 
             DebugRenderer.beginFrame();
-
-            SceneManager.getCurrentScene().getEditorCamera().getOutputFob().bindToWrite();
 
             if (Time.deltaTime() >= 0.0f) {
                 DebugGrid.addGrid();
@@ -47,16 +44,19 @@ public class EngineLayer extends Layer {
                     Profiler.stopTimer("Editor Update");
                 }
 
-                if (!Window.isRuntimePause() || Window.isNextFrame()) {
-                    Profiler.startTimer("Render Scene");
-                    renderPass(SceneManager.getCurrentScene().getEditorCamera(), Settings.EDITOR_BACKGROUND_COLOR);
-                    Profiler.stopTimer("Render Scene");
+                if (EngineGuiLayer.isAnyWindowVisible_ByType(SceneView_Window.class))
+                    if (!Window.isRuntimePause() || Window.isNextFrame()) {
+                        SceneManager.getCurrentScene().getEditorCamera().getOutputFob().bindToWrite();
 
-                    DebugRenderer.render(SceneManager.getCurrentScene().getEditorCamera());
-                }
+                        Profiler.startTimer("Render Scene");
+                        EntityRenderer.render(SceneManager.getCurrentScene().getEditorCamera(), Settings.EDITOR_BACKGROUND_COLOR);
+                        Profiler.stopTimer("Render Scene");
+
+                        DebugRenderer.render(SceneManager.getCurrentScene().getEditorCamera());
+
+                        SceneManager.getCurrentScene().getEditorCamera().getOutputFob().unbind();
+                    }
             }
-
-            SceneManager.getCurrentScene().getEditorCamera().getOutputFob().unbind();
 
             if (!Window.isRuntimePause() || Window.isNextFrame()) {
                 Profiler.startTimer("Render Game Cameras");
@@ -67,23 +67,13 @@ public class EngineLayer extends Layer {
                         cam.getOutputFob().bindToWrite();
                         Color backgroundColor = new Color(cam.getBackgroundColor());
                         backgroundColor.a = 255.0f;
-                        renderPass(cam, backgroundColor);
+                        EntityRenderer.render(cam, backgroundColor);
                         cam.getOutputFob().unbind();
                     }
                 }
                 Profiler.stopTimer("Render Game Cameras");
             }
         }
-    }
-
-    private void renderPass(ed_BaseCamera camera, Color backgroundColor) {
-        RenderCommand.setClearColor(backgroundColor);
-        RenderCommand.clear(RenderCommand.BufferBit.COLOR_AND_DEPTH_BUFFER);
-        // Clear entity ID attachment to -1
-//        SceneManager.getCurrentScene().getEditorCamera().getOutputFob().clearColorAttachment(1, -1); // TODO FIX CLEARING THE COLOR BUFFER
-//        EntityRenderer.beginScene();
-        EntityRenderer.render(camera);
-//        EntityRenderer.endScene();
     }
 
     @Override

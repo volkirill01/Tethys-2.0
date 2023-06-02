@@ -8,7 +8,7 @@ import engine.renderer.buffers.VertexBuffer;
 import engine.renderer.buffers.bufferLayout.BufferLayout;
 import engine.renderer.renderer2D.ed_Renderer;
 
-public abstract class RenderBatch2D implements Comparable<RenderBatch2D> {
+public abstract class RenderBatch2D implements Comparable<RenderBatch2D> { // TODO ADD DIRTY FLAG SYSTEM
 
     protected final ed_Renderer[] quads;
     protected int numberOfQuads;
@@ -55,6 +55,11 @@ public abstract class RenderBatch2D implements Comparable<RenderBatch2D> {
         Profiler.startTimer(String.format("Add Sprite to RenderBatch2D. Obj Name - '%s'", renderer.gameObject.getName()));
         // Get index and add render object
         int index = this.numberOfQuads;
+        for (ed_Renderer _renderer : this.quads)
+            if (_renderer == renderer) {
+                Profiler.stopTimer(String.format("Add Sprite to RenderBatch2D. Obj Name - '%s'", renderer.gameObject.getName()));
+                return;
+            }
         this.quads[index] = renderer;
         this.numberOfQuads++;
 
@@ -68,15 +73,20 @@ public abstract class RenderBatch2D implements Comparable<RenderBatch2D> {
 
     public abstract void render();
 
-    public boolean destroyIfExists(GameObject obj) {
+    public <T extends ed_Renderer> boolean destroyIfExists(GameObject obj, Class<T> rendererType) {
         Profiler.startTimer("Destroy in RenderBatch2D");
-        ed_Renderer renderer = obj.getComponent(ed_Renderer.class);
+        ed_Renderer renderer = obj.getComponent(rendererType);
+        if (renderer == null) {
+            Profiler.stopTimer("Destroy in RenderBatch2D");
+            return false;
+        }
+
         for (int i = 0; i < this.numberOfQuads; i++) {
             if (this.quads[i] == renderer) {
-                for (int j = i; j < this.numberOfQuads - 1; j++) {
+                for (int j = i; j < this.numberOfQuads - 1; j++)
                     this.quads[j] = this.quads[j + 1];
-                    this.quads[j].setDirty(true);
-                }
+
+                this.quads[this.numberOfQuads] = null;
                 this.numberOfQuads--;
                 Profiler.stopTimer("Destroy in RenderBatch2D");
                 return true;

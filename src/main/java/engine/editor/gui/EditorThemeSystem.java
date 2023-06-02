@@ -8,7 +8,12 @@ import imgui.flag.ImGuiCol;
 
 public class EditorThemeSystem {
 
-    public static final Color activeColor = new Color(18.0f, 113.0f, 235.0f, 255.0f);
+    private static final boolean roundedCorners = false;
+
+    public static final Color activeColor                       = new Color(18.0f, 113.0f, 235.0f, 255.0f);
+    public static final Color selectionColor                    = new Color(255.0f, 225.0f, 135.0f, 174.0f);
+
+    public static final Color textColor_Opposite                = Color.WHITE.copy();
 
     private static final Color textColor                        = Color.WHITE.copy();
     private static final Color textDisabledColor                = Color.WHITE.copy();
@@ -86,9 +91,9 @@ public class EditorThemeSystem {
 
     public static void updateTheme() {
         Profiler.startTimer("Update Theme");
-        ImGui.getStyle().setFrameRounding(frameRounding);
-        ImGui.getStyle().setPopupRounding(popupRounding);
-        ImGui.getStyle().setWindowRounding(windowRounding);
+        ImGui.getStyle().setFrameRounding(roundedCorners ? frameRounding : 0.0f);
+        ImGui.getStyle().setPopupRounding(roundedCorners ? popupRounding : 0.0f);
+        ImGui.getStyle().setWindowRounding(roundedCorners ? windowRounding : 0.0f);
 
         ImGui.getStyle().setWindowBorderSize(windowBorderSize);
         ImGui.getStyle().setFrameBorderSize(frameBorderSize);
@@ -101,8 +106,8 @@ public class EditorThemeSystem {
 
         ImGui.getStyle().setScrollbarSize(scrollbarSize);
 
-        ImGui.getStyle().setGrabRounding(grabRounding);
-        ImGui.getStyle().setTabRounding(tabRounding);
+        ImGui.getStyle().setGrabRounding(roundedCorners ? grabRounding : 0.0f);
+        ImGui.getStyle().setTabRounding(roundedCorners ? tabRounding : 0.0f);
         ImGui.getStyle().setTouchExtraPadding(touchExtraPadding.x, touchExtraPadding.y);
         ImGui.getStyle().setWindowMenuButtonPosition(windowMenuButtonPosition);
         ImGui.getStyle().setCircleTessellationMaxError(circleTessellationMaxError);
@@ -216,18 +221,19 @@ public class EditorThemeSystem {
         activeColor.set(0.0f, 122.0f, 204.0f, 255.0f);
 
         textColor.set(255.0f, 255.0f, 255.0f, 255.0f);
+        textColor_Opposite.set(0.0f, 0.0f, 0.0f, 255.0f);
         textDisabledColor.set(128.0f, 128.0f, 128.0f, 255.0f);
 
-        windowBgColor.set(45.0f, 45.0f, 48.0f, 255.0f);
-        childBgColor.set(52.0f, 52.0f, 56.0f, 255.0f);
-        popupBgColor.set(52.0f, 52.0f, 56.0f, 255.0f);
+        windowBgColor.set(42.0f, 42.0f, 45.0f, 255.0f);
+        childBgColor.set(50.0f, 50.0f, 54.0f, 255.0f);
+        popupBgColor.set(50.0f, 50.0f, 54.0f, 255.0f);
 
         borderColor.set(255.0f, 255.0f, 255.0f, 22.0f);
         borderShadowColor.set(0.0f, 0.0f, 0.0f, 0.0f);
 
-        frameBgColor.set(34.0f, 34.0f, 35.0f, 255.0f);
-        frameBgHoveredColor.set(36.0f, 36.0f, 37.0f, 255.0f);
-        frameBgActiveColor.set(38.0f, 38.0f, 39.0f, 255.0f);
+        frameBgColor.set(31.0f, 31.0f, 32.0f, 255.0f);
+        frameBgHoveredColor.set(33.0f, 33.0f, 35.0f, 255.0f);
+        frameBgActiveColor.set(35.0f, 35.0f, 37.0f, 255.0f);
 
         titleBgColor.set(0.0f, 0.0f, 0.0f, 255.0f);
         titleBgActiveColor.set(0.0f, 0.0f, 0.0f, 255.0f);
@@ -252,8 +258,8 @@ public class EditorThemeSystem {
         headerHoveredColor.set(68.0f, 68.0f, 75.0f, 255.0f);
         headerActiveColor.set(74.0f, 74.0f, 80.0f, 255.0f);
 
-        separatorColor.set(50.0f, 50.0f, 50.0f, 255.0f);
-        separatorHoveredColor.set(60.0f, 60.0f, 60.0f, 255.0f);
+        separatorColor.set(33.0f, 33.0f, 34.0f, 255.0f);
+        separatorHoveredColor.set(52.0f, 53.0f, 54.0f, 255.0f);
         separatorActiveColor.set(activeColor);
 
         resizeGripColor.set(51.0f, 51.0f, 51.0f, 150.0f);
@@ -278,7 +284,7 @@ public class EditorThemeSystem {
         tableBorderStrongColor.set(255.0f, 255.0f, 255.0f, 44.0f);
         tableBorderLightColor.set(255.0f, 255.0f, 255.0f, 22.0f);
 
-        tableRowBgColor.set(52.0f, 52.0f, 56.0f, 255.0f);
+        tableRowBgColor.set(50.0f, 50.0f, 54.0f, 255.0f);
         tableRowBgAltColor.set(62.0f, 62.0f, 66.0f, 255.0f);
 
         textSelectedBgColor.set(18.0f, 113.0f, 235.0f, 100.0f);
@@ -295,6 +301,7 @@ public class EditorThemeSystem {
 
     public static void setLightTheme() {
         textColor.set(0.0f, 0.0f, 0.0f, 255.0f);
+        textColor_Opposite.set(255.0f, 255.0f, 255.0f, 255.0f);
         textDisabledColor.set(37.0f, 37.0f, 37.0f, 255.0f);
 
         windowBgColor.set(220.0f, 220.0f, 220.0f, 255.0f);

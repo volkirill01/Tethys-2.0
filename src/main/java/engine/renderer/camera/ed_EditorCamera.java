@@ -2,6 +2,7 @@ package engine.renderer.camera;
 
 import engine.editor.gui.EngineGuiLayer;
 import engine.editor.windows.Outliner_Window;
+import engine.editor.windows.SceneView_Window;
 import engine.eventListeners.Input;
 import engine.eventListeners.KeyCode;
 import engine.renderer.frameBuffer.FrameBufferAttachmentSpecification;
@@ -55,7 +56,7 @@ public class ed_EditorCamera extends ed_BaseCamera {
 
         // TODO REPLACE STATIC KEY, WITH KEY FROM USER SETTINGS
         if (this.projectionType == ProjectionType.Orthographic) {
-            if (EngineGuiLayer.isSceneWindowSelected()) {
+            if (EngineGuiLayer.isAnyWindowSelected_ByType(SceneView_Window.class)) {
                 if (!Input.buttonDown(KeyCode.Left_Control)) {
                     if (Input.buttonDown(KeyCode.W))
                         this.position.y += moveSpeed / 2.0f * this.zoom * Time.deltaTime();
@@ -69,7 +70,7 @@ public class ed_EditorCamera extends ed_BaseCamera {
                 }
             }
 
-            if (EngineGuiLayer.isSceneWindowSelected() && EngineGuiLayer.getWantCaptureMouse()) {
+            if (EngineGuiLayer.isAnyWindowSelected_ByType(SceneView_Window.class) && EngineGuiLayer.getWantCaptureMouse()) {
                 if (Input.buttonDown(KeyCode.Mouse_Button_Right) && this.dragDebounce > 0) {
                     this.clickOrigin = Input.getMouseWorldPosition();
                     this.dragDebounce -= Time.deltaTime();
@@ -86,7 +87,7 @@ public class ed_EditorCamera extends ed_BaseCamera {
             if (this.dragDebounce <= 0.0f && !Input.buttonDown(KeyCode.Mouse_Button_Right))
                 this.dragDebounce = this.startDragDebounce;
         } else {
-            if (EngineGuiLayer.isSceneWindowSelected() && EngineGuiLayer.getWantCaptureMouse()) {
+            if (EngineGuiLayer.isAnyWindowSelected_ByType(SceneView_Window.class) && EngineGuiLayer.getWantCaptureMouse()) {
                 if (Input.buttonDown(KeyCode.Mouse_Button_Right)) {
                     float yawChange = Input.getMouseDeltaPositionX() * rotateSensitivity;
                     this.rotation.y -= yawChange;

@@ -80,7 +80,7 @@ public class DebugRenderer {
         }
     }
 
-    public static void render(ed_BaseCamera camera) {
+    public static void render(ed_BaseCamera camera) { // TODO FIX BUG, IF ENGINE IN PLAY-MODE AND IT IS PAUSED, NOT RENDERING DEBUG LINES
         if (lines.size() == 0)
             return;
 
@@ -161,12 +161,13 @@ public class DebugRenderer {
     // =================================================================================================================
     // Add box2D methods
     // =================================================================================================================
-    public static void addBox2D(Vector3f center, Vector2f size) { addBox2D(center, size, new Vector3f(0.0f), Color.GREEN, 1); }
-    public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation) { addBox2D(center, size, rotation, Color.GREEN, 1); }
-    public static void addBox2D(Vector3f center, Vector2f size, Color color) { addBox2D(center, size, new Vector3f(0.0f), color, 1); }
-    public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation, Color color) { addBox2D(center, size, rotation, color, 1); }
+    public static void addBox2D(Vector3f center, Vector2f size) { addBox2D(center, center, size, new Vector3f(0.0f), Color.GREEN, 1); }
+    public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation) { addBox2D(center, center, size, rotation, Color.GREEN, 1); }
+    public static void addBox2D(Vector3f center, Vector2f size, Color color) { addBox2D(center, center, size, new Vector3f(0.0f), color, 1); }
+    public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation, Color color) { addBox2D(center, center, size, rotation, color, 1); }
+    public static void addBox2D(Vector3f center, Vector3f rotationOrigin, Vector2f size, Vector3f rotation) { addBox2D(center, rotationOrigin, size, rotation, Color.GREEN, 1); }
     /** @param lifetime in frames */
-    public static void addBox2D(Vector3f center, Vector2f size, Vector3f rotation, Color color, int lifetime) {
+    public static void addBox2D(Vector3f center, Vector3f rotationOrigin, Vector2f size, Vector3f rotation, Color color, int lifetime) {
         if (!drawDebugOptions.get("Draw Debug") || !drawDebugOptions.get("Draw Debug/Box Colliders2D"))
             return;
 
@@ -180,7 +181,7 @@ public class DebugRenderer {
                 new Vector3f(max.x, min.y, min.z), // bottom right
         };
 
-        Maths.rotate3DVertices(vertices, center, rotation);
+        Maths.rotate3DVertices(vertices, rotationOrigin, rotation);
 
         addLine(vertices[0], vertices[1], color, lifetime); // back left
         addLine(vertices[0], vertices[3], color, lifetime); // back bottom
@@ -238,12 +239,13 @@ public class DebugRenderer {
     // =================================================================================================================
     // Add circle2D methods
     // =================================================================================================================
-    public static void addCircle2D(Vector3f center, float radius) { addCircle2D(center, radius, new Vector3f(0.0f), Color.GREEN, 1); }
-    public static void addCircle2D(Vector3f center, float radius, Color color) { addCircle2D(center, radius, new Vector3f(0.0f), color, 1); }
-    public static void addCircle2D(Vector3f center, float radius, Vector3f rotation) { addCircle2D(center, radius, rotation, Color.GREEN, 1); }
-    public static void addCircle2D(Vector3f center, float radius, Vector3f rotation, Color color) { addCircle2D(center, radius, rotation, color, 1); }
+    public static void addCircle2D(Vector3f center, float radius) { addCircle2D(center, center, radius, new Vector3f(0.0f), Color.GREEN, 1); }
+    public static void addCircle2D(Vector3f center, float radius, Color color) { addCircle2D(center, center, radius, new Vector3f(0.0f), color, 1); }
+    public static void addCircle2D(Vector3f center, float radius, Vector3f rotation) { addCircle2D(center, center, radius, rotation, Color.GREEN, 1); }
+    public static void addCircle2D(Vector3f center, float radius, Vector3f rotation, Color color) { addCircle2D(center, center, radius, rotation, color, 1); }
+    public static void addCircle2D(Vector3f center, Vector3f rotationOrigin, float radius, Vector3f rotation) { addCircle2D(center, rotationOrigin, radius, rotation, Color.GREEN, 1); }
     /** @param lifetime in frames */
-    public static void addCircle2D(Vector3f center, float radius, Vector3f rotation, Color color, int lifetime) {
+    public static void addCircle2D(Vector3f center, Vector3f rotationOrigin, float radius, Vector3f rotation, Color color, int lifetime) {
         if (!drawDebugOptions.get("Draw Debug") || !drawDebugOptions.get("Draw Debug/Circle Colliders2D"))
             return;
 
@@ -255,8 +257,8 @@ public class DebugRenderer {
             Vector2f tmp = new Vector2f(radius + 0.001f, 0.0f);
             Maths.rotate(tmp, currentAngle, new Vector2f(0.0f));
             Vector3f point = new Vector3f(tmp.x, tmp.y, 0.0f);
-            Maths.rotate3D(point, rotation);
-            points[i] = point.add(center);
+            Maths.rotate3D(point.add(center), rotationOrigin, rotation);
+            points[i] = point; // .add(center)
 
             if (i > 0)
                 addLine(points[i - 1], points[i], color, lifetime);

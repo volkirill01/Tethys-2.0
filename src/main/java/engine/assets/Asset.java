@@ -9,8 +9,9 @@ public class Asset {
     public enum AssetType {
         Folder,
 
-        Texture,
         Scene,
+        Texture,
+        Mesh,
 
         Other
     }

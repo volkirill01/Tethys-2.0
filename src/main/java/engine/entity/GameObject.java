@@ -14,11 +14,11 @@ import engine.entity.component.Transform;
 import engine.stuff.UUID;
 import engine.stuff.utils.EditorGson;
 import imgui.ImGui;
-import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiTreeNodeFlags;
+import org.joml.Random;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,15 +76,17 @@ public class GameObject {
         c.generateID();
         this.components.add(c);
         c.gameObject = this;
+
+        c.start();
     }
 
     public void imgui() {
+        ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getStyle().getWindowPaddingX() / 2, ImGui.getCursorStartPosY() + ImGui.getStyle().getWindowPaddingY() / 2);
         setName(EditorGUI.textFieldNoLabel("GameObject_Name_" + this.tagComponent.id.toString(), getName(), "Name", ImGui.getContentRegionAvailX() / 1.5f));
         ImGui.sameLine();
 
         //<editor-fold desc="Add Component Button">
-        float width = (ImGui.getContentRegionAvailX() / 2.0f) - (ImGui.calcTextSize("Add component").x / 2.0f);
-        float buttonCenter = ImGui.getCursorScreenPosX() + width + ImGui.getStyle().getFramePaddingX();
+        float width = (ImGui.getContentRegionAvailX() / 2) - (ImGui.calcTextSize("Add component").x / 2) - ImGui.getStyle().getWindowPaddingX() / 2;
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, width, ImGui.getStyle().getFramePaddingY());
         if (ImGui.button("Add component"))
             ImGui.openPopup("ComponentAdder");
@@ -92,9 +94,6 @@ public class GameObject {
         //</editor-fold>
 
         //<editor-fold desc="Add Component Popup">
-        ImVec2 popupPosition = new ImVec2(buttonCenter - ImGui.getStateStorage().getFloat(ImGui.getID("addComponentPopupWidth")), ImGui.getWindowPosY() + ImGui.getCursorPosY());
-        if (ImGui.isPopupOpen("ComponentAdder"))
-            ImGui.setNextWindowPos(popupPosition.x, popupPosition.y);
         if (ImGui.beginPopup("ComponentAdder")) {
             for (Component c : Component.allComponents()) {
                 if (!hasComponent(c.getClass()))
@@ -105,7 +104,6 @@ public class GameObject {
                         addComponent(copy);
                     }
             }
-            ImGui.getStateStorage().setFloat(ImGui.getID("addComponentPopupWidth"), ImGui.getContentRegionMaxX());
             ImGui.endPopup();
         }
         //</editor-fold>
@@ -165,12 +163,11 @@ public class GameObject {
         }
 
         ImGui.sameLine();
-        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() - ImGui.getFrameHeight() - ImGui.getStyle().getWindowPaddingX());
-        if (ImGui.invisibleButton("Component_Context_Button_" + c, ImGui.getFrameHeight(), ImGui.getFrameHeight())) {
+        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() - ImGui.getFrameHeight());
+        if (ImGui.invisibleButton("Component_Context_Button_" + c, ImGui.getFrameHeight(), ImGui.getFrameHeight()))
             ImGui.openPopup("Component_Context_Popup_" + c);
-        }
         ImGui.sameLine();
-        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() - ImGui.getFrameHeight() - ImGui.getStyle().getWindowPaddingX() + ImGui.getStyle().getFramePaddingY());
+        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() - ImGui.getFrameHeight() + ImGui.getStyle().getFramePaddingY());
         ImGui.text("\uEFE1"); // \uEFA2 \uEFE1 \uEFE2
 
         if (treeNodeOpen) {
@@ -257,4 +254,7 @@ public class GameObject {
     public void setClickable(boolean clickable) { this.clickable = clickable; }
 
     public boolean isDeath() { return this.isDeath; }
+
+    private final boolean hasChildren = new Random().nextFloat() > 0.6f; // Temporary for tweaking GUI
+    public boolean hasChildren() { return hasChildren; }
 }
