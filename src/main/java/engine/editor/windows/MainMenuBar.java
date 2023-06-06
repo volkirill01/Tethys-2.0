@@ -51,7 +51,7 @@ public class MainMenuBar {
         }
         if (ImGui.beginMenu("Windows")) {
             if (ImGui.menuItem("Open Profiler"))
-                EngineGuiLayer.setWindowOpen(Profiler_Window.class, true);
+                EngineGuiLayer.setWindowsOpen_ByType(Profiler_Window.class, true);
             ImGui.endMenu();
         }
 

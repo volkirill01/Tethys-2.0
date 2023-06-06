@@ -78,7 +78,7 @@ public class Shader {
         String finalFragmentSource;
 
         try {
-            String fragmentShaderTemplateSource = new String(Files.readAllBytes(Paths.get("editorFiles/shaders/stuff/fragmentShaderTemplate.glsl")));
+            String fragmentShaderTemplateSource = new String(Files.readAllBytes(Paths.get("Resources/shaders/stuff/fragmentShaderTemplate.glsl")));
 
             fragmentShaderTemplateSource = fragmentShaderTemplateSource.replace("#sourceFirst", splitFragmentSource[0]);
             fragmentShaderTemplateSource = fragmentShaderTemplateSource.replace("#sourceSecond", partWithoutBracket);

@@ -1,8 +1,10 @@
 package engine.editor.gui;
 
 import engine.assets.Asset;
-import engine.assets.AssetPool;
-import engine.logging.DebugLog;
+import engine.editor.windows.ContentFinder_Window;
+import engine.editor.windows.Content_Window;
+import engine.renderer.Texture;
+import engine.renderer.renderer3D.mesh.Mesh;
 import engine.stuff.Settings;
 import engine.stuff.customVariables.Color;
 import imgui.ImGui;
@@ -16,6 +18,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.lang.reflect.Field;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -393,29 +396,84 @@ public class EditorGUI {
         return -1;
     }
 
-    public static Object field_Asset(String label, Object field, Asset.AssetType type) {
-        Object result = field;
+    public static void field_Asset(String label, Object object, Field field, Asset.AssetType type) {
+        String assetName = "";
+        try {
+            switch (type) {
+                case Texture -> assetName = field.get(object) != null ? ((Texture) field.get(object)).getFilepath() : "(none) " + Texture.class.getSimpleName();
+                case Mesh -> assetName = field.get(object) != null ? ((Mesh) field.get(object)).getFilepath() : "(none) " + Mesh.class.getSimpleName();
+                default -> ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f, String.format("Unknown Asset type - '%s'", type.name()));
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         beginField(label);
+        ImVec2 startCursorPos = ImGui.getCursorPos();
 
-        ImGui.button("Asset_DragDropField##" + label, ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2, ImGui.getFrameHeight());
+        ImVec4 tmp = ImGui.getStyle().getColor(ImGuiCol.FrameBg);
+        ImGui.pushStyleColor(ImGuiCol.Button, tmp.x, tmp.y, tmp.z, tmp.w);
+        tmp = ImGui.getStyle().getColor(ImGuiCol.FrameBgHovered);
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, tmp.x, tmp.y, tmp.z, tmp.w);
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, tmp.x, tmp.y, tmp.z, tmp.w);
+        ImGui.button("##field_Asset_DragDropField_" + label, ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2, ImGui.getFrameHeight());
+        ImGui.popStyleColor(3);
 
         String assetPath = getDragDrop_Asset("Asset", type);
         if (assetPath != null) {
-            switch (type) {
-                case Texture -> result = AssetPool.getTexture(assetPath);
-                case Mesh -> result = AssetPool.getMesh(assetPath);
-                default -> DebugLog.logError("EditorGUI field_Asset drag and drop, Default: ", assetPath, ", type: ", type.name());
+            try {
+                field.set(object, Content_Window.loadObjectFromAsset(type, assetPath));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
         }
+        ImGui.sameLine();
+        ImGui.setCursorPos(startCursorPos.x + ImGui.getStyle().getFramePaddingX(), ImGui.getCursorPosY());
+        float width = ImGui.getItemRectMaxX();
+        ImGui.pushClipRect(
+                ImGui.getItemRectMinX(),
+                ImGui.getItemRectMinY(),
+                width - ImGui.getFrameHeight(),
+                ImGui.getItemRectMaxY(),
+                true
+        );
+        ImGui.text(assetName);
+        ImGui.popClipRect();
+        ImVec2 endCursorPos = ImGui.getCursorPos();
+
+        ImGui.setCursorPos(startCursorPos.x, startCursorPos.y);
+        ImGui.getWindowDrawList().addCircle(
+                width - ImGui.getFrameHeight() / 2,
+                ImGui.getCursorScreenPosY() + ImGui.getFrameHeight() / 2,
+                ImGui.getFrameHeight() / 4,
+                ImGui.getColorU32(ImGuiCol.TextDisabled),
+                0,
+                ImGui.getFrameHeight() / 20
+        );
+        ImGui.getWindowDrawList().addCircleFilled(
+                width - ImGui.getFrameHeight() / 2,
+                ImGui.getCursorScreenPosY() + ImGui.getFrameHeight() / 2,
+                ImGui.getFrameHeight() / 4 / 3,
+                ImGui.getColorU32(ImGuiCol.TextDisabled),
+                0
+        );
+        if (ImGui.isMouseClicked(ImGuiMouseButton.Left))
+            if (ImGui.isMouseHoveringRect(
+                    width - ImGui.getFrameHeight(),
+                    ImGui.getCursorScreenPosY(),
+                    width,
+                    ImGui.getCursorScreenPosY() + ImGui.getFrameHeight()
+            ))
+                ContentFinder_Window.openWindow(object, field, type);
+
+        ImGui.setCursorPos(endCursorPos.x, endCursorPos.y);
 
         endField();
-        return result;
     }
 
     private static final List<String> isCollapsingHeaderBegin = new ArrayList<>();
     public static boolean beginCollapsingHeader(String label) { return beginCollapsingHeader(label, ImGuiTreeNodeFlags.None); }
-    public static boolean beginCollapsingHeader(String label, int flags) { // TODO FIX INDENT(LEFT) SPACING OF COLLAPSING HEADER
+    public static boolean beginCollapsingHeader(String label, int flags) {
         if (isCollapsingHeaderBegin.contains(label))
             throw new RuntimeException("Mismatched beginCollapsingHeader vs endCollapsingHeader calls: did you forget to call endCollapsingHeader?");
 

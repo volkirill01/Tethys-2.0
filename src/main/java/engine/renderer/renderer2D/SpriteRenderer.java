@@ -10,6 +10,9 @@ import engine.renderer.renderer2D.sprite.Sprite;
 import engine.stuff.customVariables.Color;
 import org.joml.Vector2f;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
 public class SpriteRenderer extends ed_Renderer { // TODO FIX BUG, THEN COMPONENT ADDED ON GAME OBJECT, ITS DRAWING BLACK SQUARE, NOT WHITE, AND THEN IF ADD TEXTURE TO IT, ITS DISAPPEAR
 
     private final Color color = Color.WHITE.copy();
@@ -46,7 +49,26 @@ public class SpriteRenderer extends ed_Renderer { // TODO FIX BUG, THEN COMPONEN
     public void imgui() {
         EditorGUI.field_Color("Color", this.color);
 
-        this.sprite.setTexture((Texture2D) EditorGUI.field_Asset("Texture", this.sprite.getTexture(), Asset.AssetType.Texture));
+        try {
+            for (Field field : this.sprite.getClass().getDeclaredFields()) {
+                boolean isPrivate = Modifier.isPrivate(field.getModifiers());
+                if (isPrivate)
+                    field.setAccessible(true);
+
+                if (field.get(this.sprite).getClass() != Texture2D.class) {
+                    if (isPrivate)
+                        field.setAccessible(false);
+                    continue;
+                }
+
+                EditorGUI.field_Asset("Texture", this.sprite, field, Asset.AssetType.Texture);
+
+                if (isPrivate)
+                    field.setAccessible(false);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         EditorGUI.field_Vector2f("Tiling", this.tiling, new Vector2f(1.0f), new Vector2f(0.0f));
     }

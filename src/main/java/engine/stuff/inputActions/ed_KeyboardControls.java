@@ -14,7 +14,6 @@ import engine.observers.events.Event;
 import engine.observers.events.EventType;
 import engine.scenes.SceneManager;
 import engine.stuff.Settings;
-import engine.stuff.utils.Time;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -23,8 +22,8 @@ import java.util.Objects;
 
 public class ed_KeyboardControls extends Component implements Observer {
 
-    private final static float startDebounce = 0.2f;
-    private float debounce = startDebounce;
+//    private final static float startDebounce = 0.2f;
+//    private float debounce = startDebounce;
 
     private static final float smallMoveMultiplayer = 0.1f;
     private static final float normalMoveMultiplayer = 1.0f;
@@ -34,8 +33,8 @@ public class ed_KeyboardControls extends Component implements Observer {
 
     @Override
     public void update() {
-        if (this.debounce > 0.0f)
-            this.debounce -= Time.deltaTime();
+//        if (this.debounce > 0.0f)
+//            this.debounce -= Time.deltaTime();
 
         if (Input.buttonDown(KeyCode.Left_Shift) || Input.buttonDown(KeyCode.Right_Shift))
             this.currentMoveMultiplayer = smallMoveMultiplayer;
@@ -68,25 +67,25 @@ public class ed_KeyboardControls extends Component implements Observer {
             }
             case KeyCode.D -> {
                 if (control && !shift) {
-                    if (this.debounce <= 0.0f) {
-                        this.debounce = startDebounce;
+//                    if (this.debounce <= 0.0f) {
+//                        this.debounce = startDebounce;
 
-                        if (activeGameObjects.size() > 1) {
-                            List<GameObject> gameObjects = new ArrayList<>(activeGameObjects);
-                            Outliner_Window.clearSelected();
+                    if (activeGameObjects.size() > 1) {
+                        List<GameObject> gameObjects = new ArrayList<>(activeGameObjects);
+                        Outliner_Window.clearSelected();
 
-                            for (GameObject obj : gameObjects) {
-                                GameObject copy = obj.copy();
-                                SceneManager.getCurrentScene().addGameObjectToScene(copy);
-                                Outliner_Window.addActiveGameObject(copy);
-                            }
-                        } else {
-                            GameObject copy = Objects.requireNonNull(Outliner_Window.getActiveGameObject()).copy();
-                            copy.transform.position.add(Settings.GRID_WIDTH, 0.0f, 0.0f);
+                        for (GameObject obj : gameObjects) {
+                            GameObject copy = obj.copy();
                             SceneManager.getCurrentScene().addGameObjectToScene(copy);
-                            Outliner_Window.setActiveGameObject(copy);
+                            Outliner_Window.addActiveGameObject(copy);
                         }
+                    } else {
+                        GameObject copy = Objects.requireNonNull(Outliner_Window.getActiveGameObject()).copy();
+                        copy.transform.position.add(Settings.GRID_WIDTH, 0.0f, 0.0f);
+                        SceneManager.getCurrentScene().addGameObjectToScene(copy);
+                        Outliner_Window.setActiveGameObject(copy);
                     }
+//                    }
                 }
             }
             case KeyCode.Delete -> {
@@ -99,57 +98,57 @@ public class ed_KeyboardControls extends Component implements Observer {
             }
             case KeyCode.Page_Down -> {
                 if (!control && !shift)
-                    if (this.debounce <= 0.0f) {
-                        this.debounce = startDebounce;
+//                    if (this.debounce <= 0.0f) {
+//                        this.debounce = startDebounce;
 
-                        for (GameObject obj : activeGameObjects)
-                            obj.transform.setZIndex(obj.transform.getZIndex() - 1);
-                    }
+                    for (GameObject obj : activeGameObjects)
+                        obj.transform.setZIndex(obj.transform.getZIndex() - 1);
+//                    }
             }
             case KeyCode.Page_Up -> {
                 if (!control && !shift)
-                    if (this.debounce <= 0.0f) {
-                        this.debounce = startDebounce;
+//                    if (this.debounce <= 0.0f) {
+//                        this.debounce = startDebounce;
 
-                        for (GameObject obj : activeGameObjects)
-                            obj.transform.setZIndex(obj.transform.getZIndex() + 1);
-                    }
+                    for (GameObject obj : activeGameObjects)
+                        obj.transform.setZIndex(obj.transform.getZIndex() + 1);
+//                    }
             }
             case KeyCode.Arrow_Up -> {
                 if (!control)
-                    if (this.debounce <= 0.0f) {
-                        this.debounce = startDebounce;
+//                    if (this.debounce <= 0.0f) {
+//                        this.debounce = startDebounce;
 
-                        for (GameObject obj : activeGameObjects)
-                            obj.transform.position.y += Settings.GRID_HEIGHT * currentMoveMultiplayer;
-                    }
+                    for (GameObject obj : activeGameObjects)
+                        obj.transform.position.y += Settings.GRID_HEIGHT * currentMoveMultiplayer;
+//                    }
             }
             case KeyCode.Arrow_Down -> {
                 if (!control)
-                    if (this.debounce <= 0.0f) {
-                        this.debounce = startDebounce;
+//                    if (this.debounce <= 0.0f) {
+//                        this.debounce = startDebounce;
 
-                        for (GameObject obj : activeGameObjects)
-                            obj.transform.position.y -= Settings.GRID_HEIGHT * currentMoveMultiplayer;
-                    }
+                    for (GameObject obj : activeGameObjects)
+                        obj.transform.position.y -= Settings.GRID_HEIGHT * currentMoveMultiplayer;
+//                    }
             }
             case KeyCode.Arrow_Left -> {
                 if (!control)
-                    if (this.debounce <= 0.0f) {
-                        this.debounce = startDebounce;
+//                    if (this.debounce <= 0.0f) {
+//                        this.debounce = startDebounce;
 
-                        for (GameObject obj : activeGameObjects)
-                            obj.transform.position.x -= Settings.GRID_WIDTH * currentMoveMultiplayer;
-                    }
+                    for (GameObject obj : activeGameObjects)
+                        obj.transform.position.x -= Settings.GRID_WIDTH * currentMoveMultiplayer;
+//                    }
             }
             case KeyCode.Arrow_Right -> {
                 if (!control)
-                    if (this.debounce <= 0.0f) {
-                        this.debounce = startDebounce;
+//                    if (this.debounce <= 0.0f) {
+//                        this.debounce = startDebounce;
 
-                        for (GameObject obj : activeGameObjects)
-                            obj.transform.position.x += Settings.GRID_WIDTH * currentMoveMultiplayer;
-                    }
+                    for (GameObject obj : activeGameObjects)
+                        obj.transform.position.x += Settings.GRID_WIDTH * currentMoveMultiplayer;
+//                    }
             }
             default -> { }
         }

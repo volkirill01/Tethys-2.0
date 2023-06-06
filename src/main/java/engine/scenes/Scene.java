@@ -74,8 +74,8 @@ public class Scene {
                 new SpriteSheet(AssetPool.getTexture("Assets/decorationsAndBlocks.png"),
                         16, 16, 81, 0, 0, 0, 0));
 
-        AssetPool.addSpriteSheet("editorFiles/gizmos.png",
-                new SpriteSheet(AssetPool.getTexture("editorFiles/gizmos.png"),
+        AssetPool.addSpriteSheet("Resources/gizmos.png",
+                new SpriteSheet(AssetPool.getTexture("Resources/gizmos.png"),
                         24, 48, 3, 0, 0, 0, 0));
 
         AssetPool.addSound("Assets/sounds/main-theme-overworld.ogg", true);

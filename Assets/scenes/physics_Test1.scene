@@ -281,7 +281,7 @@
       }
     ],
     "clickable": true,
-    "hasChildren": true
+    "hasChildren": false
   },
   {
     "tagComponent": {
@@ -372,8 +372,8 @@
         "type": "engine.entity.component.Transform",
         "properties": {
           "position": {
-            "x": 6.0,
-            "y": -5.0,
+            "x": 6.9833183,
+            "y": -3.8217661,
             "z": 0.0
           },
           "scale": {
@@ -403,7 +403,7 @@
             "width": 16.0,
             "height": 16.0,
             "texture": {
-              "filepath": "Assets/decorationsAndBlocks.png",
+              "filepath": "C:\\_Files\\Projects\\Java\\Tethys_2.0\\Assets\\decorationsAndBlocks.png",
               "width": 112,
               "height": 192
             },
@@ -480,7 +480,7 @@
             "width": 16.0,
             "height": 16.0,
             "texture": {
-              "filepath": "Assets/decorationsAndBlocks.png",
+              "filepath": "C:\\_Files\\Projects\\Java\\Tethys_2.0\\Assets\\decorationsAndBlocks.png",
               "width": 112,
               "height": 192
             },
@@ -512,7 +512,7 @@
       }
     ],
     "clickable": true,
-    "hasChildren": true
+    "hasChildren": false
   },
   {
     "tagComponent": {
@@ -558,6 +558,107 @@
           "thickness": 1.0,
           "fade": 0.0,
           "uid": 52
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": true
+  },
+  {
+    "tagComponent": {
+      "name": "Cube",
+      "id": {
+        "uuid": 3785441318732602368
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": -9.583078,
+            "y": 0.0,
+            "z": -0.8552233
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 57
+        }
+      },
+      {
+        "type": "engine.renderer.renderer3D.MeshRenderer",
+        "properties": {
+          "mesh": {
+            "filepath": "C:\\_Files\\Projects\\Java\\Tethys_2.0\\Assets\\defaultCapsule.obj"
+          },
+          "uid": 58
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": false
+  },
+  {
+    "tagComponent": {
+      "name": "Camera",
+      "id": {
+        "uuid": 4580385298424238080
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "zIndex": 0,
+          "uid": 63
+        }
+      },
+      {
+        "type": "engine.renderer.camera.Camera",
+        "properties": {
+          "isMain": true,
+          "zoom": 1.0,
+          "orthographicProjectionSize": {
+            "x": 24.0,
+            "y": 13.48
+          },
+          "orthographicNearPlane": -1.0,
+          "orthographicFarPlane": 100.0,
+          "perspectiveFov": 45.0,
+          "perspectiveNearPlane": 0.01,
+          "perspectiveFarPlane": 1000.0,
+          "projectionType": "Orthographic",
+          "backgroundColor": {
+            "r": 44.225098,
+            "g": 164.00124,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "uid": 64
         }
       }
     ],

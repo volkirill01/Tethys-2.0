@@ -26,8 +26,8 @@ public class MasterRenderer2D {
 
     private static int quadsCount = 0;
 
-    private static final Shader spriteShader = AssetPool.getShader("editorFiles/shaders/2D/defaultSprite.glsl", true);
-    private static final Shader circleShader = AssetPool.getShader("editorFiles/shaders/2D/circle.glsl", true);
+    private static final Shader spriteShader = AssetPool.getShader("Resources/shaders/2D/defaultSprite.glsl", true);
+    private static final Shader circleShader = AssetPool.getShader("Resources/shaders/2D/circle.glsl", true);
 
     public static void add(GameObject go) { add(go.getComponent(ed_Renderer.class)); }
 

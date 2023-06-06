@@ -263,7 +263,7 @@ public class EditorThemeSystem {
         separatorActiveColor.set(activeColor);
 
         resizeGripColor.set(51.0f, 51.0f, 51.0f, 150.0f);
-        resizeGripHoveredColor.set(0.235f, 0.235f, 0.235f, 150.0f);
+        resizeGripHoveredColor.set(60.0f, 60.0f, 60.0f, 150.0f);
         resizeGripActiveColor.set(activeColor);
 
         tabColor.set(62.0f, 62.0f, 66.0f, 255.0f);

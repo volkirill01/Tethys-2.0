@@ -27,13 +27,13 @@ public class GuiFont {
 
         // Fonts merge example
         fontConfig.setPixelSnapH(true);
-        defaultFont = fontAtlas.addFontFromFileTTF("editorFiles/fonts/openSans/OpenSans-Regular.ttf", 20.0f * fontSize, defaultFontConfig);
+        defaultFont = fontAtlas.addFontFromFileTTF("Resources/fonts/openSans/OpenSans-Regular.ttf", 20.0f * fontSize, defaultFontConfig);
         fontConfig.setMergeMode(true);
         fontConfig.setGlyphMinAdvanceX(13.0f); // Use if you want to make the icon monospaced
         short[] icons_ranges = { (short) 0xE97A, (short) 0xF02C, 0 }; // Min(0xE97A), Max(0xF02C) icons range // TODO -+-+- Change min and max
-        fontAtlas.addFontFromFileTTF("editorFiles/fonts/icofont_all.ttf", 15.5f * fontSize, fontConfig, icons_ranges);
-        boldFont = fontAtlas.addFontFromFileTTF("editorFiles/fonts/openSans/OpenSans-Bold.ttf", 20.0f * fontSize, defaultFontConfig);
-        semiBoldFont = fontAtlas.addFontFromFileTTF("editorFiles/fonts/openSans/OpenSans-SemiBold.ttf", 20.0f * fontSize, defaultFontConfig);
+        fontAtlas.addFontFromFileTTF("Resources/fonts/icofont_all.ttf", 15.5f * fontSize, fontConfig, icons_ranges);
+        boldFont = fontAtlas.addFontFromFileTTF("Resources/fonts/openSans/OpenSans-Bold.ttf", 20.0f * fontSize, defaultFontConfig);
+        semiBoldFont = fontAtlas.addFontFromFileTTF("Resources/fonts/openSans/OpenSans-SemiBold.ttf", 20.0f * fontSize, defaultFontConfig);
 
 //        defaultSmallText = fontAtlas.addFontFromFileTTF("engineFiles/fonts/openSans/OpenSans-Regular.ttf", 15.0f * fontSize, defaultFontConfig);
 //        semiBoldText = fontAtlas.addFontFromFileTTF("engineFiles/fonts/openSans/OpenSans-SemiBold.ttf", 20.0f * fontSize, defaultFontConfig);

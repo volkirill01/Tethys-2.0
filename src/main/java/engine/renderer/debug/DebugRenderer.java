@@ -23,7 +23,7 @@ public class DebugRenderer {
     private static final List<DebugLine> lines = new ArrayList<>();
     // 6 floats per vertex, 2 vertices per line
     private static final float[] vertexArray =  new float[MAX_LINES * 6 * 2];
-    private static final Shader shader = AssetPool.getShader("editorFiles/shaders/debug/debugLineShader.glsl", true);
+    private static final Shader shader = AssetPool.getShader("Resources/shaders/debug/debugLineShader.glsl", true);
 
     private static int vaoID;
     private static int vboID;

@@ -31,7 +31,7 @@ public class GameView_Window extends EditorGuiWindow implements Observer {
         ImVec2 topLeft = new ImVec2();
         ImGui.getCursorScreenPos(topLeft);
 
-        int textureID = SceneManager.getCurrentScene().getMainCamera() != null ? SceneManager.getCurrentScene().getMainCamera().getOutputFob().getColorAttachmentID() : AssetPool.getTexture("editorFiles/images/noMainCameraInScene.png").getTextureID();
+        int textureID = SceneManager.getCurrentScene().getMainCamera() != null ? SceneManager.getCurrentScene().getMainCamera().getOutputFob().getColorAttachmentID() : AssetPool.getTexture("Resources/images/noMainCameraInScene.png").getTextureID();
         ImVec2 start = new ImVec2();
         ImGui.getCursorPos(start);
         ImGui.image(textureID, viewportSize.x, viewportSize.y, 0, 1, 1, 0);

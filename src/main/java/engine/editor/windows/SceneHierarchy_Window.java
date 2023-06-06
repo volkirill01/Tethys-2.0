@@ -219,7 +219,7 @@ public class SceneHierarchy_Window extends EditorGuiWindow {
         if (ImGui.menuItem("Create Cube")) {
             GameObject empty = GameObject_Manager.createEmpty("Cube", true);
             empty.addComponent(new MeshRenderer());
-            empty.getComponent(MeshRenderer.class).setMesh(AssetPool.getMesh("editorFiles/meshes/defaultMeshes/defaultCube.obj"));
+            empty.getComponent(MeshRenderer.class).setMesh(AssetPool.getMesh("Resources/meshes/defaultMeshes/defaultCube.obj"));
         }
 
         EditorGUI.separator();

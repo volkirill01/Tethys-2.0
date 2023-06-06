@@ -7,6 +7,8 @@ import java.io.File;
 public class Asset {
 
     public enum AssetType {
+        All,
+
         Folder,
 
         Scene,

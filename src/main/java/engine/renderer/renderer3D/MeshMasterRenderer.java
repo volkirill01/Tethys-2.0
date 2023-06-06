@@ -16,7 +16,7 @@ import java.util.List;
 public class MeshMasterRenderer {
 
     private static final List<MeshRenderer> meshes = new ArrayList<>();
-    private static final Shader shader = AssetPool.getShader("editorFiles/shaders/3D/pbrTest.glsl", true);
+    private static final Shader shader = AssetPool.getShader("Resources/shaders/3D/pbrTest.glsl", true);
 
     public static void add(GameObject go) { add(go.getComponent(MeshRenderer.class)); }
 

@@ -79,9 +79,9 @@ public abstract class Component {
                 else if (type == Color.class)
                     EditorGUI.field_Color(name, (Color) value);
                 else if (type == Texture.class)
-                    field.set(this, EditorGUI.field_Asset(name, value, Asset.AssetType.Texture));
+                    EditorGUI.field_Asset(name, this, field, Asset.AssetType.Texture);
                 else if (type == Mesh.class)
-                    field.set(this, EditorGUI.field_Asset(name, value, Asset.AssetType.Mesh));
+                    EditorGUI.field_Asset(name, this, field, Asset.AssetType.Mesh);
                 else
                     ImGui.text(name + ", " + type.getCanonicalName() + " - Custom inspector not added yet.");
 

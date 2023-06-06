@@ -56,10 +56,14 @@ public class EngineGuiLayer extends Layer {
 
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new GameView_Window()));
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new SceneView_Window()));
+
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Outliner_Window()));
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new SceneHierarchy_Window()));
+
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Console_Window()));
+
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(true), new Content_Window()));
+        windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(false), new ContentFinder_Window()));
 
         windows.put(getNextWindowId(), new AbstractMap.SimpleEntry<>(new ImBoolean(false), new Profiler_Window()));
 
@@ -386,13 +390,11 @@ public class EngineGuiLayer extends Layer {
 
     public static void selectWindow(EditorGuiWindow window) { ImGui.setWindowFocus(window.actualWindowTitle); }
 
-    public static  <T extends EditorGuiWindow> void setWindowOpen(Class<T> window, boolean state) {
+    public static  <T extends EditorGuiWindow> void setWindowsOpen_ByType(Class<T> window, boolean state) {
         DebugLog.log("EditorGuiLayer:SetWindowOpen: ", window.getName(), ", state: ", state);
         for (int windowId : windows.keySet())
-            if (windows.get(windowId).getValue().getClass() == window) {
+            if (windows.get(windowId).getValue().getClass() == window)
                 windows.get(windowId).getKey().set(state);
-                return;
-            }
     }
 
     public static int getNextWindowId() { return windowId++; }
