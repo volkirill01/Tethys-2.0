@@ -1,0 +1,112 @@
+[
+  {
+    "tagComponent": {
+      "name": "Shape Circle",
+      "id": {
+        "uuid": 3186906508015566848
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": -4.9425125,
+            "y": 1.5498941,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 4
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.ShapeRenderer",
+        "properties": {
+          "color": {
+            "r": 255.0,
+            "g": 255.0,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "shapeType": "Circle",
+          "radius": 0.5,
+          "thickness": 1.0,
+          "fade": 0.0,
+          "cornerRadius": 0.0,
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 5
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": false
+  },
+  {
+    "tagComponent": {
+      "name": "Shape Rect",
+      "id": {
+        "uuid": 4072476010748917760
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 2.6754913,
+            "y": 0.44865322,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 6
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.ShapeRenderer",
+        "properties": {
+          "color": {
+            "r": 255.0,
+            "g": 255.0,
+            "b": 255.0,
+            "a": 255.0
+          },
+          "shapeType": "Rectangle",
+          "radius": 0.5,
+          "thickness": 1.0,
+          "fade": 0.0,
+          "cornerRadius": 0.0,
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 7
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": false
+  }
+]

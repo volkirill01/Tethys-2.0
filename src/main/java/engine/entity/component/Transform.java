@@ -7,8 +7,8 @@ import org.joml.Vector3f;
 public class Transform extends Component { // TODO ADD TRANSFORM CONSTRAINS(LIMIT POSITION, LOCK SCALE, ...)
 
     public final Vector3f position = new Vector3f(0.0f);
-    public final Vector3f scale = new Vector3f(1.0f);
     public final Vector3f rotation = new Vector3f(0.0f); // In radians
+    public final Vector3f scale = new Vector3f(1.0f);
 
     private int zIndex = 0;
 
@@ -26,8 +26,8 @@ public class Transform extends Component { // TODO ADD TRANSFORM CONSTRAINS(LIMI
 
     public void set(Vector3f position, Vector3f scale, Vector3f rotation) {
         this.position.set(position);
-        this.scale.set(scale);
         this.rotation.set(rotation);
+        this.scale.set(scale);
     }
 
     @Override
@@ -38,6 +38,13 @@ public class Transform extends Component { // TODO ADD TRANSFORM CONSTRAINS(LIMI
             this.rotation.set(Math.toRadians(degreesRotation.x), Math.toRadians(degreesRotation.y), Math.toRadians(degreesRotation.z));
         EditorGUI.field_Vector3f("Scale", this.scale, new Vector3f(1.0f), EditorGUI.DEFAULT_FLOAT_FORMAT + "m");
         this.zIndex = EditorGUI.field_Int("ZIndex", this.zIndex);
+    }
+
+    @Override
+    public void reset() {
+        this.position.set(0.0f);
+        this.rotation.set(0.0f);
+        this.scale.set(1.0f);
     }
 
     public Transform copy() { return new Transform(new Vector3f(this.position), new Vector3f(this.scale)); }

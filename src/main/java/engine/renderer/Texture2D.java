@@ -9,13 +9,13 @@ import static org.lwjgl.opengl.GL45.*;
 
 public class Texture2D extends Texture {
 
-    public Texture2D(int width, int height, int textureID) {
-        super("_GENERATED_", width, height);
+    public Texture2D(String name, int width, int height, int textureID) {
+        super(name, width, height);
         this.textureID = textureID;
     }
 
-    public Texture2D(int width, int height, int[] data, boolean useAlpha) {
-        super("_GENERATED_", width, height);
+    public Texture2D(String name, int width, int height, int[] data, boolean useAlpha) {
+        super(name, width, height);
 //        // Generate texture on GPU
 //        this.textureID = glCreateTextures(GL_TEXTURE_2D);
 //        glBindTexture(GL_TEXTURE_2D, this.textureID);
@@ -66,6 +66,20 @@ public class Texture2D extends Texture {
         if (object == this) return true;
 
         return t.getWidth() == this.getWidth() && t.getHeight() == this.getHeight() && t.getTextureID() == this.getTextureID() && t.getFilepath().equals(this.getFilepath());
+    }
+
+    public boolean equalsWithoutID(Object object) {
+        if (object == null) return false;
+        if (!(object instanceof Texture2D t)) return false;
+
+        if (object == this) return true;
+
+        return t.getWidth() == this.getWidth() && t.getHeight() == this.getHeight() && t.getFilepath().equals(this.getFilepath());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Texture2D {\n\tfilepath = %s\n\ttextureID = %d\n\twidth = %d\n\theight = %d\n}", getFilepath(), this.textureID, this.width, this.height);
     }
 
     @Override

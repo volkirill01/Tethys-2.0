@@ -4,9 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="// Reworking Editor GUI;&#10;// Add 3D Meshes support(MeshRenderer component now has field for mesh, and from content browser mesh able to drag in to it);&#10;&#10;---------- Internal ----------&#10;// Temporarily remove Dirty flag system;&#10;// Fix bug when MeshRenderer or SpriteRenderer or ShapeRenderer2D added to game object, it's not displaying unless engine enters runtime mode;&#10;// Fix colliders offset rendering;&#10;// Add button for adding primitives and game objects to SceneHierarchy Window;&#10;// Add custom ImGui window flags;">
-      <change afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/ContentFinder_Window.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/engine/stuff/utils/Paths.java" afterDir="false" />
+    <list default="true" id="526c38b4-0925-4927-ab44-ac1c6dc0fcc0" name="Changes" comment="Add Content finder window;">
+      <change afterPath="$PROJECT_DIR$/Assets/scenes/test.scene" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=folder-solid-(256x256).png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=folder-solid-(32x32).png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/icons/tools/rotateTool.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/icons/tools/scaleTool.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/icons/tools/selectTool.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/icons/tools/translateTool.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/meshes/defaultMeshes/defaultCone.obj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/meshes/defaultMeshes/defaultCylinder.obj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/meshes/defaultMeshes/defaultPlane.obj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/meshes/defaultMeshes/defaultPyramid.obj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/meshes/defaultMeshes/defaultSphere.obj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Resources/shaders/2D/rectangle.glsl" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/ContentHierarchy_SubWindow.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/entity/GameObject_GUI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/ShapeRenderer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/batches/Rectangle_RenderBatch2D.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.4/fileHashes/fileHashes.bin" afterDir="false" />
@@ -15,62 +30,99 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/defaultCapsule.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/meshes/defaultMeshes/defaultCapsule.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/scenes/physics_Test1.scene" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/scenes/physics_Test1.scene" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/gizmos.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/meshes/defaultMeshes/defaultCube.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/meshes/defaultMeshes/defaultCube.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Resources/shaders/2D/circle.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/shaders/2D/circle.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TethysProfile-Runtime.json" beforeDir="false" afterPath="$PROJECT_DIR$/TethysProfile-Runtime.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TethysProfile-Shutdown.json" beforeDir="false" afterPath="$PROJECT_DIR$/TethysProfile-Shutdown.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TethysProfile-Startup.json" beforeDir="false" afterPath="$PROJECT_DIR$/TethysProfile-Startup.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/Assets/defaultCapsule.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/Assets/defaultCube.obj" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/Assets/scenes/PinkCube.scene" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/Assets/scenes/Test.scene" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/Assets/scenes/Test2.scene" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/Assets/scenes/Test3.scene" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/Engine.7z" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/TethysProfile-Runtime.json" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/TethysProfile-Runtime.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/TethysProfile-Shutdown.json" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/TethysProfile-Shutdown.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/TethysProfile-Startup.json" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/TethysProfile-Startup.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/Tethys_2.0-1.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/Tethys_2.0-1.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/icofont_all.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/LICENSE.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-Bold.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-BoldItalic.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-ExtraBold.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-ExtraBoldItalic.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-Italic.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-Light.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-LightItalic.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-Medium.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-MediumItalic.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-Regular.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-SemiBold.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/fonts/openSans/OpenSans-SemiBoldItalic.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/gizmos.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/icons/assets/icon=file-solid-(256x256).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/icons/assets/icon=file-solid-(32x32).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/icons/assets/icon=folder-open-regular-(256x256).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/icons/assets/icon=folder-open-regular-(32x32).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/icons/assets/icon=scene-solid-(256x256).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/icons/assets/icon=scene-solid-(32x32).png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/images/noMainCameraInScene.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/shaders/2D/defaultSprite.glsl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/shaders/3D/pbrTest.glsl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/shaders/3D/test.glsl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/shaders/debug/debugLineShader.glsl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/editorFiles/shaders/stuff/fragmentShaderTemplate.glsl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/engine.conf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/gui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/gui.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/level.scene" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/window.ini" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/icofont_all.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/icofont_all.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/LICENSE.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/LICENSE.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Bold.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-Bold.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-BoldItalic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-BoldItalic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-ExtraBold.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-ExtraBold.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-ExtraBoldItalic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-ExtraBoldItalic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Italic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-Italic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Light.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-Light.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-LightItalic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-LightItalic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Medium.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-Medium.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-MediumItalic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-MediumItalic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-Regular.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-Regular.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-SemiBold.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-SemiBold.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/fonts/openSans/OpenSans-SemiBoldItalic.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/fonts/openSans/OpenSans-SemiBoldItalic.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/gizmos.png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/gizmos.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/icons/assets/icon=cube-solid-(256x256).png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=cube-solid-(256x256).png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/icons/assets/icon=cube-solid-(32x32).png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=cube-solid-(32x32).png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/icons/assets/icon=file-solid-(256x256).png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=file-solid-(256x256).png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/icons/assets/icon=file-solid-(32x32).png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=file-solid-(32x32).png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/icons/assets/icon=folder-open-regular-(256x256).png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=folder-open-regular-(256x256).png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/icons/assets/icon=folder-open-regular-(32x32).png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=folder-open-regular-(32x32).png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/icons/assets/icon=scene-solid-(256x256).png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=scene-solid-(256x256).png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/icons/assets/icon=scene-solid-(32x32).png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/icons/assets/icon=scene-solid-(32x32).png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/images/noMainCameraInScene.png" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/images/noMainCameraInScene.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/meshes/defaultMeshes/defaultCube.obj" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/meshes/defaultMeshes/defaultCube.obj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/shaders/2D/circle.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/shaders/2D/circle.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/shaders/2D/defaultSprite.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/shaders/2D/defaultSprite.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/shaders/3D/pbrTest.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/shaders/3D/pbrTest.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/shaders/debug/debugLineShader.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/shaders/debug/debugLineShader.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/editorFiles/shaders/stuff/fragmentShaderTemplate.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/Resources/shaders/stuff/fragmentShaderTemplate.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gui.ini" beforeDir="false" afterPath="$PROJECT_DIR$/gui.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/assets/Asset.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/assets/Asset.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/assets/AssetPool.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/assets/AssetPool.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/assets/assetTypes/Asset_Folder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/assets/assetTypes/Asset_Folder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/assets/assetTypes/Asset_Mesh.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/assets/assetTypes/Asset_Mesh.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/assets/assetTypes/Asset_Scene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/assets/assetTypes/Asset_Scene.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorGUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorThemeSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorThemeSystem.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EngineGuiLayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EngineGuiLayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/GuiFont.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/GuiFont.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/gui/GuiFont.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/gui/EditorGuiFont.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/ContentFinder_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/ContentFinder_Window.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/Content_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/Content_Window.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/GameView_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/GameView_Window.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/MainMenuBar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/MainMenuBar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/Outliner_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/Outliner_Window.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/SceneHierarchy_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/SceneHierarchy_Window.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/editor/windows/SceneView_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/windows/SceneView_Window.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/GameObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/GameObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/GameObjectDeserializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/GameObjectDeserializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/GameObject_Manager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/GameObject_Manager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/component/Component.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/component/Component.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/component/TagComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/component/TagComponent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/entity/component/Transform.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/entity/component/Transform.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/gizmo/ed_GizmoSystem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/gizmo/ed_GizmoSystem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/RigidBody2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/RigidBody2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/colliders/Box2DCollider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/colliders/Box2DCollider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/colliders/Circle2DCollider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/colliders/Circle2DCollider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/colliders/Pillbox2DCollider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/physics/physics2D/components/colliders/Pillbox2DCollider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/profiling/Profiler_Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/profiling/Profiler_Window.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/EntityRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/EntityRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/Texture2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/Texture2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/Camera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/Camera.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/ed_EditorCamera.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/camera/ed_EditorCamera.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/debug/DebugRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/debug/DebugRenderer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/MasterRenderer2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/MasterRenderer2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/ShapeRenderer2D.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/SpriteRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/SpriteRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/batches/Circle_RenderBatch2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/batches/Circle_RenderBatch2D.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/batches/Sprite_RenderBatch2D.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer2D/batches/Sprite_RenderBatch2D.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer3D/MeshMasterRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer3D/MeshMasterRenderer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/shader/Shader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/shader/Shader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer3D/MeshRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/renderer/renderer3D/MeshRenderer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/scenes/Scene.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/scenes/Scene.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/stuff/Maths.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/stuff/utils/Maths.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/stuff/UUID.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/editor/UUID.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/stuff/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/stuff/Window.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/engine/stuff/inputActions/ed_KeyboardControls.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/stuff/inputActions/ed_KeyboardControls.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/engine/stuff/utils/Paths.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/engine/stuff/utils/Paths.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/window_ini" beforeDir="false" afterPath="$PROJECT_DIR$/window_ini" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -86,8 +138,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="GLSL Shader" />
         <option value="Enum" />
+        <option value="GLSL Shader" />
         <option value="Class" />
       </list>
     </option>
@@ -116,38 +168,38 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/_Files/Projects/Java/Tethys",
+    "last_opened_file_path": "C:/_Files/Projects/Java/Tethys_2.0/Resources/fonts/droid-sans-mono",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.4901734",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.intentionPowerPack"
+    "settings.editor.selected.configurable": "editing.templates"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\_Files\Projects\Java\Tethys_2.0\Resources\fonts\droid-sans-mono" />
+      <recent name="C:\_Files\Projects\Java\Tethys_2.0\Resources\meshes\defaultMeshes" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\icons\assets" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\shaders\2D" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\src\main\java\engine\renderer\renderer2D" />
-      <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\icons" />
-      <recent name="C:\_Files\Projects\Java\Tethys_2.0\src\main\java\engine\stuff" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\_Files\Projects\Java\Tethys_2.0\Resources\fonts" />
+      <recent name="C:\_Files\Projects\Java\Tethys_2.0\Resources\meshes\defaultMeshes" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\meshes\defaultMeshes" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\icons\assets" />
       <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\fonts\openSans" />
-      <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles\fonts" />
-      <recent name="C:\_Files\Projects\Java\Tethys_2.0\editorFiles" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="TMP_MARIO_STUFF" />
+      <recent name="engine.renderer.renderer2D.batches" />
       <recent name="engine.assets.assetTypes" />
       <recent name="engine.renderer.renderer2D" />
       <recent name="engine.stuff.openGL" />
-      <recent name="engine.renderer.shader.uniforms" />
-      <recent name="engine.stuff" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Main">
@@ -214,8 +266,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Main" />
         <item itemvalue="Gradle.Tethys_2.0 [fatJar]" />
+        <item itemvalue="Application.Main" />
         <item itemvalue="Gradle.Tethys_2.0 [jar]" />
       </list>
     </recent_temporary>
@@ -355,7 +407,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685681666246</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Add Content finder window;">
+      <created>1686045471311</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1686045471311</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -396,6 +455,7 @@
     <MESSAGE value="Start adding UUID system;&#10;Refactor Code;&#10;&#10;---------- Internal ----------&#10;Fix Physics2D rotation bug;&#10;Fix saving window ini file and engine config file" />
     <MESSAGE value="Add Circle 2D renderer;&#10;Add debug rendering options abd GUI for it;&#10;&#10;---------- Internal ----------&#10;Fix circle collider size bug;&#10;Switch rotation units from degrees to radians(Almost all math in engine requires radians and only visualization needs it in degrees, so no reason to leave it in degrees);" />
     <MESSAGE value="Reworking Editor GUI;&#10;Add 3D Meshes support(MeshRenderer component now has field for mesh, and from content browser mesh able to drag in to it);&#10;&#10;---------- Internal ----------&#10;Temporarily remove Dirty flag system;&#10;Fix bug when MeshRenderer or SpriteRenderer or ShapeRenderer2D added to game object, it's not displaying unless engine enters runtime mode;&#10;Fix colliders offset rendering;&#10;Add button for adding primitives and game objects to SceneHierarchy Window;&#10;Add custom ImGui window flags;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Reworking Editor GUI;&#10;Add 3D Meshes support(MeshRenderer component now has field for mesh, and from content browser mesh able to drag in to it);&#10;&#10;---------- Internal ----------&#10;Temporarily remove Dirty flag system;&#10;Fix bug when MeshRenderer or SpriteRenderer or ShapeRenderer2D added to game object, it's not displaying unless engine enters runtime mode;&#10;Fix colliders offset rendering;&#10;Add button for adding primitives and game objects to SceneHierarchy Window;&#10;Add custom ImGui window flags;" />
+    <MESSAGE value="Add Content finder window;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Content finder window;" />
   </component>
 </project>

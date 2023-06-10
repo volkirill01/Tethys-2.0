@@ -10,7 +10,7 @@ import engine.renderer.renderer2D.SpriteRenderer;
 import engine.renderer.renderer2D.ed_Renderer;
 import engine.stuff.openGL.ShaderDataType;
 import engine.renderer.shader.Shader;
-import engine.stuff.Maths;
+import engine.stuff.utils.Maths;
 import engine.stuff.customVariables.Color;
 import org.joml.*;
 

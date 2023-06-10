@@ -4,11 +4,11 @@ import engine.profiling.Profiler;
 import engine.renderer.EntityRenderer;
 import engine.renderer.buffers.bufferLayout.BufferLayout;
 import engine.renderer.buffers.bufferLayout.VertexBufferElement;
-import engine.renderer.renderer2D.ShapeRenderer2D;
+import engine.renderer.renderer2D.ShapeRenderer;
 import engine.renderer.renderer2D.MasterRenderer2D;
 import engine.renderer.renderer2D.ed_Renderer;
 import engine.renderer.shader.Shader;
-import engine.stuff.Maths;
+import engine.stuff.utils.Maths;
 import engine.stuff.customVariables.Color;
 import engine.stuff.openGL.ShaderDataType;
 import org.joml.Matrix4f;
@@ -39,16 +39,19 @@ public class Circle_RenderBatch2D extends RenderBatch2D {
         Profiler.startTimer("Render in Circle_RenderBatch2D");
         boolean rebufferData = false;
         for (int i = 0; i < this.numberOfQuads; i++) {
-            if (this.quads[i].getClass() != ShapeRenderer2D.class)
+            if (this.quads[i].getClass() != ShapeRenderer.class)
+                continue;
+
+            if (((ShapeRenderer) this.quads[i]).getShapeType() != ShapeRenderer.ShapeType.Circle)
                 continue;
 
             loadVertexProperties(i);
             rebufferData = true;
 
             // TODO GET BETTER SOLUTION FOR THIS
-            ShapeRenderer2D renderer = (ShapeRenderer2D) this.quads[i];
+            ShapeRenderer renderer = (ShapeRenderer) this.quads[i];
             if (renderer.gameObject.transform.getZIndex() != this.zIndex) {
-                destroyIfExists(renderer.gameObject, ShapeRenderer2D.class);
+                destroyIfExists(renderer.gameObject, ShapeRenderer.class);
                 MasterRenderer2D.add(renderer.gameObject);
                 i--;
             }
@@ -72,10 +75,12 @@ public class Circle_RenderBatch2D extends RenderBatch2D {
 
     @Override
     protected void loadVertexProperties(int index) {
-        if (this.quads[index].getClass() != ShapeRenderer2D.class)
+        if (this.quads[index].getClass() != ShapeRenderer.class)
             return;
 
-        ShapeRenderer2D shape = (ShapeRenderer2D) this.quads[index];
+        ShapeRenderer shape = (ShapeRenderer) this.quads[index];
+        if (shape.getShapeType() != ShapeRenderer.ShapeType.Circle)
+            return;
 
         // Find offset within array (4 vertices per sprite)
         int offset = index * 4 * vertexSize;

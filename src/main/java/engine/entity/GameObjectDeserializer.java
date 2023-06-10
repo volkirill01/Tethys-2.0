@@ -5,7 +5,7 @@ import engine.entity.component.Component;
 import engine.entity.component.Transform;
 import engine.logging.DebugLog;
 import engine.profiling.Profiler;
-import engine.stuff.UUID;
+import engine.editor.UUID;
 
 import java.lang.reflect.Type;
 

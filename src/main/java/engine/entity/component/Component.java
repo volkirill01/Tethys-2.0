@@ -21,7 +21,7 @@ import java.util.*;
 
 public abstract class Component {
 
-    private static int ID_COUNTER = 0; // TODO CHANGE THIS SYSTEM TO ACTUAL APPROPRIATE UUID
+    private static int ID_COUNTER = 0;
     private int uid = -1;
     public transient GameObject gameObject = null;
 
@@ -36,7 +36,7 @@ public abstract class Component {
                 if (!c.getSimpleName().startsWith("ed_")) // if Class name starts with 'ed_', its editor stuff and reflection scip it
                     allComponents.add(c.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
-                System.out.println("Error " + c);
+                throw new RuntimeException("Error in reflection state of Component class", e);
             }
         }
         Profiler.stopTimer("Collect All Build In Components");
@@ -113,6 +113,8 @@ public abstract class Component {
     }
 
     public void destroy() { }
+
+    public void reset() { }
 
     public int getUid() { return this.uid; }
 

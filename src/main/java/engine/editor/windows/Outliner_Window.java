@@ -3,6 +3,7 @@ package engine.editor.windows;
 import engine.editor.gui.CustomImGuiWindowFlags;
 import engine.editor.gui.EditorGuiWindow;
 import engine.entity.GameObject;
+import engine.entity.GameObject_GUI;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 
@@ -20,7 +21,7 @@ public class Outliner_Window extends EditorGuiWindow {
     public void drawWindow() {
         if (activeGameObjects.size() == 1 && activeGameObjects.get(0) != null) {
             activeGameObject = activeGameObjects.get(0);
-            activeGameObject.imgui();
+            GameObject_GUI.imgui(activeGameObject);
         } else {
             ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getContentRegionMaxX() / 2 - ImGui.calcTextSize("No selected Object").x / 2, ImGui.getCursorPosY() + ImGui.getStyle().getItemSpacingY() * 4);
             ImGui.text("No selected Object");

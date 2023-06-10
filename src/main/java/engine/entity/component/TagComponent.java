@@ -1,6 +1,6 @@
 package engine.entity.component;
 
-import engine.stuff.UUID;
+import engine.editor.UUID;
 
 public class TagComponent {
 

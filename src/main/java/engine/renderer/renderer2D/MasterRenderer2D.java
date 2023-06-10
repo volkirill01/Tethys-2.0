@@ -7,6 +7,7 @@ import engine.renderer.EntityRenderer;
 import engine.renderer.Texture2D;
 import engine.renderer.camera.ed_BaseCamera;
 import engine.renderer.renderer2D.batches.Circle_RenderBatch2D;
+import engine.renderer.renderer2D.batches.Rectangle_RenderBatch2D;
 import engine.renderer.renderer2D.batches.RenderBatch2D;
 import engine.renderer.renderer2D.batches.Sprite_RenderBatch2D;
 import engine.renderer.shader.Shader;
@@ -28,11 +29,12 @@ public class MasterRenderer2D {
 
     private static final Shader spriteShader = AssetPool.getShader("Resources/shaders/2D/defaultSprite.glsl", true);
     private static final Shader circleShader = AssetPool.getShader("Resources/shaders/2D/circle.glsl", true);
+    private static final Shader rectangleShader = AssetPool.getShader("Resources/shaders/2D/rectangle.glsl", true);
 
     public static void add(GameObject go) { add(go.getComponent(ed_Renderer.class)); }
 
     private static void add(ed_Renderer renderer) {
-        Profiler.startTimer(String.format("SpriteMasterRenderer Add GameObject. Obj Name - '%s'", renderer.gameObject.getName()));
+        Profiler.startTimer(String.format("MasterRenderer2D Add GameObject. Obj Name - '%s'", renderer.gameObject.getName()));
         boolean added = false;
         for (RenderBatch2D batch : batches) {
             if (batch.getClass() == Sprite_RenderBatch2D.class && renderer.getClass() == SpriteRenderer.class) {
@@ -46,8 +48,16 @@ public class MasterRenderer2D {
                         break;
                     }
                 }
-            } else if (batch.getClass() == Circle_RenderBatch2D.class && renderer.getClass() == ShapeRenderer2D.class) {
+            } else if (batch.getClass() == Circle_RenderBatch2D.class && renderer.getClass() == ShapeRenderer.class) {
                 Circle_RenderBatch2D _batch = (Circle_RenderBatch2D) batch;
+
+                if (_batch.hasRoom() && _batch.getZIndex() == renderer.gameObject.transform.getZIndex()) {
+                    _batch.addQuad(renderer);
+                    added = true;
+                    break;
+                }
+            } else if (batch.getClass() == Rectangle_RenderBatch2D.class && renderer.getClass() == ShapeRenderer.class) {
+                Rectangle_RenderBatch2D _batch = (Rectangle_RenderBatch2D) batch;
 
                 if (_batch.hasRoom() && _batch.getZIndex() == renderer.gameObject.transform.getZIndex()) {
                     _batch.addQuad(renderer);
@@ -64,30 +74,41 @@ public class MasterRenderer2D {
                 batches.add(newBatch);
                 newBatch.addQuad(renderer);
                 Collections.sort(batches);
-            } else if (renderer.getClass() == ShapeRenderer2D.class) {
-                Circle_RenderBatch2D newBatch = new Circle_RenderBatch2D(MAX_BATCH_SIZE, renderer.gameObject.transform.getZIndex());
-                newBatch.init();
-                batches.add(newBatch);
-                newBatch.addQuad(renderer);
+            } else if (renderer.getClass() == ShapeRenderer.class) { // TODO FIX ADDING OF RECTANGLE
+                switch (((ShapeRenderer) renderer).getShapeType()) {
+                    case Rectangle -> {
+                        Rectangle_RenderBatch2D newBatch = new Rectangle_RenderBatch2D(MAX_BATCH_SIZE, renderer.gameObject.transform.getZIndex());
+                        newBatch.init();
+                        batches.add(newBatch);
+                        newBatch.addQuad(renderer);
+                    }
+                    case Circle -> {
+                        Circle_RenderBatch2D newBatch = new Circle_RenderBatch2D(MAX_BATCH_SIZE, renderer.gameObject.transform.getZIndex());
+                        newBatch.init();
+                        batches.add(newBatch);
+                        newBatch.addQuad(renderer);
+                    }
+                    default -> throw new IllegalStateException(String.format("Unknown Shape type - '%s'", ((ShapeRenderer) renderer).getShapeType().name()));
+                }
                 Collections.sort(batches);
             }
         }
-        Profiler.stopTimer(String.format("SpriteMasterRenderer Add GameObject. Obj Name - '%s'", renderer.gameObject.getName()));
+        Profiler.stopTimer(String.format("MasterRenderer2D Add GameObject. Obj Name - '%s'", renderer.gameObject.getName()));
 
         quadsCount++;
     }
 
     public static <T extends ed_Renderer> void destroyGameObject(GameObject obj, Class<T> rendererType) {
-        Profiler.startTimer(String.format("SpriteMasterRenderer Destroy GameObject - '%s'", obj.getName()));
+        Profiler.startTimer(String.format("MasterRenderer2D Destroy GameObject - '%s'", obj.getName()));
         for (RenderBatch2D batch : batches)
             if (batch.destroyIfExists(obj, rendererType))
                 break;
         quadsCount--;
-        Profiler.stopTimer(String.format("SpriteMasterRenderer Destroy GameObject - '%s'", obj.getName()));
+        Profiler.stopTimer(String.format("MasterRenderer2D Destroy GameObject - '%s'", obj.getName()));
     }
 
     public static void render(ed_BaseCamera camera) {
-        Profiler.startTimer("SpriteMasterRenderer Render");
+        Profiler.startTimer("MasterRenderer2D Render");
         glEnable(GL_BLEND);
 
         for (int i = 0; i < batches.size(); i++) {
@@ -101,6 +122,12 @@ public class MasterRenderer2D {
                 circleShader.bind();
                 EntityRenderer.uploadSceneData(camera);
                 circleShader.uploadMat4f("u_TransformationMatrix", new Matrix4f().identity());
+            } else if (batches.get(i).getClass() == Rectangle_RenderBatch2D.class) {
+                System.out.println("render");
+                EntityRenderer.setShader(rectangleShader);
+                rectangleShader.bind();
+                EntityRenderer.uploadSceneData(camera);
+                rectangleShader.uploadMat4f("u_TransformationMatrix", new Matrix4f().identity());
             }
 
             batches.get(i).render();
@@ -109,6 +136,8 @@ public class MasterRenderer2D {
                 spriteShader.unbind();
             else if (batches.get(i).getClass() == Circle_RenderBatch2D.class)
                 circleShader.unbind();
+            else if (batches.get(i).getClass() == Rectangle_RenderBatch2D.class)
+                rectangleShader.unbind();
 
             if (batches.get(i).isEmpty()) {
                 batches.remove(i);
@@ -116,7 +145,7 @@ public class MasterRenderer2D {
             }
         }
 
-        Profiler.stopTimer("SpriteMasterRenderer Render");
+        Profiler.stopTimer("MasterRenderer2D Render");
     }
 
     public static void clear() { batches.clear(); }

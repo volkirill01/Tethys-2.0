@@ -28,6 +28,7 @@ import engine.scenes.SceneManager;
 import engine.stuff.fileDialogs.FileDialogs;
 import engine.stuff.fileDialogs.FileTypeFilter;
 import engine.stuff.utils.Time;
+import imgui.ImGui;
 import org.joml.Vector2f;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -81,7 +82,7 @@ public class Window implements Observer {
     public static boolean debugMode = false; // TODO DELETE THIS
 
     private void putLayersInStack() {
-        new LayerStack(); // only for initialization of layer stack
+        new LayerStack(); // Only for initialization of layer stack
 
         LayerStack.attachLayer(new EngineGuiLayer());
         LayerStack.attachLayer(new EngineLayer());
@@ -247,6 +248,7 @@ public class Window implements Observer {
 
         saveWindowIniFile();
         saveEngineConfigFile();
+        ImGui.saveIniSettingsToDisk("gui.ini");
 
         // Free the memory
         AssetPool.freeMemory();

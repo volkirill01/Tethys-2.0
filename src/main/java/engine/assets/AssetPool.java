@@ -26,10 +26,10 @@ public class AssetPool {
     private static final Sprite defaultSprite;
     static {
         // Generate white OpenGL texture.
-        whiteTexture = new Texture2D(1, 1, new int[]{ 0xFFFFFFFF }, false);
+        whiteTexture = new Texture2D("_WhiteTexture_", 1, 1, new int[]{ 0xFFFFFFFF }, false);
 
         defaultSprite = new Sprite();
-        defaultSprite.setTexture(getTexture("tmp.png"));
+        defaultSprite.setTexture(whiteTexture);
         defaultSprite.setWidth(1);
         defaultSprite.setHeight(1);
     }

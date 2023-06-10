@@ -74,10 +74,6 @@ public class Scene {
                 new SpriteSheet(AssetPool.getTexture("Assets/decorationsAndBlocks.png"),
                         16, 16, 81, 0, 0, 0, 0));
 
-        AssetPool.addSpriteSheet("Resources/gizmos.png",
-                new SpriteSheet(AssetPool.getTexture("Resources/gizmos.png"),
-                        24, 48, 3, 0, 0, 0, 0));
-
         AssetPool.addSound("Assets/sounds/main-theme-overworld.ogg", true);
         AssetPool.addSound("Assets/sounds/flagpole.ogg", false);
         AssetPool.addSound("Assets/sounds/break_block.ogg", false);
@@ -93,23 +89,6 @@ public class Scene {
         AssetPool.addSound("Assets/sounds/stomp.ogg", false);
         AssetPool.addSound("Assets/sounds/kick.ogg", false);
         AssetPool.addSound("Assets/sounds/invincible.ogg", false);
-
-        for (GameObject go : this.gameObjects) {
-            if (go.hasComponent(SpriteRenderer.class)) {
-                SpriteRenderer renderer = go.getComponent(SpriteRenderer.class);
-                if (renderer.getSprite() != AssetPool.getDefaultSprite() && !renderer.getSprite().getTexture().getFilepath().equals("_GENERATED_"))
-                    if (renderer.getSprite().getTexture() != null) {
-                        // Load Textures from AssetPool and replacing saved textures because Gson loads Textures and creates separate Object, with broken data
-                        renderer.getSprite().setTexture(AssetPool.getTexture(renderer.getSprite().getTexture().getFilepath()));
-                    }
-            }
-            if (go.hasComponent(MeshRenderer.class)) {
-                MeshRenderer renderer = go.getComponent(MeshRenderer.class);
-                if (renderer.getMesh() != null)
-                    // Load Meshes from AssetPool and replacing saved meshes because Gson loads Meshes and creates separate Object, with broken data
-                    renderer.setMesh(AssetPool.getMesh(renderer.getMesh().getFilepath()));
-            }
-        }
         Profiler.stopTimer(String.format("Scene LoadResources - '%s'", this.filepath.replace("\\", "/")));
     }
 
@@ -186,12 +165,14 @@ public class Scene {
         Profiler.stopTimer(String.format("Scene Start - '%s'", this.filepath.replace("\\", "/")));
     }
 
-    public GameObject createGameObject(String name) {
-        DebugLog.logInfo("Scene:CreateGameObject: ", this.filepath, ", object name: ", name);
+    public GameObject createGameObject(String name) { return createGameObject(name, new Vector3f(0.0f)); }
+    public GameObject createGameObject(String name, Vector3f position) {
+        DebugLog.logInfo("Scene:CreateGameObject: ", this.filepath, ", object name: ", name, ", position: (", position.x, ", ", position.y, ", ", position.z, ")");
 
         GameObject obj = new GameObject(name);
         obj.addComponent(new Transform());
         obj.transform = obj.getComponent(Transform.class);
+        obj.transform.position.set(position);
         return obj;
     }
 

@@ -1,12 +1,14 @@
 package engine.editor.gui;
 
 import engine.assets.Asset;
+import engine.assets.AssetPool;
 import engine.editor.windows.ContentFinder_Window;
 import engine.editor.windows.Content_Window;
 import engine.renderer.Texture;
 import engine.renderer.renderer3D.mesh.Mesh;
 import engine.stuff.Settings;
 import engine.stuff.customVariables.Color;
+import engine.stuff.utils.Paths;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.ImVec4;
@@ -30,19 +32,12 @@ public class EditorGUI {
     private static final String DEFAULT_INTEGER_FORMAT = "%d";
     private static final float DRAG_SPEED = 0.1f;
 
-    public static void separator() {
-        ImVec4 color = ImGui.getStyle().getColor(ImGuiCol.Separator);
-
-        ImGui.pushStyleColor(ImGuiCol.Separator, color.x / 1.5f, color.y / 1.5f, color.z / 1.5f, color.w);
-        ImGui.separator();
-        ImGui.popStyleColor();
-    }
-
     private static void beginField(String label) {
         ImGui.pushID(label);
 
         ImGui.columns(2, "", false);
         ImGui.setColumnWidth(0, ImGui.calcTextSize(label).x + ImGui.getStyle().getFramePaddingX());
+        ImGui.alignTextToFramePadding();
         ImGui.text(label);
         ImGui.nextColumn();
         ImGui.setCursorPosX(ImGui.getCursorStartPosX() + DEFAULT_LABEL_WIDTH);
@@ -54,17 +49,37 @@ public class EditorGUI {
         ImGui.popID();
     }
 
-    public static String textFieldNoLabel(String id, String text) { return textFieldNoLabel(id, text, "", ImGui.getContentRegionAvailX()); }
-    public static String textFieldNoLabel(String id, String text, float width) { return textFieldNoLabel(id, text, "", width); }
-    public static String textFieldNoLabel(String id, String text, String hint, float width) {
+    public static String field_TextNoLabel(String id, String text) { return field_TextNoLabel(id, text, "", ' ', ImGui.getContentRegionAvailX()); }
+    public static String field_TextNoLabel(String id, String text, float width) { return field_TextNoLabel(id, text, "", ' ', width); }
+    public static String field_TextNoLabel(String id, String text, String hint, float width) { return field_TextNoLabel(id, text, hint, ' ', width); }
+    public static String field_TextNoLabel(String id, String text, String hint, char icon, float width) {
         ImGui.pushID("TextField_NoLabel_" + id);
 
-        ImGui.pushItemWidth(width);
+        ImGui.setNextItemWidth(width);
         ImString ImString = new ImString(text, 256);
 
-        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() * 1.5f, ImGui.getStyle().getFramePaddingY());
-        ImGui.inputTextWithHint("##TextField_NoLabel_" + id, hint, ImString);
-        ImGui.popStyleVar();
+        ImVec2 startCursorPos = new ImVec2();
+        if (icon != ' ') {
+            startCursorPos.set(ImGui.getCursorPos());
+            ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getFrameHeight(), ImGui.getStyle().getFramePaddingY());
+        } else
+            ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() * 1.5f, ImGui.getStyle().getFramePaddingY());
+        ImGui.inputTextWithHint("##TextField_NoLabel_" + id, hint, ImString); // TODO FIX THIS
+        ImVec2 endCursorPos = new ImVec2();
+        if (icon != ' ') {
+            ImGui.popStyleVar();
+            ImGui.sameLine();
+            endCursorPos.set(ImGui.getCursorPos());
+
+            ImGui.setCursorPos(startCursorPos.x + ImGui.getFrameHeight() / 4, startCursorPos.y - 1.0f);
+        } else
+            ImGui.popStyleVar();
+
+        if (icon != ' ') {
+            ImGui.alignTextToFramePadding();
+            ImGui.textDisabled("" + icon);
+            ImGui.setCursorPos(endCursorPos.x, endCursorPos.y);
+        }
 
         ImGui.popID();
 
@@ -166,9 +181,9 @@ public class EditorGUI {
         ImGui.setCursorPos(startCursorPos.x, startCursorPos.y);
         ImGui.alignTextToFramePadding();
         ImGui.setCursorPosX(ImGui.getCursorPosX() + ImGui.getStyle().getFramePaddingY() * 1.1f + 4.0f);
-        GuiFont.bindFont(GuiFont.getSemiBoldFont());
+        EditorGuiFont.bindFont(EditorGuiFont.getSemiBoldFont());
         ImGui.text(label);
-        GuiFont.unbindFont();
+        EditorGuiFont.unbindFont();
         ImGui.setCursorPos(endCursorPos.x, endCursorPos.y);
 
         int currentFrameColor = ImGui.getColorU32(ImGuiCol.FrameBg);
@@ -342,30 +357,8 @@ public class EditorGUI {
     public static Enum<?> field_Enum(String label, Enum<?> field) {
         beginField(label);
 
-        int currentFrameColor = ImGui.getColorU32(ImGuiCol.Button);
-        if (ImGui.isMouseHoveringRect(ImGui.getCursorScreenPosX(), ImGui.getCursorScreenPosY(), ImGui.getCursorScreenPosX() + ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2, ImGui.getCursorScreenPosY() + ImGui.getFrameHeight())) {
-            currentFrameColor = ImGui.getColorU32(ImGuiCol.ButtonHovered);
-            if (ImGui.isMouseDown(ImGuiMouseButton.Left))
-                currentFrameColor = ImGui.getColorU32(ImGuiCol.ButtonActive);
-        }
-
-        ImGui.getWindowDrawList().addRectFilled(
-                ImGui.getCursorScreenPosX(),
-                ImGui.getCursorScreenPosY(),
-                ImGui.getCursorScreenPosX() + ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2,
-                ImGui.getCursorScreenPosY() + ImGui.getFrameHeight(),
-                currentFrameColor,
-                ImGui.getStyle().getFrameRounding()
-        );
-
         ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, ImGui.getStyle().getItemSpacingX() * 2, ImGui.getStyle().getItemSpacingY());
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() * 2, ImGui.getStyle().getFramePaddingY());
-        ImGui.pushStyleColor(ImGuiCol.FrameBg, 0.0f, 0.0f, 0.0f, 0.0f);
-        ImGui.pushStyleColor(ImGuiCol.FrameBgHovered, 0.0f, 0.0f, 0.0f, 0.0f);
-        ImGui.pushStyleColor(ImGuiCol.FrameBgActive, 0.0f, 0.0f, 0.0f, 0.0f);
-        ImGui.pushStyleColor(ImGuiCol.Button, 0.0f, 0.0f, 0.0f, 0.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, 0.0f, 0.0f, 0.0f, 0.0f);
-        ImGui.pushStyleColor(ImGuiCol.ButtonActive, 0.0f, 0.0f, 0.0f, 0.0f);
 
         ImGui.pushItemWidth(ImGui.getContentRegionAvailX() - ImGui.getStyle().getWindowPaddingX() / 2);
         String[] enumValues = getEnumValues(field);
@@ -374,7 +367,6 @@ public class EditorGUI {
         if (ImGui.combo("##field_Enum_" + label, index, enumValues, enumValues.length))
             field = field.getClass().getEnumConstants()[index.get()];
         ImGui.popItemWidth();
-        ImGui.popStyleColor(6);
         ImGui.popStyleVar(2);
 
         endField();
@@ -399,11 +391,14 @@ public class EditorGUI {
     public static void field_Asset(String label, Object object, Field field, Asset.AssetType type) {
         String assetName = "";
         try {
-            switch (type) {
-                case Texture -> assetName = field.get(object) != null ? ((Texture) field.get(object)).getFilepath() : "(none) " + Texture.class.getSimpleName();
-                case Mesh -> assetName = field.get(object) != null ? ((Mesh) field.get(object)).getFilepath() : "(none) " + Mesh.class.getSimpleName();
-                default -> ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f, String.format("Unknown Asset type - '%s'", type.name()));
-            }
+            if (field.get(object) != null)
+                switch (type) {
+                    case Texture -> assetName = field.get(object) != AssetPool.getWhiteTexture() ? Paths.getFileNameFromFilepath(((Texture) field.get(object)).getFilepath()) : "(none) " + field.getType().getSimpleName();
+                    case Mesh -> assetName = Paths.getFileNameFromFilepath(((Mesh) field.get(object)).getFilepath());
+                    default -> ImGui.textColored(1.0f, 0.0f, 0.0f, 1.0f, String.format("Unknown Asset type - '%s'", type.name()));
+                }
+            else
+                assetName = "(none) " + field.getType().getSimpleName();
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

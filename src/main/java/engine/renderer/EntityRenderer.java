@@ -95,8 +95,8 @@ public class EntityRenderer {
         if (obj.hasComponent(ed_Renderer.class)) {
             if (obj.hasComponent(SpriteRenderer.class) && (rendererType == SpriteRenderer.class || rendererType == ed_Renderer.class))
                 MasterRenderer2D.destroyGameObject(obj, SpriteRenderer.class);
-            if (obj.hasComponent(ShapeRenderer2D.class) && (rendererType == ShapeRenderer2D.class || rendererType == ed_Renderer.class))
-                MasterRenderer2D.destroyGameObject(obj, ShapeRenderer2D.class);
+            if (obj.hasComponent(ShapeRenderer.class) && (rendererType == ShapeRenderer.class || rendererType == ed_Renderer.class))
+                MasterRenderer2D.destroyGameObject(obj, ShapeRenderer.class);
             if (obj.hasComponent(MeshRenderer.class) && (rendererType == MeshRenderer.class || rendererType == ed_Renderer.class))
                 MeshMasterRenderer.destroyGameObject(obj);
         }

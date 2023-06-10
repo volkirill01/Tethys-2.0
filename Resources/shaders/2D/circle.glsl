@@ -30,7 +30,6 @@ void main() {
 }
 
 #type fragment
-
 struct VertexOutput {
     vec2 UV;
     vec4 color;

@@ -7,7 +7,7 @@ import engine.renderer.camera.ed_BaseCamera;
 import engine.renderer.camera.ed_EditorCamera;
 import engine.renderer.shader.Shader;
 import engine.scenes.SceneManager;
-import engine.stuff.Maths;
+import engine.stuff.utils.Maths;
 import engine.stuff.customVariables.Color;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -104,7 +104,7 @@ public class DebugRenderer {
             }
         }
 
-//        glClear(GL_DEPTH_BUFFER_BIT); // TODO MAKE IT FOR USER
+//        glClear(GL_DEPTH_BUFFER_BIT); // TODO MAKE BOOLEAN FOR DRAWING DEBUG LINES ON TOP OF ALL
 
         glBindBuffer(GL_ARRAY_BUFFER, vboID);
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertexArray);

@@ -2,12 +2,19 @@ package engine.stuff.utils;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Paths {
 
     public static String getProjectDirectory() { return System.getProperty("user.dir"); }
 
     public static String getFileNameFromFilepath(String filepath) { return new File(filepath).getName(); }
+
+    public static String getFileExtensionFromFilepath(String filepath) {
+        File tmp = new File(filepath);
+        return tmp.getName().split("\\.")[tmp.getName().split("\\.").length - 1];
+    }
 
     public static String getAbsoluteDirectory(String filepath) { return new File(filepath).getAbsolutePath(); }
 
@@ -27,5 +34,21 @@ public class Paths {
 
         // Convert the URI to string and set current directory to it
         return relativePath.getPath();
+    }
+
+    public static void sortFiles(File[] filesList) {
+        List<File> directories = new ArrayList<>();
+        List<File> files = new ArrayList<>();
+        for (File file : filesList) {
+            if (file.isDirectory())
+                directories.add(file);
+            else
+                files.add(file);
+        }
+
+        for (int i = 0; i < directories.size(); i++)
+            filesList[i] = directories.get(i);
+        for (int i = 0; i < files.size(); i++)
+            filesList[i + directories.size()] = files.get(i);
     }
 }

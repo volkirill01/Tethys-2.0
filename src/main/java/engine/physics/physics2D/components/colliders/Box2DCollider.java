@@ -26,6 +26,12 @@ public class Box2DCollider extends ed_Collider2D {
         EditorGUI.field_Vector2f("Offset", this.offset, EditorGUI.DEFAULT_FLOAT_FORMAT + "m");
     }
 
+    @Override
+    public void reset() {
+        this.size.set(1.0f);
+        this.offset.set(0.0f);
+    }
+
     public Vector2f getSize() { return this.size; }
 
     public void setSize(Vector2f size) { this.size.set(size); }

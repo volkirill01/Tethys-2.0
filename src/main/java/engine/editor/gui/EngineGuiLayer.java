@@ -14,7 +14,7 @@ import engine.observers.events.EventType;
 import engine.profiling.Profiler;
 import engine.profiling.Profiler_Window;
 import engine.scenes.SceneManager;
-import engine.stuff.Maths;
+import engine.stuff.utils.Maths;
 import engine.stuff.Settings;
 import engine.stuff.Window;
 import engine.stuff.utils.Time;
@@ -195,7 +195,7 @@ public class EngineGuiLayer extends Layer {
             }
         });
 
-        GuiFont.init(io);
+        EditorGuiFont.init(io);
 
         // Method initializes LWJGL3 renderer.
         // This method SHOULD be called after you've initialized your ImGui configuration (fonts and so on).

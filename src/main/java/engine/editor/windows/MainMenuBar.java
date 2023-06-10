@@ -6,9 +6,7 @@ import engine.observers.EventSystem;
 import engine.observers.events.Event;
 import engine.observers.events.EventType;
 import engine.profiling.Profiler_Window;
-import engine.renderer.camera.ed_BaseCamera;
 import engine.renderer.debug.DebugRenderer;
-import engine.scenes.SceneManager;
 import engine.stuff.Window;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -20,18 +18,6 @@ import java.util.Map;
 public class MainMenuBar {
 
     private static void drawEditorMenuBar() {
-        //<editor-fold desc="Camera Mode Button">
-        ImGui.setCursorPosX(ImGui.getCursorStartPosX() + ImGui.getStyle().getFramePaddingX() + ImGui.getContentRegionMaxX() / 8);
-        if (drawRectangleButton(SceneManager.getCurrentScene().getEditorCamera().getProjectionType().name(), true)) {
-            if (SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
-                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Orthographic);
-            else
-                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Perspective);
-        }
-        //</editor-fold>
-
-        ImGui.sameLine();
-        ImGui.setCursorPosY(ImGui.getCursorStartPosY());
         drawPlayPauseButtons();
 
         drawDebugDrawOptionsButton();

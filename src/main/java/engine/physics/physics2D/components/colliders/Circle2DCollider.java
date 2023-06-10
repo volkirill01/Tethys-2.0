@@ -27,6 +27,12 @@ public class Circle2DCollider extends ed_Collider2D {
         EditorGUI.field_Vector2f("Offset", this.offset, EditorGUI.DEFAULT_FLOAT_FORMAT + "m");
     }
 
+    @Override
+    public void reset() {
+        this.radius = 0.5f;
+        this.offset.set(0.0f);
+    }
+
     public float getRadius() { return this.radius; }
 
     public void setRadius(float radius) { this.radius = radius; }

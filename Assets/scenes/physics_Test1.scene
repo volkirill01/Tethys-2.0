@@ -1,7 +1,7 @@
 [
   {
     "tagComponent": {
-      "name": "Empty",
+      "name": "Box",
       "id": {
         "uuid": 5951953220215710720
       }
@@ -11,19 +11,19 @@
         "type": "engine.entity.component.Transform",
         "properties": {
           "position": {
-            "x": -1.1359856,
-            "y": 1.5340569,
+            "x": -2.0204384,
+            "y": 8.608333,
             "z": 0.0
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
           },
           "rotation": {
             "x": 0.0,
             "y": 0.0,
             "z": -0.37175512
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
           },
           "zIndex": 0,
           "uid": 18
@@ -37,7 +37,7 @@
             "y": 1.0
           },
           "offset": {
-            "x": -0.4,
+            "x": 0.0,
             "y": 0.0
           },
           "uid": 19
@@ -64,6 +64,49 @@
           "isTrigger": false,
           "uid": 20
         }
+      },
+      {
+        "type": "engine.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 108.345726,
+            "g": 253.11809,
+            "b": 0.0,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 1.0,
+            "height": 1.0,
+            "texture": {
+              "filepath": "_WhiteTexture_",
+              "width": 1,
+              "height": 1
+            },
+            "textureCoordinates": [
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              }
+            ]
+          },
+          "tiling": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 106
+        }
       }
     ],
     "clickable": true,
@@ -71,9 +114,9 @@
   },
   {
     "tagComponent": {
-      "name": "Empty",
+      "name": "Circle",
       "id": {
-        "uuid": 5839801165651173376
+        "uuid": 409365062422372352
       }
     },
     "components": [
@@ -81,19 +124,253 @@
         "type": "engine.entity.component.Transform",
         "properties": {
           "position": {
-            "x": 0.0,
-            "y": -3.0681129,
+            "x": -1.3729162,
+            "y": 6.3583956,
             "z": 0.0
           },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.36140895
+          },
           "scale": {
-            "x": 5.4,
+            "x": 1.0,
             "y": 1.0,
             "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 32
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Circle2DCollider",
+        "properties": {
+          "radius": 0.5,
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 33
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Dynamic",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 34
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.ShapeRenderer",
+        "properties": {
+          "color": {
+            "r": 245.59041,
+            "g": 158.11005,
+            "b": 28.093369,
+            "a": 255.0
+          },
+          "shapeType": "Circle",
+          "radius": 0.5,
+          "thickness": 1.0,
+          "fade": 0.0,
+          "cornerRadius": 0.0,
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 105
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": false
+  },
+  {
+    "tagComponent": {
+      "name": "Camera",
+      "id": {
+        "uuid": 4580385298424238080
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 0.92559063,
+            "y": 1.6406364,
+            "z": 0.0
           },
           "rotation": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 63
+        }
+      },
+      {
+        "type": "engine.renderer.camera.Camera",
+        "properties": {
+          "isMain": true,
+          "zoom": 1.9,
+          "orthographicProjectionSize": {
+            "x": 24.0,
+            "y": 13.48
+          },
+          "orthographicNearPlane": -1.0,
+          "orthographicFarPlane": 100.0,
+          "perspectiveFov": 45.0,
+          "perspectiveNearPlane": 0.01,
+          "perspectiveFarPlane": 1000.0,
+          "projectionType": "Orthographic",
+          "backgroundColor": {
+            "r": 136.72035,
+            "g": 173.45589,
+            "b": 201.36531,
+            "a": 255.0
+          },
+          "uid": 64
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": false
+  },
+  {
+    "tagComponent": {
+      "name": "Shape",
+      "id": {
+        "uuid": 7723964410952614912
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": -1.4156077,
+            "y": 10.936084,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 2.0,
+            "y": 2.0,
+            "z": 2.0
+          },
+          "zIndex": 0,
+          "uid": 116
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.ShapeRenderer",
+        "properties": {
+          "color": {
+            "r": 63.044285,
+            "g": 255.0,
+            "b": 218.87549,
+            "a": 255.0
+          },
+          "shapeType": "Circle",
+          "radius": 0.5,
+          "thickness": 1.0,
+          "fade": 0.0,
+          "cornerRadius": 0.0,
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 117
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Circle2DCollider",
+        "properties": {
+          "radius": 0.5,
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 118
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Dynamic",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 123
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": true
+  },
+  {
+    "tagComponent": {
+      "name": "Floor",
+      "id": {
+        "uuid": 4474446416928595968
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 6.65034,
+            "y": 0.030100822,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.37740472
+          },
+          "scale": {
+            "x": 5.4,
+            "y": 1.0,
+            "z": 1.0
           },
           "zIndex": 0,
           "uid": 25
@@ -134,16 +411,59 @@
           "isTrigger": false,
           "uid": 27
         }
+      },
+      {
+        "type": "engine.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 31.124575,
+            "g": 58.699856,
+            "b": 101.62362,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 1.0,
+            "height": 1.0,
+            "texture": {
+              "filepath": "_WhiteTexture_",
+              "width": 1,
+              "height": 1
+            },
+            "textureCoordinates": [
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              }
+            ]
+          },
+          "tiling": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 111
+        }
       }
     ],
     "clickable": true,
-    "hasChildren": false
+    "hasChildren": true
   },
   {
     "tagComponent": {
-      "name": "Empty",
+      "name": "Floor",
       "id": {
-        "uuid": 409365062422372352
+        "uuid": 5831964876209276928
       }
     },
     "components": [
@@ -151,19 +471,584 @@
         "type": "engine.entity.component.Transform",
         "properties": {
           "position": {
-            "x": -1.3729162,
-            "y": -0.6416042,
+            "x": -4.3515,
+            "y": 2.5383935,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -0.6667598
+          },
+          "scale": {
+            "x": 5.4,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 25
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Box2DCollider",
+        "properties": {
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 26
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Static",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 27
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 31.124575,
+            "g": 58.699856,
+            "b": 101.62362,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 1.0,
+            "height": 1.0,
+            "texture": {
+              "filepath": "_WhiteTexture_",
+              "width": 1,
+              "height": 1
+            },
+            "textureCoordinates": [
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              }
+            ]
+          },
+          "tiling": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 111
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": true
+  },
+  {
+    "tagComponent": {
+      "name": "Floor",
+      "id": {
+        "uuid": 574235445474705408
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": -0.5138561,
+            "y": -0.43439722,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.5482285
+          },
+          "scale": {
+            "x": 5.4,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 25
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Box2DCollider",
+        "properties": {
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 26
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Static",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 27
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 31.124575,
+            "g": 58.699856,
+            "b": 101.62362,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 1.0,
+            "height": 1.0,
+            "texture": {
+              "filepath": "_WhiteTexture_",
+              "width": 1,
+              "height": 1
+            },
+            "textureCoordinates": [
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              }
+            ]
+          },
+          "tiling": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 111
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": true
+  },
+  {
+    "tagComponent": {
+      "name": "Floor",
+      "id": {
+        "uuid": 584661933529791488
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 1.738657,
+            "y": 3.7579165,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -0.09988939
+          },
+          "scale": {
+            "x": 7.0034866,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 25
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Box2DCollider",
+        "properties": {
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 26
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Static",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 27
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 31.124575,
+            "g": 58.699856,
+            "b": 101.62362,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 1.0,
+            "height": 1.0,
+            "texture": {
+              "filepath": "_WhiteTexture_",
+              "width": 1,
+              "height": 1
+            },
+            "textureCoordinates": [
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              }
+            ]
+          },
+          "tiling": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 111
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": true
+  },
+  {
+    "tagComponent": {
+      "name": "Floor",
+      "id": {
+        "uuid": 1922251438069046272
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": -3.408782,
+            "y": -5.546812,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -0.6538929
+          },
+          "scale": {
+            "x": 10.272268,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 25
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Box2DCollider",
+        "properties": {
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 26
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Static",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 27
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 31.124575,
+            "g": 58.699856,
+            "b": 101.62362,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 1.0,
+            "height": 1.0,
+            "texture": {
+              "filepath": "_WhiteTexture_",
+              "width": 1,
+              "height": 1
+            },
+            "textureCoordinates": [
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              }
+            ]
+          },
+          "tiling": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 111
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": true
+  },
+  {
+    "tagComponent": {
+      "name": "Floor",
+      "id": {
+        "uuid": 8293325053506617344
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 4.683196,
+            "y": -6.0526314,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": -2.627575
+          },
+          "scale": {
+            "x": 10.272268,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 25
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Box2DCollider",
+        "properties": {
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 26
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Static",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 27
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 31.124575,
+            "g": 58.699856,
+            "b": 101.62362,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 1.0,
+            "height": 1.0,
+            "texture": {
+              "filepath": "_WhiteTexture_",
+              "width": 1,
+              "height": 1
+            },
+            "textureCoordinates": [
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              }
+            ]
+          },
+          "tiling": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 111
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": true
+  },
+  {
+    "tagComponent": {
+      "name": "Circle",
+      "id": {
+        "uuid": 1195188809464549376
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 5.0644703,
+            "y": 8.228579,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
             "z": 0.0
           },
           "scale": {
             "x": 1.0,
             "y": 1.0,
             "z": 1.0
-          },
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.36140895
           },
           "zIndex": 0,
           "uid": 32
@@ -174,7 +1059,7 @@
         "properties": {
           "radius": 0.5,
           "offset": {
-            "x": 0.2,
+            "x": 0.0,
             "y": 0.0
           },
           "uid": 33
@@ -201,16 +1086,37 @@
           "isTrigger": false,
           "uid": 34
         }
+      },
+      {
+        "type": "engine.renderer.renderer2D.ShapeRenderer",
+        "properties": {
+          "color": {
+            "r": 245.59041,
+            "g": 158.11005,
+            "b": 28.093369,
+            "a": 255.0
+          },
+          "shapeType": "Circle",
+          "radius": 0.5,
+          "thickness": 1.0,
+          "fade": 0.0,
+          "cornerRadius": 0.0,
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 105
+        }
       }
     ],
     "clickable": true,
-    "hasChildren": false
+    "hasChildren": true
   },
   {
     "tagComponent": {
-      "name": "Empty Sprite",
+      "name": "Circle",
       "id": {
-        "uuid": 7898640158855578624
+        "uuid": 3748960450152744960
       }
     },
     "components": [
@@ -218,6 +1124,212 @@
         "type": "engine.entity.component.Transform",
         "properties": {
           "position": {
+            "x": 4.9301686,
+            "y": 10.359718,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 1.4899999,
+            "y": 1.4899999,
+            "z": 1.4899999
+          },
+          "zIndex": 0,
+          "uid": 32
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Circle2DCollider",
+        "properties": {
+          "radius": 0.5,
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 33
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Dynamic",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 34
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.ShapeRenderer",
+        "properties": {
+          "color": {
+            "r": 245.59041,
+            "g": 158.11005,
+            "b": 28.093369,
+            "a": 255.0
+          },
+          "shapeType": "Circle",
+          "radius": 0.5,
+          "thickness": 1.0,
+          "fade": 0.0,
+          "cornerRadius": 0.0,
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 105
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": false
+  },
+  {
+    "tagComponent": {
+      "name": "Box",
+      "id": {
+        "uuid": 2814957483933943808
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 4.685551,
+            "y": 6.08576,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.48170623
+          },
+          "scale": {
+            "x": 1.0,
+            "y": 1.0,
+            "z": 1.0
+          },
+          "zIndex": 0,
+          "uid": 18
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.colliders.Box2DCollider",
+        "properties": {
+          "size": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "offset": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "uid": 19
+        }
+      },
+      {
+        "type": "engine.physics.physics2D.components.RigidBody2D",
+        "properties": {
+          "bodyType": "Dynamic",
+          "velocity": {
+            "x": 0.0,
+            "y": 0.0
+          },
+          "fixedRotation": false,
+          "continuesCollision": false,
+          "density": 1.0,
+          "friction": 0.5,
+          "restitution": 0.0,
+          "angularDamping": 0.8,
+          "linearDamping": 0.9,
+          "mass": 1.0,
+          "angularVelocity": 0.0,
+          "gravityScale": 1.0,
+          "isTrigger": false,
+          "uid": 20
+        }
+      },
+      {
+        "type": "engine.renderer.renderer2D.SpriteRenderer",
+        "properties": {
+          "color": {
+            "r": 108.345726,
+            "g": 253.11809,
+            "b": 0.0,
+            "a": 255.0
+          },
+          "sprite": {
+            "width": 1.0,
+            "height": 1.0,
+            "texture": {
+              "filepath": "_WhiteTexture_",
+              "width": 1,
+              "height": 1
+            },
+            "textureCoordinates": [
+              {
+                "x": 1.0,
+                "y": 1.0
+              },
+              {
+                "x": 1.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 0.0
+              },
+              {
+                "x": 0.0,
+                "y": 1.0
+              }
+            ]
+          },
+          "tiling": {
+            "x": 1.0,
+            "y": 1.0
+          },
+          "uid": 106
+        }
+      }
+    ],
+    "clickable": true,
+    "hasChildren": false
+  },
+  {
+    "tagComponent": {
+      "name": "Sprite",
+      "id": {
+        "uuid": 6105856041126127616
+      }
+    },
+    "components": [
+      {
+        "type": "engine.entity.component.Transform",
+        "properties": {
+          "position": {
+            "x": 10.148035,
+            "y": 8.383444,
+            "z": 0.0
+          },
+          "rotation": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
@@ -227,13 +1339,8 @@
             "y": 1.0,
             "z": 1.0
           },
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
           "zIndex": 0,
-          "uid": 39
+          "uid": 128
         }
       },
       {
@@ -249,9 +1356,9 @@
             "width": 1.0,
             "height": 1.0,
             "texture": {
-              "filepath": "C:\\_Files\\Projects\\Java\\Tethys_2.0\\Assets\\Goomba.png",
-              "width": 32,
-              "height": 32
+              "filepath": "C:\\_Files\\Projects\\Java\\Tethys_2.0\\Assets\\decorationsAndBlocks.png",
+              "width": 112,
+              "height": 192
             },
             "textureCoordinates": [
               {
@@ -276,393 +1383,11 @@
             "x": 1.0,
             "y": 1.0
           },
-          "uid": 40
-        }
-      }
-    ],
-    "clickable": true,
-    "hasChildren": false
-  },
-  {
-    "tagComponent": {
-      "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png",
-      "id": {
-        "uuid": 7137802404458719232
-      }
-    },
-    "components": [
-      {
-        "type": "engine.entity.component.Transform",
-        "properties": {
-          "position": {
-            "x": 2.0,
-            "y": -1.0,
-            "z": 0.0
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          },
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "zIndex": 0,
-          "uid": 45
-        }
-      },
-      {
-        "type": "engine.renderer.renderer2D.SpriteRenderer",
-        "properties": {
-          "color": {
-            "r": 255.0,
-            "g": 255.0,
-            "b": 255.0,
-            "a": 255.0
-          },
-          "sprite": {
-            "width": 16.0,
-            "height": 16.0,
-            "texture": {
-              "filepath": "Assets/decorationsAndBlocks.png",
-              "width": 112,
-              "height": 192
-            },
-            "textureCoordinates": [
-              {
-                "x": 0.14285715,
-                "y": 1.0
-              },
-              {
-                "x": 0.14285715,
-                "y": 0.9166667
-              },
-              {
-                "x": 0.0,
-                "y": 0.9166667
-              },
-              {
-                "x": 0.0,
-                "y": 1.0
-              }
-            ]
-          },
-          "tiling": {
-            "x": 1.0,
-            "y": 1.0
-          },
-          "uid": 46
-        }
-      }
-    ],
-    "clickable": true,
-    "hasChildren": false
-  },
-  {
-    "tagComponent": {
-      "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png",
-      "id": {
-        "uuid": 375775629806330880
-      }
-    },
-    "components": [
-      {
-        "type": "engine.entity.component.Transform",
-        "properties": {
-          "position": {
-            "x": 6.9833183,
-            "y": -3.8217661,
-            "z": 0.0
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          },
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "zIndex": 0,
-          "uid": 45
-        }
-      },
-      {
-        "type": "engine.renderer.renderer2D.SpriteRenderer",
-        "properties": {
-          "color": {
-            "r": 255.0,
-            "g": 255.0,
-            "b": 255.0,
-            "a": 255.0
-          },
-          "sprite": {
-            "width": 16.0,
-            "height": 16.0,
-            "texture": {
-              "filepath": "C:\\_Files\\Projects\\Java\\Tethys_2.0\\Assets\\decorationsAndBlocks.png",
-              "width": 112,
-              "height": 192
-            },
-            "textureCoordinates": [
-              {
-                "x": 0.14285715,
-                "y": 1.0
-              },
-              {
-                "x": 0.14285715,
-                "y": 0.9166667
-              },
-              {
-                "x": 0.0,
-                "y": 0.9166667
-              },
-              {
-                "x": 0.0,
-                "y": 1.0
-              }
-            ]
-          },
-          "tiling": {
-            "x": 1.0,
-            "y": 1.0
-          },
-          "uid": 46
-        }
-      }
-    ],
-    "clickable": true,
-    "hasChildren": false
-  },
-  {
-    "tagComponent": {
-      "name": "Sprite OBJ_gen Assets/decorationsAndBlocks.png",
-      "id": {
-        "uuid": 8914034530868860928
-      }
-    },
-    "components": [
-      {
-        "type": "engine.entity.component.Transform",
-        "properties": {
-          "position": {
-            "x": 6.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          },
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "zIndex": 0,
-          "uid": 45
-        }
-      },
-      {
-        "type": "engine.renderer.renderer2D.SpriteRenderer",
-        "properties": {
-          "color": {
-            "r": 255.0,
-            "g": 255.0,
-            "b": 255.0,
-            "a": 255.0
-          },
-          "sprite": {
-            "width": 16.0,
-            "height": 16.0,
-            "texture": {
-              "filepath": "C:\\_Files\\Projects\\Java\\Tethys_2.0\\Assets\\decorationsAndBlocks.png",
-              "width": 112,
-              "height": 192
-            },
-            "textureCoordinates": [
-              {
-                "x": 0.14285715,
-                "y": 1.0
-              },
-              {
-                "x": 0.14285715,
-                "y": 0.9166667
-              },
-              {
-                "x": 0.0,
-                "y": 0.9166667
-              },
-              {
-                "x": 0.0,
-                "y": 1.0
-              }
-            ]
-          },
-          "tiling": {
-            "x": 1.0,
-            "y": 1.0
-          },
-          "uid": 46
-        }
-      }
-    ],
-    "clickable": true,
-    "hasChildren": false
-  },
-  {
-    "tagComponent": {
-      "name": "Empty",
-      "id": {
-        "uuid": 6966946583619840000
-      }
-    },
-    "components": [
-      {
-        "type": "engine.entity.component.Transform",
-        "properties": {
-          "position": {
-            "x": 2.7693672,
-            "y": 0.67263144,
-            "z": 0.0
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          },
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "zIndex": 0,
-          "uid": 51
-        }
-      },
-      {
-        "type": "engine.renderer.renderer2D.ShapeRenderer2D",
-        "properties": {
-          "color": {
-            "r": 255.0,
-            "g": 255.0,
-            "b": 255.0,
-            "a": 255.0
-          },
-          "shapeType": "Circle",
-          "radius": 0.5,
-          "thickness": 1.0,
-          "fade": 0.0,
-          "uid": 52
+          "uid": 129
         }
       }
     ],
     "clickable": true,
     "hasChildren": true
-  },
-  {
-    "tagComponent": {
-      "name": "Cube",
-      "id": {
-        "uuid": 3785441318732602368
-      }
-    },
-    "components": [
-      {
-        "type": "engine.entity.component.Transform",
-        "properties": {
-          "position": {
-            "x": -9.583078,
-            "y": 0.0,
-            "z": -0.8552233
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          },
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "zIndex": 0,
-          "uid": 57
-        }
-      },
-      {
-        "type": "engine.renderer.renderer3D.MeshRenderer",
-        "properties": {
-          "mesh": {
-            "filepath": "C:\\_Files\\Projects\\Java\\Tethys_2.0\\Assets\\defaultCapsule.obj"
-          },
-          "uid": 58
-        }
-      }
-    ],
-    "clickable": true,
-    "hasChildren": false
-  },
-  {
-    "tagComponent": {
-      "name": "Camera",
-      "id": {
-        "uuid": 4580385298424238080
-      }
-    },
-    "components": [
-      {
-        "type": "engine.entity.component.Transform",
-        "properties": {
-          "position": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "scale": {
-            "x": 1.0,
-            "y": 1.0,
-            "z": 1.0
-          },
-          "rotation": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "zIndex": 0,
-          "uid": 63
-        }
-      },
-      {
-        "type": "engine.renderer.camera.Camera",
-        "properties": {
-          "isMain": true,
-          "zoom": 1.0,
-          "orthographicProjectionSize": {
-            "x": 24.0,
-            "y": 13.48
-          },
-          "orthographicNearPlane": -1.0,
-          "orthographicFarPlane": 100.0,
-          "perspectiveFov": 45.0,
-          "perspectiveNearPlane": 0.01,
-          "perspectiveFarPlane": 1000.0,
-          "projectionType": "Orthographic",
-          "backgroundColor": {
-            "r": 44.225098,
-            "g": 164.00124,
-            "b": 255.0,
-            "a": 255.0
-          },
-          "uid": 64
-        }
-      }
-    ],
-    "clickable": true,
-    "hasChildren": false
   }
 ]

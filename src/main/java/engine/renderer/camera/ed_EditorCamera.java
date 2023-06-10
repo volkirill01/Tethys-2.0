@@ -9,7 +9,7 @@ import engine.renderer.frameBuffer.FrameBufferAttachmentSpecification;
 import engine.renderer.frameBuffer.Framebuffer;
 import engine.renderer.frameBuffer.FrameBufferTextureFormat;
 import engine.renderer.frameBuffer.FrameBufferTextureSpecification;
-import engine.stuff.Maths;
+import engine.stuff.utils.Maths;
 import engine.stuff.Window;
 import engine.stuff.utils.Time;
 import org.joml.*;

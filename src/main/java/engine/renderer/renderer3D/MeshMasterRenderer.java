@@ -7,7 +7,7 @@ import engine.renderer.EntityRenderer;
 import engine.renderer.camera.ed_BaseCamera;
 import engine.renderer.renderer3D.mesh.RawModel;
 import engine.renderer.shader.Shader;
-import engine.stuff.Maths;
+import engine.stuff.utils.Maths;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
@@ -47,25 +47,26 @@ public class MeshMasterRenderer {
             if (render.getMesh() == null)
                 continue;
 
-            for (RawModel rawModel : render.getMesh().getModels()) {
-//                rawModel.getVao().getVertexBuffer().bind();
+            if (render.getMesh().getModels() != null)
+                for (RawModel rawModel : render.getMesh().getModels()) {
+    //                rawModel.getVao().getVertexBuffer().bind();
 
-                Matrix4f transformationMatrix = Maths.createTransformationMatrix(render.gameObject.transform.position, render.gameObject.transform.rotation, render.gameObject.transform.scale);
+                    Matrix4f transformationMatrix = Maths.createTransformationMatrix(render.gameObject.transform.position, render.gameObject.transform.rotation, render.gameObject.transform.scale);
 
-                shader.uploadInt("u_EntityID", render.gameObject.getIncrementedID() + 1);
-                shader.uploadMat4f("u_TransformationMatrix", transformationMatrix);
+                    shader.uploadInt("u_EntityID", render.gameObject.getIncrementedID() + 1);
+                    shader.uploadMat4f("u_TransformationMatrix", transformationMatrix);
 
-//                // PBR TEST
-//                Texture albedo = AssetPool.getTexture("Assets/pbrTest/sphere_Base_Color.png");
-//                glActiveTexture(GL_TEXTURE0);
-//                albedo.bind();
-//                shader.uploadVec3f("u_CameraPosition", SceneManager.getCurrentScene().getEditorCamera().getPosition());
+    //                // PBR TEST
+    //                Texture albedo = AssetPool.getTexture("Assets/pbrTest/sphere_Base_Color.png");
+    //                glActiveTexture(GL_TEXTURE0);
+    //                albedo.bind();
+    //                shader.uploadVec3f("u_CameraPosition", SceneManager.getCurrentScene().getEditorCamera().getPosition());
 
-                EntityRenderer.submit(rawModel.getVao());
-//                albedo.unbind();
+                    EntityRenderer.submit(rawModel.getVao());
+    //                albedo.unbind();
 
-//                rawModel.getVao().getVertexBuffer().unbind();
-            }
+    //                rawModel.getVao().getVertexBuffer().unbind();
+                }
         }
 //        glDisable(GL_CULL_FACE | GL_DEPTH_TEST);
         EntityRenderer.getCurrentShader().unbind();

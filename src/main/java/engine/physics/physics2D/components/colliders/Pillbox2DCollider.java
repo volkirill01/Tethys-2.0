@@ -72,6 +72,15 @@ public class Pillbox2DCollider extends ed_Collider2D {
             resetFixture();
     }
 
+    @Override
+    public void reset() {
+        this.width = 1.0f;
+        this.height = 1.0f;
+        this.offset.set(0.0f);
+        resetFixture();
+        recalculateCollider();
+    }
+
     public void recalculateCollider() {
         float circleRadius = this.width;
         float boxHeight = this.height * 2.0f - 2.0f * circleRadius;

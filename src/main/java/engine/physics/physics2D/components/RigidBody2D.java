@@ -84,6 +84,26 @@ public class RigidBody2D extends Component {
 //        this.isTrigger = EditorGUI.field_Boolean("Is Trigger", this.isTrigger);
     }
 
+    @Override
+    public void reset() {
+        this.bodyType = BodyType.Dynamic;
+        this.velocity.set(0.0f);
+
+        this.fixedRotation = false;
+        this.continuesCollision = false;
+
+        this.density = 1.0f;
+        this.friction = 0.5f;
+        this.restitution = 0.0f; // Bounciness
+
+        this.angularDamping = 0.8f;
+        this.linearDamping = 0.9f;
+        this.mass = 1.0f;
+        this.angularVelocity = 0.0f;
+        this.gravityScale = 1.0f;
+        this.isTrigger = false;
+    }
+
     // =========================================
     public void addVelocity(Vector2f force) {
         if (this.rawBody != null)

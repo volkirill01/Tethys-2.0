@@ -8,20 +8,31 @@ import engine.editor.gui.EditorThemeSystem;
 import engine.entity.GameObject;
 import engine.entity.GameObject_Manager;
 import engine.renderer.camera.Camera;
-import engine.renderer.renderer2D.ShapeRenderer2D;
+import engine.renderer.renderer2D.ShapeRenderer;
 import engine.renderer.renderer2D.SpriteRenderer;
 import engine.renderer.renderer3D.MeshRenderer;
 import engine.scenes.SceneManager;
 import imgui.ImGui;
-import imgui.ImVec2;
 import imgui.ImVec4;
 import imgui.flag.*;
+import org.joml.Vector3f;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SceneHierarchy_Window extends EditorGuiWindow {
 
     private String searchFilter = "";
+    //          Filepath    Name
+    private static final Map<String,     String> defaultMeshes = new HashMap<>();
+
+    static {
+        File defaultMeshesDirectory = new File("Resources/meshes/defaultMeshes");
+        for (File file : defaultMeshesDirectory.listFiles())
+            defaultMeshes.put(file.getAbsolutePath(), file.getName().replace("default", "").replace(".obj", ""));
+    }
 
     public SceneHierarchy_Window() { super("\uEF74 Hierarchy", ImGuiWindowFlags.None, CustomImGuiWindowFlags.NoWindowPadding);}
 
@@ -32,40 +43,7 @@ public class SceneHierarchy_Window extends EditorGuiWindow {
 
         //<editor-fold desc="Search Field">
         ImGui.setCursorPos(ImGui.getCursorStartPosX() + ImGui.getStyle().getWindowPaddingX() / 2, ImGui.getCursorStartPosY() + ImGui.getStyle().getWindowPaddingY() / 2);
-        ImVec2 startCursorPos = ImGui.getCursorPos();
-        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, ImGui.getStyle().getFramePaddingX() * 3 + ImGui.getStyle().getFramePaddingX() / 2, ImGui.getStyle().getFramePaddingX());
-        this.searchFilter = EditorGUI.textFieldNoLabel("SceneHierarchy_SearchField", this.searchFilter, "Search...", ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() - ImGui.getStyle().getItemSpacingX() - ImGui.getStyle().getWindowPaddingX() / 2);
-        ImGui.popStyleVar();
-        ImGui.sameLine();
-        ImVec2 endCursorPos = ImGui.getCursorPos();
-
-        ImGui.setCursorPos(startCursorPos.x + ImGui.getStyle().getFramePaddingX() + ImGui.getStyle().getFramePaddingX() / 2, startCursorPos.y - 1.0f);
-//        if (ImGui.isMouseHoveringRect(                                                                                // Search Button
-//                ImGui.getCursorScreenPosX() - ImGui.getStyle().getFramePaddingY(),
-//                ImGui.getCursorScreenPosY() + ImGui.getStyle().getFramePaddingY() / 2,
-//                ImGui.getCursorScreenPosX() + ImGui.getFrameHeight() - ImGui.getStyle().getFramePaddingY() * 2,
-//                ImGui.getCursorScreenPosY() + ImGui.getFrameHeight()
-//        )) {
-//            int currentColor = ImGui.getColorU32(ImGuiCol.ButtonHovered);
-//
-//            if (ImGui.isMouseDown(ImGuiMouseButton.Left))
-//                currentColor = ImGui.getColorU32(ImGuiCol.ButtonActive);
-//            if (ImGui.isMouseReleased(ImGuiMouseButton.Left))
-//                this.searchFilter = "";
-//
-//            ImGui.getWindowDrawList().addRectFilled(
-//                    ImGui.getCursorScreenPosX() - ImGui.getStyle().getFramePaddingY(),
-//                    ImGui.getCursorScreenPosY() + ImGui.getStyle().getFramePaddingY() / 2,
-//                    ImGui.getCursorScreenPosX() + ImGui.getFrameHeight() - ImGui.getStyle().getFramePaddingY() * 2,
-//                    ImGui.getCursorScreenPosY() + ImGui.getFrameHeight(),
-//                    currentColor,
-//                    ImGui.getStyle().getFrameRounding()
-//            );
-//        }
-
-        ImGui.alignTextToFramePadding();
-        ImGui.textDisabled("\uED1B");
-        ImGui.setCursorPos(endCursorPos.x, endCursorPos.y);
+        this.searchFilter = EditorGUI.field_TextNoLabel("SceneHierarchy_SearchField", this.searchFilter, "Search...", '\uED1B', ImGui.getContentRegionAvailX() - ImGui.getFrameHeight() - ImGui.getStyle().getItemSpacingX() - ImGui.getStyle().getWindowPaddingX() / 2);
         //</editor-fold>
 
         //<editor-fold desc="Add Button">
@@ -74,7 +52,7 @@ public class SceneHierarchy_Window extends EditorGuiWindow {
         ImGui.setCursorPosY(ImGui.getCursorPosY() + ImGui.getStyle().getItemSpacingY());
 
         if (ImGui.beginPopup("SceneHierarchy_AddPopup")) {
-            drawCreateObjectsPopup();
+            drawCreateObjectPopup(new Vector3f(0.0f));
             ImGui.endPopup();
         }
         //</editor-fold>
@@ -104,7 +82,7 @@ public class SceneHierarchy_Window extends EditorGuiWindow {
 
         // Right-click on blank space(Window)
         if (ImGui.beginPopupContextWindow(ImGuiPopupFlags.NoOpenOverItems | ImGuiPopupFlags.MouseButtonDefault)) {
-            drawWindowContextPopup();
+            drawWindowContextPopup(new Vector3f(0.0f));
             ImGui.endPopup();
         }
     }
@@ -185,44 +163,53 @@ public class SceneHierarchy_Window extends EditorGuiWindow {
         return treeNodeOpen;
     }
 
-    private void drawWindowContextPopup() {
-        drawCreateObjectsPopup();
+    public static void drawWindowContextPopup(Vector3f createdObjectPosition) {
+        drawCreateObjectPopup(createdObjectPosition);
     }
 
-    private void drawObjectContextPopup(GameObject obj) {
+    private static void drawObjectContextPopup(GameObject obj) {
         if (ImGui.selectable("Delete"))
             obj.destroy();
 
-        EditorGUI.separator();
-        drawCreateObjectsPopup();
+        ImGui.separator();
+        drawCreateObjectPopup(new Vector3f(0.0f));
     }
 
-    private void drawCreateObjectsPopup() {
+    private static void drawCreateObjectPopup(Vector3f createdObjectPosition) {
         if (ImGui.menuItem("Create Empty"))
             GameObject_Manager.createEmpty("Empty", true);
 
-        EditorGUI.separator();
-        if (ImGui.menuItem("Create Sprite")) {
-            GameObject empty = GameObject_Manager.createEmpty("Sprite", true);
-            empty.addComponent(new SpriteRenderer());
-        }
-        if (ImGui.menuItem("Create Shape")) {
-            GameObject empty = GameObject_Manager.createEmpty("Shape", true);
-            empty.addComponent(new ShapeRenderer2D());
-        }
-        if (ImGui.menuItem("Create Mesh")) {
-            GameObject empty = GameObject_Manager.createEmpty("Mesh", true);
-            empty.addComponent(new MeshRenderer());
-        }
-
-        EditorGUI.separator();
-        if (ImGui.menuItem("Create Cube")) {
-            GameObject empty = GameObject_Manager.createEmpty("Cube", true);
-            empty.addComponent(new MeshRenderer());
-            empty.getComponent(MeshRenderer.class).setMesh(AssetPool.getMesh("Resources/meshes/defaultMeshes/defaultCube.obj"));
+        ImGui.separator();
+        if (ImGui.beginMenu("Create 2D")) {
+            if (ImGui.menuItem("Create Sprite")) {
+                GameObject empty = GameObject_Manager.createEmpty("Sprite", createdObjectPosition, true);
+                empty.addComponent(new SpriteRenderer());
+            }
+            if (ImGui.menuItem("Create Shape")) {
+                GameObject empty = GameObject_Manager.createEmpty("Shape", createdObjectPosition, true);
+                empty.addComponent(new ShapeRenderer());
+            }
+            ImGui.endMenu();
         }
 
-        EditorGUI.separator();
+        if (ImGui.beginMenu("Create 3D")) {
+            if (ImGui.menuItem("Create Mesh")) {
+                GameObject empty = GameObject_Manager.createEmpty("Mesh", createdObjectPosition, true);
+                empty.addComponent(new MeshRenderer());
+            }
+
+            ImGui.separator();
+            for (String filepath : defaultMeshes.keySet()) {
+                if (ImGui.menuItem("Create " + defaultMeshes.get(filepath))) {
+                    GameObject empty = GameObject_Manager.createEmpty(defaultMeshes.get(filepath), createdObjectPosition, true);
+                    empty.addComponent(new MeshRenderer());
+                    empty.getComponent(MeshRenderer.class).setMesh(AssetPool.getMesh(filepath));
+                }
+            }
+            ImGui.endMenu();
+        }
+
+        ImGui.separator();
         if (ImGui.menuItem("Create Camera")) {
             GameObject empty = GameObject_Manager.createEmpty("Camera", true);
             empty.addComponent(new Camera());

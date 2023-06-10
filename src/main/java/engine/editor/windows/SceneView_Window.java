@@ -1,8 +1,10 @@
 package engine.editor.windows;
 
 import engine.assets.Asset;
+import engine.assets.AssetPool;
 import engine.editor.gui.EditorGUI;
 import engine.editor.gui.EditorGuiWindow;
+import engine.editor.gui.EditorThemeSystem;
 import engine.editor.gui.EngineGuiLayer;
 import engine.entity.GameObject;
 import engine.eventListeners.Input;
@@ -13,25 +15,34 @@ import engine.observers.EventSystem;
 import engine.observers.Observer;
 import engine.observers.events.Event;
 import engine.observers.events.EventType;
+import engine.renderer.Texture2D;
 import engine.renderer.camera.ed_BaseCamera;
 import engine.scenes.SceneManager;
-import engine.stuff.Maths;
+import engine.stuff.utils.Maths;
 import engine.stuff.Settings;
 import engine.stuff.Window;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.ImVec4;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiMouseButton;
+import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import org.joml.Math;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class SceneView_Window extends EditorGuiWindow implements Observer {
 
     private static float leftX, rightX, topY, bottomY;
     private static final float[] transformArray = new float[4 * 4];
+
+    private static boolean dragPreviousFrame = false;
+    private static final Vector2f mouseStartPosition = new Vector2f();
 
     public SceneView_Window() {
         super("\uF02C Scene", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse);
@@ -146,6 +157,89 @@ public class SceneView_Window extends EditorGuiWindow implements Observer {
 
         MouseListener.setGameViewportPos(topLeft);
         MouseListener.setGameViewportSize(viewportSize);
+
+        if (ImGui.isWindowHovered() && ImGui.isMouseClicked(ImGuiMouseButton.Right))
+            dragPreviousFrame = false;
+
+        if (ImGui.isWindowHovered())
+            if (ImGui.isMouseReleased(ImGuiMouseButton.Right) && !dragPreviousFrame) {
+                mouseStartPosition.set(Input.getMouseScreenPosition());
+                ImGui.openPopup("Popup_SceneViewWindow_Context");
+            }
+
+        if (ImGui.isWindowHovered() && ImGui.isMouseDragging(ImGuiMouseButton.Right))
+            dragPreviousFrame = true;
+
+        if (ImGui.beginPopup("Popup_SceneViewWindow_Context")) {
+            Vector2f worldPos = new Vector2f(0.0f);
+            if (SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Orthographic)
+                worldPos.set(Input.screenToWorld(mouseStartPosition));
+
+            SceneHierarchy_Window.drawWindowContextPopup(new Vector3f(worldPos.x, worldPos.y, 0.0f));
+            ImGui.endPopup();
+        }
+
+        ImGui.setNextWindowPos(topLeft.x + ImGui.getStyle().getWindowPaddingX(), topLeft.y + ImGui.getStyle().getWindowPaddingY());
+        drawToolsWindow();
+        ImGui.sameLine();
+        ImGui.setNextWindowPos(rightX - ImGui.getFrameHeight() - ImGui.getStyle().getWindowPaddingX() * 2, topLeft.y + ImGui.getStyle().getWindowPaddingY());
+        drawCameraControls();
+    }
+
+    private void drawToolsWindow() {
+        ImGui.pushStyleColor(ImGuiCol.WindowBg, 0.0f, 0.0f, 0.0f, 0.5f);
+        ImGui.pushStyleColor(ImGuiCol.Button, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, ImGui.getStyle().getWindowPaddingX() / 2, ImGui.getStyle().getWindowPaddingY() / 2);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 5.0f);
+        ImGui.begin("Tools", ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDecoration);
+
+        if (drawToolButton(AssetPool.getTexture("Resources/icons/tools/selectTool.png"), ed_GizmoSystem.getActiveTool() == ed_GizmoSystem.GizmoTool.Select))
+            ed_GizmoSystem.setActiveTool(ed_GizmoSystem.GizmoTool.Select);
+        ImGui.sameLine();
+        if (drawToolButton(AssetPool.getTexture("Resources/icons/tools/translateTool.png"), ed_GizmoSystem.getActiveTool() == ed_GizmoSystem.GizmoTool.Translate))
+            ed_GizmoSystem.setActiveTool(ed_GizmoSystem.GizmoTool.Translate);
+        ImGui.sameLine();
+        if (drawToolButton(AssetPool.getTexture("Resources/icons/tools/rotateTool.png"), ed_GizmoSystem.getActiveTool() == ed_GizmoSystem.GizmoTool.Rotate))
+            ed_GizmoSystem.setActiveTool(ed_GizmoSystem.GizmoTool.Rotate);
+        ImGui.sameLine();
+        if (drawToolButton(AssetPool.getTexture("Resources/icons/tools/scaleTool.png"), ed_GizmoSystem.getActiveTool() == ed_GizmoSystem.GizmoTool.Scale))
+            ed_GizmoSystem.setActiveTool(ed_GizmoSystem.GizmoTool.Scale);
+
+        ImGui.end();
+        ImGui.popStyleVar(2);
+        ImGui.popStyleColor(3);
+    }
+
+    private void drawCameraControls() {
+        ImGui.pushStyleColor(ImGuiCol.WindowBg, 0.0f, 0.0f, 0.0f, 0.5f);
+        ImGui.pushStyleColor(ImGuiCol.Button, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleColor(ImGuiCol.Border, 0.0f, 0.0f, 0.0f, 0.0f);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, ImGui.getStyle().getWindowPaddingX() / 2, ImGui.getStyle().getWindowPaddingY() / 2);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 5.0f);
+        ImGui.begin("CameraSettings", ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoDecoration);
+
+        if (ImGui.button(SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective ? "3D" : "2D", ImGui.getFrameHeight(), ImGui.getFrameHeight())) {
+            if (SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
+                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Orthographic);
+            else
+                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Perspective);
+        }
+
+        ImGui.end();
+        ImGui.popStyleVar(2);
+        ImGui.popStyleColor(3);
+//        if (ImGui.button(SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective ? "3D" : "2D", ImGui.getFrameHeight(), ImGui.getFrameHeight())) {
+//            if (SceneManager.getCurrentScene().getEditorCamera().getProjectionType() == ed_BaseCamera.ProjectionType.Perspective)
+//                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Orthographic);
+//            else
+//                SceneManager.getCurrentScene().getEditorCamera().setProjectionType(ed_BaseCamera.ProjectionType.Perspective);
+//        }
+    }
+
+    private boolean drawToolButton(Texture2D icon, boolean isSelected) {
+        ImVec4 color = isSelected ? new ImVec4(EditorThemeSystem.selectionColor.r / 255.0f, EditorThemeSystem.selectionColor.g / 255.0f, EditorThemeSystem.selectionColor.b / 255.0f, 1.0f) : ImGui.getStyle().getColor(ImGuiCol.Text);
+        return ImGui.imageButton(icon.getTextureID(), ImGui.getFrameHeight() / 1.4f, ImGui.getFrameHeight() / 1.4f, 0.0f, 1.0f, 1.0f, 0.0f, (int) ImGui.getStyle().getFramePadding().y, 1.0f, 1.0f, 1.0f, 0.0f, color.x, color.y, color.z, color.w);
     }
 
     private ImVec2 getLargestSizeForViewport() {
